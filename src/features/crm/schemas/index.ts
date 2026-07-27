@@ -1,0 +1,6 @@
+export * from './lead.schema'
+export * from './crm-company.schema'
+export * from './contact.schema'
+export * from './deal.schema'
+export * from './activity.schema'
+export * from './lead-note.schema'
