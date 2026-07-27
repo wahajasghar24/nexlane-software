@@ -93,28 +93,28 @@ export default function WorkLogsPage() {
         }
       />
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <div className="flex items-center gap-2 rounded-lg border bg-card p-1">
+      <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 mb-4">
+        <div className="flex items-center gap-2 rounded-lg border bg-card p-1 self-start">
           <button onClick={prevDay} className="rounded-md px-2 py-1 text-sm hover:bg-accent">&larr;</button>
           <span className="text-sm font-medium min-w-[120px] text-center">
             {new Date(currentDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
           <button onClick={nextDay} className="rounded-md px-2 py-1 text-sm hover:bg-accent">&rarr;</button>
         </div>
-        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Employees</option>
           {employees.map((emp: any) => (
             <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
           ))}
         </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Statuses</option>
           <option value="draft">Draft</option>
           <option value="submitted">Submitted</option>
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
         </select>
-        <span className="text-sm text-muted-foreground ml-auto">Total: {totalHours}h</span>
+        <span className="text-sm text-muted-foreground sm:ml-auto">Total: {totalHours}h</span>
       </div>
 
       {loading ? (
@@ -133,41 +133,67 @@ export default function WorkLogsPage() {
           action={<button onClick={() => { setForm(prev => ({ ...prev, log_date: currentDate })); setShowModal(true) }} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Log Work</button>}
         />
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Employee</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Task</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Hours</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log: any) => (
-                <tr key={log.id} className="border-b last:border-b-0 hover:bg-muted/30">
-                  <td className="p-3 text-sm font-medium">
-                    {log.employee_name || (log.employee ? getDisplayName(log.employee) : 'Unknown')}
-                  </td>
-                  <td className="p-3 text-sm text-muted-foreground">{log.task_title || log.task?.title || '-'}</td>
-                  <td className="p-3 text-sm font-medium">{log.hours}h</td>
-                  <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">{log.description || '-'}</td>
-                  <td className="p-3">
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                      log.status === 'approved' ? 'bg-green-100 text-green-800' :
-                      log.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                      log.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {log.status}
-                    </span>
-                  </td>
+        <>
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {logs.map((log: any) => (
+              <div key={log.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="font-medium text-sm">{log.employee_name || (log.employee ? getDisplayName(log.employee) : 'Unknown')}</p>
+                    <p className="text-sm text-muted-foreground">{log.task_title || log.task?.title || '-'}</p>
+                  </div>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                    log.status === 'approved' ? 'bg-green-100 text-green-800' :
+                    log.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                    log.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>{log.status}</span>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t text-sm">
+                  <span className="font-medium">{log.hours}h</span>
+                  <span className="text-muted-foreground truncate max-w-[200px]">{log.description || '-'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Employee</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Task</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Hours</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {logs.map((log: any) => (
+                  <tr key={log.id} className="border-b last:border-b-0 hover:bg-muted/30">
+                    <td className="p-3 text-sm font-medium">
+                      {log.employee_name || (log.employee ? getDisplayName(log.employee) : 'Unknown')}
+                    </td>
+                    <td className="p-3 text-sm text-muted-foreground">{log.task_title || log.task?.title || '-'}</td>
+                    <td className="p-3 text-sm font-medium">{log.hours}h</td>
+                    <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">{log.description || '-'}</td>
+                    <td className="p-3">
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                        log.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        log.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        log.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {log.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {showModal && (

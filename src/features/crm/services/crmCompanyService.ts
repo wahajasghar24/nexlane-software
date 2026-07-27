@@ -48,9 +48,9 @@ export const crmCompanyService = {
   async getById(companyId: string, companyIdCrm: string) {
     const supabase = await createClient()
 
-    const { data: company, error } = await supabase
+    const { data, error } = await supabase
       .from('crm_companies')
-      .select('*')
+      .select('*, contacts(*)')
       .eq('id', companyIdCrm)
       .eq('company_id', companyId)
       .is('deleted_at', null)
@@ -58,19 +58,7 @@ export const crmCompanyService = {
 
     if (error) throw new DatabaseError(error)
 
-    const { data: contacts, error: contactsError } = await supabase
-      .from('contacts')
-      .select('*')
-      .eq('crm_company_id', companyIdCrm)
-      .eq('company_id', companyId)
-      .is('deleted_at', null)
-
-    if (contactsError) throw new DatabaseError(contactsError)
-
-    return {
-      ...company,
-      contacts: contacts || [],
-    }
+    return data
   },
 
   async create(companyId: string, input: CreateCrmCompanyInput, actorId: string) {

@@ -94,14 +94,14 @@ export default function TimelinePage() {
         description="Activity feed across the organization"
       />
 
-      <div className="flex flex-wrap gap-3 mb-6">
-        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Actors</option>
           {employees.map((emp: any) => (
             <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
           ))}
         </select>
-        <select value={entityFilter} onChange={e => setEntityFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={entityFilter} onChange={e => setEntityFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Entity Types</option>
           <option value="employee">Employee</option>
           <option value="project">Project</option>
@@ -110,7 +110,7 @@ export default function TimelinePage() {
           <option value="comment">Comment</option>
           <option value="department">Department</option>
         </select>
-        <select value={actionFilter} onChange={e => setActionFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={actionFilter} onChange={e => setActionFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Actions</option>
           <option value="created">Created</option>
           <option value="updated">Updated</option>

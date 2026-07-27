@@ -7,10 +7,11 @@ import { updateTeamSchema } from '@/features/teams/schemas'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.TEAMS_LIST)
 
     const { id } = await params
-    const data = await teamService.getById(companyId, id)
+    const data = await teamService.getById(context.companyId, id)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {

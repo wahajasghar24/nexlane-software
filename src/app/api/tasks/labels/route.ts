@@ -7,12 +7,13 @@ import { createTaskLabelSchema } from '@/features/tasks/schemas'
 
 export async function GET(request: Request) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.TASKS_LABELS)
 
     const url = new URL(request.url)
     const query = Object.fromEntries(url.searchParams.entries())
 
-    const data = await taskService.listLabels(companyId, query)
+    const data = await taskService.listLabels(context.companyId, query)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {

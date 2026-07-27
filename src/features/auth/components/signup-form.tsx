@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createClient } from '@/core/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const signupSchema = z.object({
@@ -27,15 +26,18 @@ export function SignupForm() {
   async function onSubmit(data: SignupForm) {
     setError(null)
     try {
-      const supabase = createClient()
-      const { error: signupError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: { full_name: data.fullName },
-        },
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       })
-      if (signupError) throw new Error(signupError.message)
+
+      const json = await res.json()
+
+      if (!res.ok || json.error) {
+        throw new Error(json.error?.message || json.error || 'Signup failed')
+      }
+
       router.push('/login?registered=true')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed')

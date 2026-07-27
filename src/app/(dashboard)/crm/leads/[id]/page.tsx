@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 import Link from 'next/link'
 
 const statusColors: Record<string, string> = {
@@ -23,6 +24,7 @@ export default function LeadDetailPage() {
   const [loading, setLoading] = useState(true)
   const [newNote, setNewNote] = useState('')
   const [addingNote, setAddingNote] = useState(false)
+  const confirm = useConfirm()
 
   useEffect(() => { load() }, [id])
 
@@ -67,7 +69,7 @@ export default function LeadDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Delete this lead?')) return
+    if (!(await confirm('Delete this lead?'))) return
     await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' })
     window.location.href = '/crm/leads'
   }

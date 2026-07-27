@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/core/supabase/server'
 import { createAdminClient } from '@/core/supabase/admin'
 import { signupSchema } from '@/features/auth/schemas/auth.schema'
+import { syncProfile, ensureEmployee, syncEmployeeForUser } from '@/core/auth/profile-sync'
 
 export async function POST(request: Request) {
   try {
@@ -23,6 +24,11 @@ export async function POST(request: Request) {
     }
 
     if (authData.user) {
+      // 1. Ensure profile exists (defensive — DB trigger should also do this)
+      await syncProfile(authData.user.id, parsed.email, {
+        full_name: parsed.fullName,
+      })
+
       const adminClient = createAdminClient()
       const companyName = parsed.companyName || `${parsed.fullName}'s Company`
       const slug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'company'
@@ -40,6 +46,7 @@ export async function POST(request: Request) {
           is_default: true,
         })
 
+        // 2. Grant Owner role
         const { data: ownerRole } = await adminClient
           .from('roles')
           .select('id')
@@ -55,6 +62,27 @@ export async function POST(request: Request) {
             assigned_by: authData.user.id,
           })
         }
+
+        // 3. Create employee record so the founder can be assigned work
+        await ensureEmployee(
+          adminClient,
+          authData.user.id,
+          company.id,
+          authData.user.id,
+          parsed.fullName,
+        )
+      }
+
+      // 4. Safety net: ensure employee records exist for ALL user's companies
+      //    (handles rare edge cases where the above flows partially fail)
+      const employeeCount = await syncEmployeeForUser(
+        authData.user.id,
+        parsed.fullName,
+      )
+      if (employeeCount > 0) {
+        console.log(
+          `[sync] Signup: created ${employeeCount} employee record(s) for user ${authData.user.id}`,
+        )
       }
     }
 

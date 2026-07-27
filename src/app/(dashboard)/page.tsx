@@ -57,11 +57,11 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Welcome to Nexlane"
         actions={
-          <div className="flex gap-2">
-            <Link href="/employees/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Employee</Link>
-            <Link href="/projects/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Project</Link>
-            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>
-            <Link href="/work-logs" className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Log Work</Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/employees/new" className="inline-flex items-center justify-center rounded-md bg-primary px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-primary-foreground hover:bg-primary/90">New Employee</Link>
+            <Link href="/projects/new" className="inline-flex items-center justify-center rounded-md bg-primary px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-primary-foreground hover:bg-primary/90">New Project</Link>
+            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>
+            <Link href="/work-logs" className="inline-flex items-center justify-center rounded-md border bg-background px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium hover:bg-accent">Log Work</Link>
           </div>
         }
       />

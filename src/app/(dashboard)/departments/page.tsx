@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<{ id: string; name: string; description?: string; employee_count?: number }[]>([])
@@ -11,6 +12,7 @@ export default function DepartmentsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', description: '' })
   const [saving, setSaving] = useState(false)
+  const confirm = useConfirm()
 
   const load = () => {
     setLoading(true)
@@ -52,7 +54,7 @@ export default function DepartmentsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this department?')) return
+    if (!(await confirm('Delete this department?'))) return
     await fetch(`/api/departments/${id}`, { method: 'DELETE' })
     load()
   }
@@ -85,7 +87,7 @@ export default function DepartmentsPage() {
           action={<button onClick={openCreate} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Add Department</button>}
         />
       ) : (
-        <div className="rounded-lg border overflow-hidden">
+        <div className="rounded-lg border overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50">

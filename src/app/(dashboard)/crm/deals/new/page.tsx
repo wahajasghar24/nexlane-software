@@ -53,7 +53,7 @@ export default function NewDealPage() {
             <label className="block text-sm font-medium mb-1">Deal Name *</label>
             <input type="text" required value={form.name} onChange={e => update('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Value ($)</label>
               <input type="number" min="0" step="0.01" value={form.value} onChange={e => update('value', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
@@ -63,7 +63,7 @@ export default function NewDealPage() {
               <input type="number" min="0" max="100" value={form.probability} onChange={e => update('probability', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Stage</label>
               <select value={form.stage} onChange={e => update('stage', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
@@ -81,7 +81,7 @@ export default function NewDealPage() {
               <input type="date" value={form.expected_close_date} onChange={e => update('expected_close_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Owner ID</label>
               <input type="text" value={form.owner_id} onChange={e => update('owner_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />

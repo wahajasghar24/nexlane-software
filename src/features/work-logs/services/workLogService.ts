@@ -13,47 +13,38 @@ export const workLogService = {
     const parsed = workLogQuerySchema.parse(query)
     const supabase = await createClient()
 
-    let countQuery = supabase
+    let dbQuery = supabase
       .from('work_logs')
-      .select('id', { count: 'exact', head: true })
-      .eq('company_id', companyId)
-
-    let dataQuery = supabase
-      .from('work_logs')
-      .select('*')
+      .select(`
+        *,
+        employee:employee_id(*, profile:profile_id(full_name)),
+        task:task_id(title)
+      `, { count: 'exact' })
       .eq('company_id', companyId)
 
     if (parsed.employee_id) {
-      countQuery = countQuery.eq('employee_id', parsed.employee_id)
-      dataQuery = dataQuery.eq('employee_id', parsed.employee_id)
+      dbQuery = dbQuery.eq('employee_id', parsed.employee_id)
     }
 
     if (parsed.task_id) {
-      countQuery = countQuery.eq('task_id', parsed.task_id)
-      dataQuery = dataQuery.eq('task_id', parsed.task_id)
+      dbQuery = dbQuery.eq('task_id', parsed.task_id)
     }
 
     if (parsed.date_from) {
-      countQuery = countQuery.gte('log_date', parsed.date_from)
-      dataQuery = dataQuery.gte('log_date', parsed.date_from)
+      dbQuery = dbQuery.gte('log_date', parsed.date_from)
     }
 
     if (parsed.date_to) {
-      countQuery = countQuery.lte('log_date', parsed.date_to)
-      dataQuery = dataQuery.lte('log_date', parsed.date_to)
+      dbQuery = dbQuery.lte('log_date', parsed.date_to)
     }
 
     if (parsed.status) {
-      countQuery = countQuery.eq('status', parsed.status)
-      dataQuery = dataQuery.eq('status', parsed.status)
+      dbQuery = dbQuery.eq('status', parsed.status)
     }
-
-    const { count, error: countError } = await countQuery
-    if (countError) throw new DatabaseError(countError)
 
     const offset = (parsed.page - 1) * parsed.limit
 
-    const { data, error } = await dataQuery
+    const { data, error, count } = await dbQuery
       .order('log_date', { ascending: false })
       .range(offset, offset + parsed.limit - 1)
 

@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server'
 import { authenticate } from '@/core/auth/authenticate'
+import { authorize } from '@/core/auth/authorize'
+import { Permissions } from '@/core/auth/permissions'
 import { designationService } from '@/features/designations/services/designationService'
 import { updateDesignationSchema } from '@/features/designations/schemas'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DESIGNATIONS_LIST)
 
     const { id } = await params
-    const data = await designationService.getById(companyId, id)
+    const data = await designationService.getById(context.companyId, id)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {
@@ -27,11 +30,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DESIGNATIONS_UPDATE)
 
     const { id } = await params
     const body = updateDesignationSchema.parse(await request.json())
-    const data = await designationService.update(companyId, id, body, userId)
+    const data = await designationService.update(context.companyId, id, body, context.userId)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {
@@ -50,10 +54,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { userId, companyId } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DESIGNATIONS_DELETE)
 
     const { id } = await params
-    const data = await designationService.softDelete(companyId, id, userId)
+    const data = await designationService.softDelete(context.companyId, id, context.userId)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {

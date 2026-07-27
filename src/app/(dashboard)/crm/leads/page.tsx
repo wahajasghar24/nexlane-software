@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 import Link from 'next/link'
 
 interface Lead {
@@ -39,6 +40,7 @@ export default function LeadsPage() {
   const [priorityFilter, setPriorityFilter] = useState('')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const confirm = useConfirm()
 
   useEffect(() => {
     setLoading(true)
@@ -58,7 +60,7 @@ export default function LeadsPage() {
   }, [page, search, statusFilter, priorityFilter])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this lead?')) return
+    if (!(await confirm('Delete this lead?'))) return
     try {
       await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' })
       setLeads(prev => prev.filter(l => l.id !== id))
@@ -77,9 +79,9 @@ export default function LeadsPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search leads..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]" />
-        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
+        <input type="text" placeholder="Search leads..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Statuses</option>
           <option value="new">New</option>
           <option value="contacted">Contacted</option>
@@ -87,7 +89,7 @@ export default function LeadsPage() {
           <option value="unqualified">Unqualified</option>
           <option value="converted">Converted</option>
         </select>
-        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Priorities</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -109,7 +111,38 @@ export default function LeadsPage() {
         <EmptyState title="No leads found" description="Create your first lead to get started" action={<Link href="/crm/leads/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Lead</Link>} />
       ) : (
         <>
-          <div className="rounded-lg border overflow-hidden">
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {leads.map(lead => (
+              <div key={lead.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <Link href={`/crm/leads/${lead.id}`} className="font-medium hover:text-primary">{lead.title || 'Untitled'}</Link>
+                    <p className="text-sm text-muted-foreground">{lead.name}</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[lead.status] || ''}`}>{lead.status}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
+                  <span>Company: {lead.company || '-'}</span>
+                  <span className="text-right">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${priorityColors[lead.priority] || ''}`}>{lead.priority}</span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t text-sm">
+                  <span className="text-muted-foreground">{typeof lead.assigned_to === 'object' ? lead.assigned_to?.name : lead.assigned_to || 'Unassigned'}</span>
+                  <div className="flex gap-2">
+                    <Link href={`/crm/leads/${lead.id}`} className="text-muted-foreground hover:text-primary">View</Link>
+                    <Link href={`/crm/leads/${lead.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                    <button onClick={() => handleDelete(lead.id)} className="text-red-500 hover:text-red-700">Delete</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
@@ -147,7 +180,7 @@ export default function LeadsPage() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>

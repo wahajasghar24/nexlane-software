@@ -7,10 +7,11 @@ import { updateDepartmentSchema } from '@/features/departments/schemas'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DEPARTMENTS_LIST)
 
     const { id } = await params
-    const data = await departmentService.getById(companyId, id)
+    const data = await departmentService.getById(context.companyId, id)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {

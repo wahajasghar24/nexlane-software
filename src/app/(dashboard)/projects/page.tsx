@@ -83,15 +83,15 @@ export default function ProjectsPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
           placeholder="Search projects..."
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
-          className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
-        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Statuses</option>
           <option value="planning">Planning</option>
           <option value="active">Active</option>
@@ -99,7 +99,7 @@ export default function ProjectsPage() {
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
-        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Priorities</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -131,7 +131,37 @@ export default function ProjectsPage() {
         />
       ) : (
         <>
-          <div className="rounded-lg border overflow-hidden">
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {projects.map(p => (
+              <div key={p.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: p.color || '#6366f1' }} />
+                  <Link href={`/projects/${p.id}`} className="font-medium hover:text-primary">{p.name}</Link>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
+                  <span>Client: {p.client_name || '-'}</span>
+                  <span className="text-right">{getMemberCount(p)} members</span>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t text-sm">
+                  <div className="flex gap-2">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[p.status] || ''}`}>
+                      {p.status?.replace(/_/g, ' ')}
+                    </span>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${priorityColors[p.priority] || ''}`}>
+                      {p.priority}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href={`/projects/${p.id}`} className="text-muted-foreground hover:text-primary">View</Link>
+                    <Link href={`/projects/${p.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
@@ -183,7 +213,7 @@ export default function ProjectsPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>

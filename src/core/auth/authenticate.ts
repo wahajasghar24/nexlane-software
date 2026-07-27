@@ -1,5 +1,6 @@
 import { createClient } from '@/core/supabase/server'
 import { AppError } from '@/core/errors/app-error'
+import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
 import type { UserContext } from '@/core/types/common'
 
 export async function authenticate(request?: Request): Promise<UserContext> {
@@ -10,16 +11,36 @@ export async function authenticate(request?: Request): Promise<UserContext> {
     throw new AppError('UNAUTHENTICATED', 'Authentication required', 401)
   }
 
-  const { data: profile } = await supabase
+  // 1. Sync profile — ensures profile row exists and is up-to-date
+  //    This replaces the previous inline auto-repair logic.
+  const meta = user.user_metadata as Record<string, unknown> | null
+  await syncProfile(
+    user.id,
+    user.email || '',
+    meta,
+  )
+
+  // 2. Look up profile (now guaranteed to exist)
+  let { data: profile } = await supabase
     .from('profiles')
     .select('id, email, full_name')
     .eq('id', user.id)
     .single()
 
   if (!profile) {
-    throw new AppError('PROFILE_NOT_FOUND', 'User profile not found', 401)
+    // Defensive — should never happen after syncProfile above
+    throw new AppError('PROFILE_NOT_FOUND', 'User profile not found after sync', 500)
   }
 
+  // 3. Ensure employee records exist for all user's companies
+  //    Handles the case where a user was added to company_members
+  //    but doesn't have an employees row yet.
+  await syncEmployeeForUser(
+    user.id,
+    profile.full_name,
+  )
+
+  // 4. Find the user's default company
   const { data: membership } = await supabase
     .from('company_members')
     .select('company_id')

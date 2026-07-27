@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server'
 import { authenticate } from '@/core/auth/authenticate'
+import { authorize } from '@/core/auth/authorize'
+import { Permissions } from '@/core/auth/permissions'
 import { designationService } from '@/features/designations/services/designationService'
 import { createDesignationSchema } from '@/features/designations/schemas'
 
 export async function GET(request: Request) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DESIGNATIONS_LIST)
 
     const url = new URL(request.url)
     const query = Object.fromEntries(url.searchParams.entries())
 
-    const data = await designationService.list(companyId)
+    const data = await designationService.list(context.companyId)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {
@@ -29,10 +32,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.DESIGNATIONS_CREATE)
 
     const body = createDesignationSchema.parse(await request.json())
-    const data = await designationService.create(companyId, body, userId)
+    const data = await designationService.create(context.companyId, body, context.userId)
 
     return NextResponse.json({ data, error: null }, { status: 201 })
   } catch (err) {

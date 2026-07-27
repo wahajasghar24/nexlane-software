@@ -17,7 +17,7 @@ export const employeeService = {
         profile:profile_id(*),
         department:department_id(id, name),
         designation:designation_id(id, name)
-      `)
+      `, { count: 'exact' })
       .eq('company_id', companyId)
       .is('deleted_at', null)
 
@@ -213,54 +213,54 @@ export const employeeService = {
   async getProfile(companyId: string, employeeId: string) {
     const supabase = await createClient()
 
-    const { data: employee, error: empError } = await supabase
-      .from('employees')
-      .select(`
-        *,
-        profile:profile_id(*),
-        department:department_id(id, name),
-        designation:designation_id(id, name)
-      `)
-      .eq('id', employeeId)
-      .eq('company_id', companyId)
-      .single()
+    const [
+      { data: employee, error: empError },
+      { data: projects, error: projError },
+      { data: tasks, error: taskError },
+      { data: workLogs, error: wlError },
+      { data: activity, error: actError },
+    ] = await Promise.all([
+      supabase
+        .from('employees')
+        .select(`
+          *,
+          profile:profile_id(*),
+          department:department_id(id, name),
+          designation:designation_id(id, name)
+        `)
+        .eq('id', employeeId)
+        .eq('company_id', companyId)
+        .single(),
+      supabase
+        .from('project_members')
+        .select('project:project_id(*)')
+        .eq('employee_id', employeeId),
+      supabase
+        .from('tasks')
+        .select('*')
+        .eq('assignee_id', employeeId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(20),
+      supabase
+        .from('work_logs')
+        .select('*')
+        .eq('employee_id', employeeId)
+        .order('date', { ascending: false })
+        .limit(10),
+      supabase
+        .from('activity_logs')
+        .select('*')
+        .eq('entity_type', 'employee')
+        .eq('entity_id', employeeId)
+        .order('created_at', { ascending: false })
+        .limit(20),
+    ])
 
     if (empError) throw new DatabaseError(empError)
-
-    const { data: projects, error: projError } = await supabase
-      .from('project_members')
-      .select('project:project_id(*)')
-      .eq('employee_id', employeeId)
-
     if (projError) throw new DatabaseError(projError)
-
-    const { data: tasks, error: taskError } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('assignee_id', employeeId)
-      .is('deleted_at', null)
-      .order('created_at', { ascending: false })
-      .limit(20)
-
     if (taskError) throw new DatabaseError(taskError)
-
-    const { data: workLogs, error: wlError } = await supabase
-      .from('work_logs')
-      .select('*')
-      .eq('employee_id', employeeId)
-      .order('date', { ascending: false })
-      .limit(10)
-
     if (wlError) throw new DatabaseError(wlError)
-
-    const { data: activity, error: actError } = await supabase
-      .from('activity_logs')
-      .select('*')
-      .eq('entity_type', 'employee')
-      .eq('entity_id', employeeId)
-      .order('created_at', { ascending: false })
-      .limit(20)
-
     if (actError) throw new DatabaseError(actError)
 
     return {

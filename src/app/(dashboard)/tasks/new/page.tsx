@@ -95,7 +95,7 @@ export default function NewTaskPage() {
             <label className="block text-sm font-medium mb-1">Description</label>
             <textarea rows={3} value={form.description} onChange={e => update('description', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Project</label>
               <select value={form.project_id} onChange={e => update('project_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
@@ -111,7 +111,7 @@ export default function NewTaskPage() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Priority</label>
               <select value={form.priority} onChange={e => update('priority', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
@@ -132,7 +132,7 @@ export default function NewTaskPage() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Due Date</label>
               <input type="date" value={form.due_date} onChange={e => update('due_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />

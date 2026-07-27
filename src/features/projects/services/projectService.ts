@@ -59,37 +59,38 @@ export const projectService = {
   async getById(companyId: string, projectId: string) {
     const supabase = await createClient()
 
-    const { data: project, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', projectId)
-      .eq('company_id', companyId)
-      .single()
+    const [
+      { data: project, error },
+      { data: members, error: membersError },
+      { data: modules, error: modulesError },
+      { data: milestones, error: milestonesError },
+    ] = await Promise.all([
+      supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .eq('company_id', companyId)
+        .single(),
+      supabase
+        .from('project_members')
+        .select('*, employee:employee_id!inner(*, profile:profile_id(*))')
+        .eq('project_id', projectId),
+      supabase
+        .from('project_modules')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('company_id', companyId)
+        .order('sort_order'),
+      supabase
+        .from('milestones')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('company_id', companyId),
+    ])
 
     if (error) throw new DatabaseError(error)
-
-    const { data: members, error: membersError } = await supabase
-      .from('project_members')
-      .select('*, employee:employee_id!inner(*, profile:profile_id(*))')
-      .eq('project_id', projectId)
-
     if (membersError) throw new DatabaseError(membersError)
-
-    const { data: modules, error: modulesError } = await supabase
-      .from('project_modules')
-      .select('*')
-      .eq('project_id', projectId)
-      .eq('company_id', companyId)
-      .order('sort_order')
-
     if (modulesError) throw new DatabaseError(modulesError)
-
-    const { data: milestones, error: milestonesError } = await supabase
-      .from('milestones')
-      .select('*')
-      .eq('project_id', projectId)
-      .eq('company_id', companyId)
-
     if (milestonesError) throw new DatabaseError(milestonesError)
 
     return {
@@ -233,43 +234,24 @@ export const projectService = {
   async getStats(companyId: string) {
     const supabase = await createClient()
 
-    const { data: total, error: totalError } = await supabase
+    const { data, error } = await supabase
       .from('projects')
-      .select('id', { count: 'exact', head: true })
+      .select('status, priority')
       .eq('company_id', companyId)
       .is('deleted_at', null)
 
-    if (totalError) throw new DatabaseError(totalError)
-
-    const { data: byStatus, error: statusError } = await supabase
-      .from('projects')
-      .select('status')
-      .eq('company_id', companyId)
-      .is('deleted_at', null)
-
-    if (statusError) throw new DatabaseError(statusError)
-
-    const { data: byPriority, error: priorityError } = await supabase
-      .from('projects')
-      .select('priority')
-      .eq('company_id', companyId)
-      .is('deleted_at', null)
-
-    if (priorityError) throw new DatabaseError(priorityError)
+    if (error) throw new DatabaseError(error)
 
     const statusCounts: Record<string, number> = {}
     const priorityCounts: Record<string, number> = {}
 
-    for (const p of byStatus || []) {
+    for (const p of data || []) {
       statusCounts[p.status] = (statusCounts[p.status] || 0) + 1
-    }
-
-    for (const p of byPriority || []) {
       priorityCounts[p.priority] = (priorityCounts[p.priority] || 0) + 1
     }
 
     return {
-      total: total?.length || 0,
+      total: data?.length || 0,
       byStatus: statusCounts,
       byPriority: priorityCounts,
     }

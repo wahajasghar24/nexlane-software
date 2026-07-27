@@ -25,73 +25,61 @@ export const taskService = {
     const parsed = taskQuerySchema.parse(query)
     const supabase = await createClient()
 
-    let countQuery = supabase
+    let dbQuery = supabase
       .from('tasks')
-      .select('id', { count: 'exact', head: true })
-      .eq('company_id', companyId)
-      .is('deleted_at', null)
-
-    let dataQuery = supabase
-      .from('tasks')
-      .select('*, task_assignees(*)')
+      .select(`
+        *,
+        project:project_id(id, name, color),
+        task_assignees(
+          *,
+          employee:employee_id(*, profile:profile_id(full_name))
+        )
+      `, { count: 'exact' })
       .eq('company_id', companyId)
       .is('deleted_at', null)
 
     if (parsed.archived) {
-      countQuery = countQuery.eq('is_archived', true)
-      dataQuery = dataQuery.eq('is_archived', true)
+      dbQuery = dbQuery.eq('is_archived', true)
     } else {
-      countQuery = countQuery.eq('is_archived', false)
-      dataQuery = dataQuery.eq('is_archived', false)
+      dbQuery = dbQuery.eq('is_archived', false)
     }
 
     if (parsed.search) {
       const filter = `%${parsed.search}%`
-      countQuery = countQuery.ilike('title', filter)
-      dataQuery = dataQuery.ilike('title', filter)
+      dbQuery = dbQuery.ilike('title', filter)
     }
 
     if (parsed.project_id) {
-      countQuery = countQuery.eq('project_id', parsed.project_id)
-      dataQuery = dataQuery.eq('project_id', parsed.project_id)
+      dbQuery = dbQuery.eq('project_id', parsed.project_id)
     }
 
     if (parsed.module_id) {
-      countQuery = countQuery.eq('module_id', parsed.module_id)
-      dataQuery = dataQuery.eq('module_id', parsed.module_id)
+      dbQuery = dbQuery.eq('module_id', parsed.module_id)
     }
 
     if (parsed.status) {
-      countQuery = countQuery.eq('status', parsed.status)
-      dataQuery = dataQuery.eq('status', parsed.status)
+      dbQuery = dbQuery.eq('status', parsed.status)
     }
 
     if (parsed.priority) {
-      countQuery = countQuery.eq('priority', parsed.priority)
-      dataQuery = dataQuery.eq('priority', parsed.priority)
+      dbQuery = dbQuery.eq('priority', parsed.priority)
     }
 
     if (parsed.assignee_id) {
-      countQuery = countQuery.contains('assignee_ids', [parsed.assignee_id])
-      dataQuery = dataQuery.contains('assignee_ids', [parsed.assignee_id])
+      dbQuery = dbQuery.contains('assignee_ids', [parsed.assignee_id])
     }
 
     if (parsed.due_date_from) {
-      countQuery = countQuery.gte('due_date', parsed.due_date_from)
-      dataQuery = dataQuery.gte('due_date', parsed.due_date_from)
+      dbQuery = dbQuery.gte('due_date', parsed.due_date_from)
     }
 
     if (parsed.due_date_to) {
-      countQuery = countQuery.lte('due_date', parsed.due_date_to)
-      dataQuery = dataQuery.lte('due_date', parsed.due_date_to)
+      dbQuery = dbQuery.lte('due_date', parsed.due_date_to)
     }
-
-    const { count, error: countError } = await countQuery
-    if (countError) throw new DatabaseError(countError)
 
     const offset = (parsed.page - 1) * parsed.limit
 
-    const { data, error } = await dataQuery
+    const { data, error, count } = await dbQuery
       .order('created_at', { ascending: false })
       .range(offset, offset + parsed.limit - 1)
 
@@ -109,76 +97,68 @@ export const taskService = {
   async getById(companyId: string, taskId: string) {
     const supabase = await createClient()
 
-    const { data: task, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('id', taskId)
-      .eq('company_id', companyId)
-      .single()
+    const [
+      { data: task, error },
+      { data: assignees, error: assigneesError },
+      { data: labelMappings, error: labelsError },
+      { data: checklists, error: checklistsError },
+      { data: comments, error: commentsError },
+      { data: attachments, error: attachmentsError },
+      { data: watchers, error: watchersError },
+      { data: dependencies, error: dependenciesError },
+    ] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', taskId)
+        .eq('company_id', companyId)
+        .single(),
+      supabase
+        .from('task_assignees')
+        .select('*, employee:employee_id(*)')
+        .eq('task_id', taskId),
+      supabase
+        .from('task_label_mappings')
+        .select('label:label_id(*)')
+        .eq('task_id', taskId),
+      supabase
+        .from('task_checklist_items')
+        .select('*')
+        .eq('task_id', taskId)
+        .order('sort_order'),
+      supabase
+        .from('comments')
+        .select('*')
+        .eq('entity_type', 'task')
+        .eq('entity_id', taskId)
+        .order('created_at', { ascending: true }),
+      supabase
+        .from('task_attachments')
+        .select('*')
+        .eq('task_id', taskId),
+      supabase
+        .from('task_watchers')
+        .select('*, employee:employee_id(*)')
+        .eq('task_id', taskId),
+      supabase
+        .from('task_dependencies')
+        .select('*')
+        .eq('task_id', taskId),
+    ])
 
     if (error) throw new DatabaseError(error)
-
-    const { data: assignees, error: assigneesError } = await supabase
-      .from('task_assignees')
-      .select('*, employee:employee_id(*)')
-      .eq('task_id', taskId)
-
     if (assigneesError) throw new DatabaseError(assigneesError)
-
-    const { data: mappings, error: labelsError } = await supabase
-      .from('task_label_mappings')
-      .select('label_id')
-      .eq('task_id', taskId)
-
     if (labelsError) throw new DatabaseError(labelsError)
-
-    const labelIds = (mappings || []).map((m: { label_id: string }) => m.label_id)
-    const labels = labelIds.length > 0
-      ? (await supabase.from('task_labels').select('*').in('id', labelIds)).data || []
-      : []
-
-    const { data: checklists, error: checklistsError } = await supabase
-      .from('task_checklist_items')
-      .select('*')
-      .eq('task_id', taskId)
-      .order('sort_order')
-
     if (checklistsError) throw new DatabaseError(checklistsError)
-
-    const { data: comments, error: commentsError } = await supabase
-      .from('comments')
-      .select('*')
-      .eq('entity_type', 'task')
-      .eq('entity_id', taskId)
-      .order('created_at', { ascending: true })
-
     if (commentsError) throw new DatabaseError(commentsError)
-
-    const { data: attachments, error: attachmentsError } = await supabase
-      .from('task_attachments')
-      .select('*')
-      .eq('task_id', taskId)
-
     if (attachmentsError) throw new DatabaseError(attachmentsError)
-
-    const { data: watchers, error: watchersError } = await supabase
-      .from('task_watchers')
-      .select('*, employee:employee_id(*)')
-      .eq('task_id', taskId)
-
     if (watchersError) throw new DatabaseError(watchersError)
-
-    const { data: dependencies, error: dependenciesError } = await supabase
-      .from('task_dependencies')
-      .select('*')
-      .eq('task_id', taskId)
-
     if (dependenciesError) throw new DatabaseError(dependenciesError)
 
     return {
       ...task,
       assignees: assignees || [],
-      labels: labels || [],
+      labels: (labelMappings || []).map((m: { label: unknown }) => m.label).filter(Boolean),
       checklists: checklists || [],
       comments: comments || [],
       attachments: attachments || [],
@@ -239,28 +219,41 @@ export const taskService = {
     }
 
     if (labels && labels.length > 0) {
-      for (const labelName of labels) {
-        const { data: existing } = await supabase
+      // Batch resolve label IDs: fetch existing + create missing in one pass
+      const { data: existingLabels } = await supabase
+        .from('task_labels')
+        .select('id, name')
+        .eq('company_id', companyId)
+        .in('name', labels)
+
+      const labelMap = new Map<string, string>()
+      for (const lbl of existingLabels || []) {
+        labelMap.set(lbl.name, lbl.id)
+      }
+
+      // Create labels that don't exist yet (batch upsert)
+      const newNames = labels.filter(n => !labelMap.has(n))
+      if (newNames.length > 0) {
+        const { data: createdLabels } = await supabase
           .from('task_labels')
-          .select('id')
-          .eq('company_id', companyId)
-          .eq('name', labelName)
-          .maybeSingle()
+          .insert(newNames.map(name => ({ company_id: companyId, name })))
+          .select('id, name')
 
-        let labelId = existing?.id
-        if (!labelId) {
-          const { data: newLabel, error: createError } = await supabase
-            .from('task_labels')
-            .insert({ company_id: companyId, name: labelName })
-            .select('id')
-            .single()
-          if (createError) throw new DatabaseError(createError)
-          labelId = newLabel.id
+        for (const lbl of createdLabels || []) {
+          labelMap.set(lbl.name, lbl.id)
         }
+      }
 
+      // Batch insert all mappings
+      const mappingRows = labels
+        .map(name => labelMap.get(name))
+        .filter(Boolean)
+        .map(labelId => ({ task_id: task.id, label_id: labelId }))
+
+      if (mappingRows.length > 0) {
         const { error: mapError } = await supabase
           .from('task_label_mappings')
-          .insert({ task_id: task.id, label_id: labelId })
+          .insert(mappingRows)
         if (mapError) throw new DatabaseError(mapError)
       }
     }
@@ -322,29 +315,44 @@ export const taskService = {
     if (labels) {
       await supabase.from('task_label_mappings').delete().eq('task_id', taskId)
 
-      for (const labelName of labels) {
-        const { data: existing } = await supabase
+      if (labels.length > 0) {
+        // Batch resolve label IDs: fetch existing + create missing in one pass
+        const { data: existingLabels } = await supabase
           .from('task_labels')
-          .select('id')
+          .select('id, name')
           .eq('company_id', companyId)
-          .eq('name', labelName)
-          .maybeSingle()
+          .in('name', labels)
 
-        let labelId = existing?.id
-        if (!labelId) {
-          const { data: newLabel, error: createError } = await supabase
-            .from('task_labels')
-            .insert({ company_id: companyId, name: labelName })
-            .select('id')
-            .single()
-          if (createError) throw new DatabaseError(createError)
-          labelId = newLabel.id
+        const labelMap = new Map<string, string>()
+        for (const lbl of existingLabels || []) {
+          labelMap.set(lbl.name, lbl.id)
         }
 
-        const { error: mapError } = await supabase
-          .from('task_label_mappings')
-          .insert({ task_id: taskId, label_id: labelId })
-        if (mapError) throw new DatabaseError(mapError)
+        // Create labels that don't exist yet (batch)
+        const newNames = labels.filter(n => !labelMap.has(n))
+        if (newNames.length > 0) {
+          const { data: createdLabels } = await supabase
+            .from('task_labels')
+            .insert(newNames.map(name => ({ company_id: companyId, name })))
+            .select('id, name')
+
+          for (const lbl of createdLabels || []) {
+            labelMap.set(lbl.name, lbl.id)
+          }
+        }
+
+        // Batch insert all mappings
+        const mappingRows = labels
+          .map(name => labelMap.get(name))
+          .filter(Boolean)
+          .map(labelId => ({ task_id: taskId, label_id: labelId }))
+
+        if (mappingRows.length > 0) {
+          const { error: mapError } = await supabase
+            .from('task_label_mappings')
+            .insert(mappingRows)
+          if (mapError) throw new DatabaseError(mapError)
+        }
       }
     }
 

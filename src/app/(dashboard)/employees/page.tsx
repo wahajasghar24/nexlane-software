@@ -66,18 +66,18 @@ export default function EmployeesPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
           placeholder="Search employees..."
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
-          className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
         <select
           value={statusFilter}
           onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
-          className="rounded-md border bg-background px-3 py-2 text-sm"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
           <option value="">All Statuses</option>
           <option value="active">Active</option>
@@ -88,7 +88,7 @@ export default function EmployeesPage() {
         <select
           value={departmentFilter}
           onChange={e => { setDepartmentFilter(e.target.value); setPage(1) }}
-          className="rounded-md border bg-background px-3 py-2 text-sm"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
           <option value="">All Departments</option>
           {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -96,7 +96,7 @@ export default function EmployeesPage() {
         <select
           value={designationFilter}
           onChange={e => { setDesignationFilter(e.target.value); setPage(1) }}
-          className="rounded-md border bg-background px-3 py-2 text-sm"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
           <option value="">All Designations</option>
           {designations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -124,7 +124,34 @@ export default function EmployeesPage() {
         />
       ) : (
         <>
-          <div className="rounded-lg border overflow-hidden">
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {employees.map(emp => (
+              <div key={emp.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <Link href={`/employees/${emp.id}`} className="font-medium hover:text-primary">
+                    {getDisplayName(emp)}
+                  </Link>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[emp.employment_status] || ''}`}>
+                    {emp.employment_status?.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground">
+                  <span>{emp.department?.name || 'No dept'}</span>
+                  <span className="text-right">{emp.designation?.name || '-'}</span>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-2 border-t text-sm">
+                  <span className="text-muted-foreground">{emp.position || '-'}</span>
+                  <div className="flex gap-2">
+                    <Link href={`/employees/${emp.id}`} className="text-muted-foreground hover:text-primary">View</Link>
+                    <Link href={`/employees/${emp.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
@@ -162,7 +189,7 @@ export default function EmployeesPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button

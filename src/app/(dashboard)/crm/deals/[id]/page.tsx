@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 import Link from 'next/link'
 
 const stages = ['new', 'contacted', 'demo_scheduled', 'proposal_sent', 'negotiation', 'won', 'lost']
@@ -20,6 +21,7 @@ export default function DealDetailPage() {
   const [customer, setCustomer] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const confirm = useConfirm()
 
   useEffect(() => { load() }, [id])
 
@@ -49,7 +51,7 @@ export default function DealDetailPage() {
   }
 
   const changeStage = async (newStage: string) => {
-    if (!confirm(`Mark deal as ${stageLabels[newStage]}?`)) return
+    if (!(await confirm(`Mark deal as ${stageLabels[newStage]}?`))) return
     setActionLoading(true)
     try {
       const res = await fetch(`/api/crm/deals/${id}`, {
@@ -67,7 +69,7 @@ export default function DealDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Delete this deal?')) return
+    if (!(await confirm('Delete this deal?'))) return
     await fetch(`/api/crm/deals/${id}`, { method: 'DELETE' })
     window.location.href = '/crm/deals'
   }
@@ -84,18 +86,18 @@ export default function DealDetailPage() {
         title={deal.name}
         description={`Stage: ${stageLabels[deal.stage]}`}
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {deal.stage !== 'won' && (
-              <button onClick={() => changeStage('won')} disabled={actionLoading} className="inline-flex items-center justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">
+              <button onClick={() => changeStage('won')} disabled={actionLoading} className="inline-flex items-center justify-center rounded-md bg-green-600 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">
                 Mark Won
               </button>
             )}
             {deal.stage !== 'lost' && (
-              <button onClick={() => changeStage('lost')} disabled={actionLoading} className="inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
+              <button onClick={() => changeStage('lost')} disabled={actionLoading} className="inline-flex items-center justify-center rounded-md bg-red-600 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
                 Mark Lost
               </button>
             )}
-            <button onClick={handleDelete} className="inline-flex items-center justify-center rounded-md border border-red-200 bg-background px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+            <button onClick={handleDelete} className="inline-flex items-center justify-center rounded-md border border-red-200 bg-background px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-red-600 hover:bg-red-50">
               Delete
             </button>
           </div>

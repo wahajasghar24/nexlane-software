@@ -53,7 +53,7 @@ export default function DealsPipelinePage() {
     return 'border-l-gray-300 bg-card'
   }
 
-  if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="grid grid-cols-4 gap-4">{[...Array(4)].map((_, i) => <div key={i} className="h-96 bg-muted rounded" />)}</div></div>
+  if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="flex gap-4 overflow-x-auto pb-4">{[...Array(4)].map((_, i) => <div key={i} className="h-96 w-64 flex-shrink-0 bg-muted rounded" />)}</div></div>
 
   return (
     <div>

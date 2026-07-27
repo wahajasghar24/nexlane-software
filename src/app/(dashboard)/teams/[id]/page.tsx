@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 import Link from 'next/link'
 
 export default function TeamDetailPage() {
@@ -12,6 +13,7 @@ export default function TeamDetailPage() {
   const [team, setTeam] = useState<any>(null)
   const [members, setMembers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const confirm = useConfirm()
 
   useEffect(() => {
     fetch(`/api/teams/${id}`)
@@ -26,7 +28,7 @@ export default function TeamDetailPage() {
   }, [id])
 
   const handleRemoveMember = async (memberId: string) => {
-    if (!confirm('Remove this member from the team?')) return
+    if (!(await confirm('Remove this member from the team?'))) return
     const res = await fetch(`/api/teams/${id}/members/${memberId}`, { method: 'DELETE' })
     if (res.ok) {
       setMembers(prev => prev.filter(m => m.id !== memberId))

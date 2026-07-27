@@ -89,9 +89,9 @@ export default function TasksPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search tasks..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]" />
-        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
+        <input type="text" placeholder="Search tasks..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Statuses</option>
           <option value="todo">Todo</option>
           <option value="in_progress">In Progress</option>
@@ -99,7 +99,7 @@ export default function TasksPage() {
           <option value="done">Done</option>
           <option value="blocked">Blocked</option>
         </select>
-        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Priorities</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -128,7 +128,58 @@ export default function TasksPage() {
         />
       ) : (
         <>
-          <div className="rounded-lg border overflow-hidden">
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {tasks.map(task => {
+              const assignees = getAssigneeNames(task)
+              return (
+                <div key={task.id} className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <Link href={`/tasks/${task.id}`} className="font-medium hover:text-primary">{task.title}</Link>
+                    <div className="flex gap-1 shrink-0">
+                      <span className={`text-sm font-medium capitalize ${priorityColors[task.priority] || ''}`}>{task.priority}</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
+                    <span>{task.project?.name ? (
+                      <span className="flex items-center gap-1">
+                        {task.project.color && <span className="h-2 w-2 rounded-full" style={{ backgroundColor: task.project.color }} />}
+                        {task.project.name}
+                      </span>
+                    ) : '-'}</span>
+                    <span className="text-right">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t text-sm">
+                    <div className="flex items-center gap-2">
+                      {assignees.length > 0 && (
+                        <div className="flex -space-x-1.5">
+                          {assignees.slice(0, 3).map((name: string, i: number) => (
+                            <div key={i} className="h-6 w-6 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center text-[10px] font-medium" title={name}>
+                              {name.charAt(0).toUpperCase()}
+                            </div>
+                          ))}
+                          {assignees.length > 3 && <span className="text-xs text-muted-foreground ml-1">+{assignees.length - 3}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <select
+                      value={task.status}
+                      onChange={e => handleStatusChange(task.id, e.target.value)}
+                      className={`rounded-md border bg-background px-2 py-1 text-xs font-medium ${statusColors[task.status] || ''}`}
+                    >
+                      <option value="todo">Todo</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="review">Review</option>
+                      <option value="done">Done</option>
+                      <option value="blocked">Blocked</option>
+                    </select>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
@@ -191,7 +242,7 @@ export default function TasksPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>

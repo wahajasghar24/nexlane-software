@@ -34,11 +34,11 @@ export default function NewContactPage() {
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div><label className="block text-sm font-medium mb-1">Name *</label><input type="text" required value={form.name} onChange={e => u('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium mb-1">Email</label><input type="email" value={form.email} onChange={e => u('email', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
             <div><label className="block text-sm font-medium mb-1">Phone</label><input type="text" value={form.phone} onChange={e => u('phone', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium mb-1">WhatsApp</label><input type="text" value={form.whatsapp} onChange={e => u('whatsapp', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
             <div><label className="block text-sm font-medium mb-1">Designation</label><input type="text" value={form.designation} onChange={e => u('designation', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           </div>

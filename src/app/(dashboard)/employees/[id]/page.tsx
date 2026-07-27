@@ -195,7 +195,7 @@ export default function EmployeeDetailPage() {
                 )}
               </div>
               <div className="md:col-span-2 space-y-4">
-                <div className="grid gap-4 grid-cols-3">
+                <div className="grid gap-4 grid-cols-3 sm:grid-cols-3">
                   <div className="rounded-lg border bg-card p-4 text-center">
                     <p className="text-2xl font-bold">{projects.length}</p>
                     <p className="text-xs text-muted-foreground">Projects</p>

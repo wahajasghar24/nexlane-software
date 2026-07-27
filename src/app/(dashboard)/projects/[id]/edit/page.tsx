@@ -77,7 +77,7 @@ export default function EditProjectPage() {
             <label className="block text-sm font-medium mb-1">Description</label>
             <textarea rows={3} value={form.description} onChange={e => update('description', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Client Name</label>
               <input type="text" value={form.client_name} onChange={e => update('client_name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
@@ -87,7 +87,7 @@ export default function EditProjectPage() {
               <input type="color" value={form.color} onChange={e => update('color', e.target.value)} className="w-full h-9 rounded-md border bg-background px-1" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Status</label>
               <select value={form.status} onChange={e => update('status', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
@@ -108,7 +108,7 @@ export default function EditProjectPage() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Start Date</label>
               <input type="date" value={form.start_date} onChange={e => update('start_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />

@@ -55,11 +55,11 @@ export default function EditDealPage() {
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div><label className="block text-sm font-medium mb-1">Deal Name *</label><input type="text" required value={form.name} onChange={e => u('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium mb-1">Value ($)</label><input type="number" min="0" step="0.01" value={form.value} onChange={e => u('value', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
             <div><label className="block text-sm font-medium mb-1">Probability (%)</label><input type="number" min="0" max="100" value={form.probability} onChange={e => u('probability', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Stage</label>
               <select value={form.stage} onChange={e => u('stage', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/core/supabase/server'
 import { loginSchema } from '@/features/auth/schemas/auth.schema'
+import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +19,27 @@ export async function POST(request: Request) {
         { data: null, error: { code: 'AUTH_ERROR', message: error.message } },
         { status: 401 }
       )
+    }
+
+    // Ensure profile exists and sync last_sign_in_at / email / avatar
+    if (data.user) {
+      const syncResult = await syncProfile(
+        data.user.id,
+        data.user.email || parsed.email,
+        data.user.user_metadata as Record<string, unknown> | null,
+      )
+
+      // Ensure employee records exist for ALL companies the user is a member of
+      const employeeCount = await syncEmployeeForUser(
+        data.user.id,
+        (data.user.user_metadata as { full_name?: string } | null)?.full_name,
+      )
+
+      if (syncResult.employeeCreated || employeeCount > 0) {
+        console.log(
+          `[sync] Created ${employeeCount} employee record(s) for user ${data.user.id}`,
+        )
+      }
     }
 
     return NextResponse.json({ data: { user: data.user }, error: null })

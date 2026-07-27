@@ -55,9 +55,9 @@ export default function CompaniesPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search companies..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]" />
-        <input type="text" placeholder="Filter by industry..." value={industryFilter} onChange={e => { setIndustryFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
+        <input type="text" placeholder="Search companies..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <input type="text" placeholder="Filter by industry..." value={industryFilter} onChange={e => { setIndustryFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto" />
       </div>
 
       {loading ? (
@@ -73,7 +73,29 @@ export default function CompaniesPage() {
         <EmptyState title="No companies found" description="Add your first company" action={<Link href="/crm/companies/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Company</Link>} />
       ) : (
         <>
-          <div className="rounded-lg border overflow-hidden">
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-3">
+            {companies.map(c => (
+              <div key={c.id} className="rounded-lg border bg-card p-4">
+                <Link href={`/crm/companies/${c.id}`} className="font-medium hover:text-primary block mb-1">{c.name}</Link>
+                <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
+                  <span>{c.industry || 'No industry'}</span>
+                  <span className="text-right">{getContactCount(c)} contacts</span>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t text-sm">
+                  {c.website ? (
+                    <a href={c.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary truncate max-w-[180px]">{c.website}</a>
+                  ) : <span className="text-muted-foreground">-</span>}
+                  <div className="flex gap-2 shrink-0">
+                    <Link href={`/crm/companies/${c.id}`} className="text-muted-foreground hover:text-primary">View</Link>
+                    <Link href={`/crm/companies/${c.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table view */}
+          <div className="rounded-lg border overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
@@ -100,7 +122,7 @@ export default function CompaniesPage() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>

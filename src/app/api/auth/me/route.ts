@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/core/supabase/server'
+import { syncProfile } from '@/core/auth/profile-sync'
 
 export async function GET() {
   const supabase = await createClient()
@@ -11,6 +12,13 @@ export async function GET() {
       { status: 401 }
     )
   }
+
+  // Sync profile to catch stale email / full_name / avatar and track session
+  await syncProfile(
+    user.id,
+    user.email || '',
+    user.user_metadata as Record<string, unknown> | null,
+  )
 
   const { data: profile } = await supabase
     .from('profiles')

@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server'
 import { authenticate } from '@/core/auth/authenticate'
+import { authorize } from '@/core/auth/authorize'
+import { Permissions } from '@/core/auth/permissions'
 import { teamService } from '@/features/teams/services/teamService'
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string; memberId: string }> }) {
   try {
-    const { userId, companyId, email, ip, userAgent } = await authenticate(request)
+    const context = await authenticate(request)
+    await authorize(context, Permissions.TEAMS_UPDATE)
 
     const { id, memberId } = await params
-    const data = await teamService.removeMember(companyId, id, memberId)
+    const data = await teamService.removeMember(context.companyId, id, memberId)
 
     return NextResponse.json({ data, error: null })
   } catch (err) {

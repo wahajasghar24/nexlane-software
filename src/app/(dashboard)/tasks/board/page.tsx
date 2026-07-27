@@ -102,7 +102,7 @@ export default function TaskBoardPage() {
           placeholder="Search tasks..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="rounded-md border bg-background px-3 py-2 text-sm min-w-[200px]"
+          className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
       </div>
 
