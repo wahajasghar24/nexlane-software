@@ -23,22 +23,28 @@ export async function POST(request: Request) {
 
     // Ensure profile exists and sync last_sign_in_at / email / avatar
     if (data.user) {
-      const syncResult = await syncProfile(
-        data.user.id,
-        data.user.email || parsed.email,
-        data.user.user_metadata as Record<string, unknown> | null,
-      )
-
-      // Ensure employee records exist for ALL companies the user is a member of
-      const employeeCount = await syncEmployeeForUser(
-        data.user.id,
-        (data.user.user_metadata as { full_name?: string } | null)?.full_name,
-      )
-
-      if (syncResult.employeeCreated || employeeCount > 0) {
-        console.log(
-          `[sync] Created ${employeeCount} employee record(s) for user ${data.user.id}`,
+      try {
+        const syncResult = await syncProfile(
+          data.user.id,
+          data.user.email || parsed.email,
+          data.user.user_metadata as Record<string, unknown> | null,
         )
+
+        // Ensure employee records exist for ALL companies the user is a member of
+        const employeeCount = await syncEmployeeForUser(
+          data.user.id,
+          (data.user.user_metadata as { full_name?: string } | null)?.full_name,
+        )
+
+        if (syncResult.employeeCreated || employeeCount > 0) {
+          console.log(
+            `[sync] Created ${employeeCount} employee record(s) for user ${data.user.id}`,
+          )
+        }
+      } catch (syncErr) {
+        // Sync failure should not block login
+        // This can happen when SUPABASE_SERVICE_ROLE_KEY is not configured
+        console.warn('[sync] Profile/employee sync failed:', syncErr)
       }
     }
 
