@@ -1,15 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-const globalForSupabase = globalThis as unknown as {
-  _supabaseClient?: ReturnType<typeof createServerClient>
-}
-
 export async function createClient() {
-  if (globalForSupabase._supabaseClient) {
-    return globalForSupabase._supabaseClient
-  }
-
   const cookieStore = await cookies()
 
   const client = createServerClient(
@@ -35,6 +27,5 @@ export async function createClient() {
     }
   )
 
-  globalForSupabase._supabaseClient = client
   return client
 }
