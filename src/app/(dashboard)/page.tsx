@@ -22,6 +22,8 @@ interface Activity {
   created_at: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activities, setActivities] = useState<Activity[]>([])
