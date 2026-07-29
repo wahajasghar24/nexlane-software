@@ -12,7 +12,12 @@ const svg = {
   tasks: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4"/><path d="M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10z"/></svg>,
   workLogs: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
   timeline: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 20h4"/><path d="M12 16v4"/><path d="M3 12h4"/><path d="M5 8v8"/><path d="M17 12h4"/><path d="M19 8v8"/><path d="M10 4h4"/><path d="M12 0v4"/></svg>,
+  spreadsheet: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>,
   settings: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
+  accounting: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20h16"/><path d="M8 6h8"/><path d="M8 10h8"/><path d="M8 14h5"/><path d="M8 18h8"/></svg>,
+  notifications: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>,
+  files: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
+  admin: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
 }
 
 const managementItems = [
@@ -24,10 +29,19 @@ const managementItems = [
   { label: 'Tasks', href: '/tasks', icon: svg.tasks },
   { label: 'Work Logs', href: '/work-logs', icon: svg.workLogs },
   { label: 'Timeline', href: '/timeline', icon: svg.timeline },
+  { label: 'Spreadsheets', href: '/spreadsheets', icon: svg.spreadsheet },
 ]
 
 const bottomItems = [
   { label: 'Settings', href: '/settings', icon: svg.settings },
+]
+
+const accountingItems = [
+  { label: 'Accounts', href: '/accounting/accounts', icon: svg.settings },
+  { label: 'Journal Entries', href: '/accounting/journal-entries', icon: svg.tasks },
+  { label: 'Invoices', href: '/accounting/invoices', icon: svg.projects },
+  { label: 'Payments', href: '/accounting/payments', icon: svg.spreadsheet },
+  { label: 'Reports', href: '/accounting/reports', icon: svg.timeline },
 ]
 
 export function Sidebar() {
@@ -36,7 +50,7 @@ export function Sidebar() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <aside className="hidden md:flex md:w-64 flex-col border-r bg-card">
+    <aside className="hidden md:flex md:w-64 flex-col border-r bg-card max-h-screen">
       <div className="p-4 border-b">
         <Link href="/" className="text-lg font-bold">Nexlane</Link>
       </div>
@@ -67,6 +81,55 @@ export function Sidebar() {
             {item.label}
           </Link>
         ))}
+        <div className="pt-4 pb-1">
+          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Accounting</p>
+        </div>
+        {accountingItems.map(item => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              isActive(item.href) ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            )}
+          >
+            <span className="text-base">{item.icon}</span>
+            {item.label}
+          </Link>
+        ))}
+        <div className="pt-4 pb-1">
+          <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Tools</p>
+        </div>
+        <Link
+          href="/notifications"
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            isActive('/notifications') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          )}
+        >
+          <span className="text-base">{svg.notifications}</span>
+          Notifications
+        </Link>
+        <Link
+          href="/files"
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            isActive('/files') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          )}
+        >
+          <span className="text-base">{svg.files}</span>
+          Files
+        </Link>
+        <Link
+          href="/admin"
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            isActive('/admin') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+          )}
+        >
+          <span className="text-base">{svg.admin}</span>
+          Admin
+        </Link>
         <div className="pt-4 border-t mt-4">
           {bottomItems.map(item => (
             <Link

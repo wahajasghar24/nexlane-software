@@ -83,6 +83,7 @@ export const Permissions = {
   SPREADSHEETS_DELETE: 'spreadsheets.delete',
   SPREADSHEETS_MANAGE_COLUMNS: 'spreadsheets.manage_columns',
   SPREADSHEETS_EDIT_DATA: 'spreadsheets.edit_data',
+  SPREADSHEETS_EXPORT: 'spreadsheets.export',
 
   // Departments
   DEPARTMENTS_LIST: 'departments.list',

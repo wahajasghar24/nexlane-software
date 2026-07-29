@@ -37,7 +37,7 @@ export default function TimelinePage() {
       const res = await fetch(`/api/timeline?${params}`)
       if (res.ok) {
         const d = await res.json()
-        const items = d.data || d || []
+        const items = d.data?.data || d.data || d || []
         const raw = Array.isArray(items) ? items : []
         setHasMore(raw.length === 20)
         let list = raw
@@ -58,7 +58,7 @@ export default function TimelinePage() {
   }, [employeeFilter, entityFilter, actionFilter])
 
   useEffect(() => {
-    fetch('/api/employees?limit=200').then(r => r.json()).then(d => setEmployees(d.data || d || [])).catch(() => {})
+    fetch('/api/employees?limit=200').then(r => r.json()).then(d => setEmployees(d.data?.data || d.data || [])).catch(() => {})
   }, [])
 
   const loadMore = () => {

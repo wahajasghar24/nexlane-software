@@ -31,8 +31,8 @@ export default function WorkLogsPage() {
       fetch(`/api/work-logs?${params}`).then(r => r.json()),
       fetch('/api/employees?limit=200').then(r => r.json()),
     ]).then(([wlData, empData]) => {
-      setLogs(wlData.data || wlData || [])
-      setEmployees(empData.data || empData || [])
+      setLogs(Array.isArray(wlData.data) ? wlData.data : (wlData.data?.data || []))
+      setEmployees(Array.isArray(empData.data) ? empData.data : (empData.data?.data || []))
     }).catch(() => {}).finally(() => setLoading(false))
   }
 

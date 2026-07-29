@@ -23,6 +23,7 @@ const allItems = [
   { label: 'CRM', href: '/crm', icon: svg.crm },
   { label: 'Teams', href: '/teams', icon: svg.employees },
   { label: 'Timeline', href: '/timeline', icon: svg.workLogs },
+  { label: 'Spreadsheets', href: '/spreadsheets', icon: svg.workLogs },
 ]
 
 export function MobileNav() {

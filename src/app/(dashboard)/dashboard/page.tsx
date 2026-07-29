@@ -40,7 +40,7 @@ export default function DashboardPage() {
         }
         if (activityRes.ok) {
           const actData = await activityRes.json()
-          setActivities(actData.data || actData || [])
+          setActivities(actData.data?.items || actData || [])
         }
       } catch {
         // API routes may not exist yet; show empty state
