@@ -1015,7 +1015,7 @@ export const accountingService = {
     let operatingCashFlow = 0
     let investingCashFlow = 0
     let financingCashFlow = 0
-    let beginningCash = 0
+    const beginningCash = 0
 
     const transactions: any[] = []
 
