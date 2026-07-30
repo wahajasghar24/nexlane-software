@@ -38,7 +38,7 @@ export default function SettingsPage() {
     ]).then(([pData, cData]) => {
       if (pData.data) {
         setProfile(pData.data)
-        setProfileForm({ name: pData.data.name || '', phone: pData.data.phone || '' })
+        setProfileForm({ name: pData.data.full_name || '', phone: pData.data.phone || '' })
       }
       if (cData.data) {
         setCompany(cData.data)

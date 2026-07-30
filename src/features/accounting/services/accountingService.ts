@@ -987,7 +987,7 @@ export const accountingService = {
       equityAccounts,
       totalAssets,
       totalLiabilities,
-      totalEquity: totalEquity + (netIncome > 0 ? netIncome : 0),
+      totalEquity: totalEquity + netIncome,
       netIncome,
       asOfDate,
     }
