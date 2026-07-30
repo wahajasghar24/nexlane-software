@@ -11,7 +11,7 @@ export async function GET() {
   const { data: companyMember } = await supabase
     .from('company_members')
     .select('company_id')
-    .eq('user_id', user.id)
+    .eq('profile_id', user.id)
     .single()
 
   if (!companyMember) {
@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest) {
   const { data: companyMember } = await supabase
     .from('company_members')
     .select('company_id')
-    .eq('user_id', user.id)
+    .eq('profile_id', user.id)
     .single()
 
   if (!companyMember) {
