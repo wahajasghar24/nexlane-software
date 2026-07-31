@@ -21,7 +21,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   const loadStats = () => {
-    setLoading(true)
     Promise.all([
       fetch('/api/admin/stats').then(r => r.json()).catch(() => ({ data: null })),
       fetch('/api/admin/audit-logs?limit=20').then(r => r.json()).catch(() => ({ data: [] })),

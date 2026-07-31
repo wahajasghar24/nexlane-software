@@ -14,29 +14,34 @@ export default function CompanyDetailPage() {
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => { load() }, [id])
 
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/crm/companies/${id}`)
-      if (res.ok) {
-        const d = await res.json()
-        setCompany(d.data || d)
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/crm/companies/${id}`)
+        if (res.ok) {
+          const d = await res.json()
+          if (!ignore) setCompany(d.data || d)
+        }
+        const contRes = await fetch(`/api/crm/contacts?company_id=${id}&limit=50`)
+        if (contRes.ok) {
+          const c = await contRes.json()
+          if (!ignore) setContacts(c.data || c || [])
+        }
+        const dealRes = await fetch(`/api/crm/deals?crm_company_id=${id}&limit=50`)
+        if (dealRes.ok) {
+          const d = await dealRes.json()
+          if (!ignore) setDeals(d.data || d || [])
+        }
+      } catch {} finally {
+        if (!ignore) setLoading(false)
       }
-      const contRes = await fetch(`/api/crm/contacts?company_id=${id}&limit=50`)
-      if (contRes.ok) {
-        const c = await contRes.json()
-        setContacts(c.data || c || [])
-      }
-      const dealRes = await fetch(`/api/crm/deals?crm_company_id=${id}&limit=50`)
-      if (dealRes.ok) {
-        const d = await dealRes.json()
-        setDeals(d.data || d || [])
-      }
-    } catch {} finally {
-      setLoading(false)
     }
-  }
+    load()
+    return () => { ignore = true }
+  }, [id])
+
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
   if (!company) return <EmptyState title="Company not found" />

@@ -43,7 +43,6 @@ export default function ProjectsPage() {
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
     if (statusFilter) params.set('status', statusFilter)

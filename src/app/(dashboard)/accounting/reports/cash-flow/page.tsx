@@ -24,7 +24,6 @@ export default function CashFlowPage() {
   const [toDate, setToDate] = useState(now.toISOString().split('T')[0])
 
   useEffect(() => {
-    setLoading(true)
     fetch(`/api/accounting/reports/cash-flow?from_date=${fromDate}&to_date=${toDate}`)
       .then(r => r.json())
       .then(d => setData(d.data || d))
@@ -46,11 +45,11 @@ export default function CashFlowPage() {
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
           <label className="block text-xs text-muted-foreground mb-1">From</label>
-          <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <input type="date" value={fromDate} onChange={e => { setLoading(true); setFromDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
         <div>
           <label className="block text-xs text-muted-foreground mb-1">To</label>
-          <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <input type="date" value={toDate} onChange={e => { setLoading(true); setToDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
 

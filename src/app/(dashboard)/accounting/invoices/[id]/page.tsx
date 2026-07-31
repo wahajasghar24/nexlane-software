@@ -49,7 +49,6 @@ export default function InvoiceDetailPage() {
   const id = params.id as string
 
   const fetchInvoice = () => {
-    setLoading(true)
     fetch(`/api/accounting/invoices/${id}`)
       .then(r => r.json())
       .then(d => {

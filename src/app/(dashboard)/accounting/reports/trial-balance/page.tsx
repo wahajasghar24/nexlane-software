@@ -19,7 +19,6 @@ export default function TrialBalancePage() {
   const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split('T')[0])
 
   useEffect(() => {
-    setLoading(true)
     const params = asOfDate ? `?asOfDate=${asOfDate}` : ''
     fetch(`/api/accounting/reports/trial-balance${params}`)
       .then(r => r.json())
@@ -48,7 +47,7 @@ export default function TrialBalancePage() {
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
           <label className="block text-xs text-muted-foreground mb-1">As of Date</label>
-          <input type="date" value={asOfDate} onChange={e => setAsOfDate(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <input type="date" value={asOfDate} onChange={e => { setLoading(true); setAsOfDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
 

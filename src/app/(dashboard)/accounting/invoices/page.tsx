@@ -34,7 +34,6 @@ export default function InvoicesPage() {
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
     fetch(`/api/accounting/invoices?${params}`)
@@ -71,7 +70,7 @@ export default function InvoicesPage() {
           type="text"
           placeholder="Search invoices..."
           value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1) }}
+          onChange={e => { setLoading(true); setSearch(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
       </div>
@@ -138,14 +137,14 @@ export default function InvoicesPage() {
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
                 Previous
               </button>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >

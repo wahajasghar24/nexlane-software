@@ -31,30 +31,35 @@ export default function ProjectDetailPage() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [loading, setLoading] = useState(true)
 
+
   useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/projects/${id}`)
+        if (res.ok) {
+          const d = await res.json()
+          const data = d.data || d
+          if (!ignore) {
+            setProject(data)
+            setMembers(data.members || [])
+            setModules(data.modules || [])
+            setMilestones(data.milestones || [])
+          }
+        }
+        const tasksRes = await fetch(`/api/tasks?project_id=${id}&limit=50`)
+        if (tasksRes.ok) {
+          const tData = await tasksRes.json()
+          if (!ignore) setTasks(tData.data || tData || [])
+        }
+      } catch {} finally {
+        if (!ignore) setLoading(false)
+      }
+    }
     load()
+    return () => { ignore = true }
   }, [id])
 
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/projects/${id}`)
-      if (res.ok) {
-        const d = await res.json()
-        const data = d.data || d
-        setProject(data)
-        setMembers(data.members || [])
-        setModules(data.modules || [])
-        setMilestones(data.milestones || [])
-      }
-      const tasksRes = await fetch(`/api/tasks?project_id=${id}&limit=50`)
-      if (tasksRes.ok) {
-        const tData = await tasksRes.json()
-        setTasks(tData.data || tData || [])
-      }
-    } catch {} finally {
-      setLoading(false)
-    }
-  }
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'overview', label: 'Overview' },

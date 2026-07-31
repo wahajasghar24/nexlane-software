@@ -27,34 +27,38 @@ export default function TimelinePage() {
   const [actionFilter, setActionFilter] = useState('')
   const [employees, setEmployees] = useState<any[]>([])
 
-  const load = async (pageNum: number, append = false) => {
-    if (pageNum === 1) setLoading(true)
-    else setLoadingMore(true)
-    try {
-      const params = new URLSearchParams({ page: String(pageNum), limit: '20' })
-      if (employeeFilter) params.set('employee_id', employeeFilter)
-      if (actionFilter) params.set('action', actionFilter)
-      const res = await fetch(`/api/timeline?${params}`)
-      if (res.ok) {
-        const d = await res.json()
-        const items = d.data?.data || d.data || d || []
-        const raw = Array.isArray(items) ? items : []
-        setHasMore(raw.length === 20)
-        let list = raw
-        if (entityFilter) {
-          list = raw.filter(item => item.entity_type === entityFilter)
-        }
-        setActivities(prev => append ? [...prev, ...list] : list)
+  const load = async (pageNum: number) => {
+    const params = new URLSearchParams({ page: String(pageNum), limit: '20' })
+    if (employeeFilter) params.set('employee_id', employeeFilter)
+    if (actionFilter) params.set('action', actionFilter)
+    const res = await fetch(`/api/timeline?${params}`)
+    let list: ActivityItem[] = []
+    let hasMore = false
+    if (res.ok) {
+      const d = await res.json()
+      const items = d.data?.data || d.data || d || []
+      const raw = Array.isArray(items) ? items : []
+      hasMore = raw.length === 20
+      list = raw
+      if (entityFilter) {
+        list = raw.filter(item => item.entity_type === entityFilter)
       }
-    } catch {} finally {
-      setLoading(false)
-      setLoadingMore(false)
     }
+    return { list, hasMore }
   }
 
   useEffect(() => {
-    setPage(1)
-    load(1)
+    let ignore = false
+    load(1).then(({ list, hasMore }) => {
+      if (ignore) return
+      setActivities(list)
+      setHasMore(hasMore)
+    }).catch(() => {
+      if (!ignore) setActivities([])
+    }).finally(() => {
+      if (!ignore) setLoading(false)
+    })
+    return () => { ignore = true }
   }, [employeeFilter, entityFilter, actionFilter])
 
   useEffect(() => {
@@ -64,7 +68,11 @@ export default function TimelinePage() {
   const loadMore = () => {
     const nextPage = page + 1
     setPage(nextPage)
-    load(nextPage, true)
+    setLoadingMore(true)
+    load(nextPage).then(({ list, hasMore }) => {
+      setActivities(prev => [...prev, ...list])
+      setHasMore(hasMore)
+    }).finally(() => setLoadingMore(false))
   }
 
   const getEntityLink = (item: ActivityItem) => {
@@ -95,13 +103,13 @@ export default function TimelinePage() {
       />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
-        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
+        <select value={employeeFilter} onChange={e => { setPage(1); setEmployeeFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Actors</option>
           {employees.map((emp: any) => (
             <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
           ))}
         </select>
-        <select value={entityFilter} onChange={e => setEntityFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
+        <select value={entityFilter} onChange={e => { setPage(1); setEntityFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Entity Types</option>
           <option value="employee">Employee</option>
           <option value="project">Project</option>
@@ -110,7 +118,7 @@ export default function TimelinePage() {
           <option value="comment">Comment</option>
           <option value="department">Department</option>
         </select>
-        <select value={actionFilter} onChange={e => setActionFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
+        <select value={actionFilter} onChange={e => { setPage(1); setActionFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
           <option value="">All Actions</option>
           <option value="created">Created</option>
           <option value="updated">Updated</option>

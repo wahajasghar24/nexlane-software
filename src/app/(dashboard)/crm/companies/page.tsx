@@ -22,7 +22,6 @@ export default function CompaniesPage() {
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
     if (industryFilter) params.set('industry', industryFilter)

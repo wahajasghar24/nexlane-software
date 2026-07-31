@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import { useRouter } from 'next/navigation'
@@ -30,24 +30,41 @@ export default function NotificationsPage() {
   const [unreadOnly, setUnreadOnly] = useState(false)
   const router = useRouter()
 
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true)
+  const fetchNotifications = async () => {
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (unreadOnly) params.set('unread', 'true')
+    const res = await fetch(`/api/notifications?${params}`)
+    const d = await res.json()
+    const paginated = d.data || d
+    return {
+      notifications: Array.isArray(paginated) ? paginated : (paginated?.data || []),
+      totalPages: paginated?.totalPages || 1,
+    }
+  }
+
+  const refreshNotifications = async () => {
     try {
-      const res = await fetch(`/api/notifications?${params}`)
-      const d = await res.json()
-      const paginated = d.data || d
-      setNotifications(Array.isArray(paginated) ? paginated : (paginated?.data || []))
-      setTotalPages(paginated?.totalPages || 1)
+      const { notifications, totalPages } = await fetchNotifications()
+      setNotifications(notifications)
+      setTotalPages(totalPages)
     } catch {
       setNotifications([])
-    } finally {
-      setLoading(false)
     }
-  }, [page, unreadOnly])
+  }
 
-  useEffect(() => { fetchNotifications() }, [fetchNotifications])
+  useEffect(() => {
+    let ignore = false
+    fetchNotifications().then(({ notifications, totalPages }) => {
+      if (ignore) return
+      setNotifications(notifications)
+      setTotalPages(totalPages)
+    }).catch(() => {
+      if (!ignore) setNotifications([])
+    }).finally(() => {
+      if (!ignore) setLoading(false)
+    })
+    return () => { ignore = true }
+  }, [page, unreadOnly])
 
   const handleMarkRead = async (id: string) => {
     await fetch('/api/notifications', {
@@ -55,7 +72,7 @@ export default function NotificationsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    fetchNotifications()
+    refreshNotifications()
   }
 
   const handleMarkAllRead = async () => {
@@ -64,7 +81,7 @@ export default function NotificationsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAll: true }),
     })
-    fetchNotifications()
+    refreshNotifications()
   }
 
   const handleClick = (n: Notification) => {

@@ -33,7 +33,6 @@ export default function JournalEntriesPage() {
   const limit = 20
 
   useEffect(() => {
-    setLoading(true)
     fetch(`/api/accounting/journal-entries?page=${page}&limit=${limit}`)
       .then(r => r.json())
       .then(d => {
@@ -147,14 +146,14 @@ export default function JournalEntriesPage() {
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
                 Previous
               </button>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >

@@ -70,14 +70,11 @@ export default function NewTaskPage() {
 
   const [modules, setModules] = useState<{ id: string; name: string }[]>([])
   useEffect(() => {
-    if (form.project_id) {
+    if (!form.project_id) return
       fetch(`/api/projects/${form.project_id}`).then(r => r.json()).then(d => {
         const data = d.data || d
         setModules(data.modules || [])
       }).catch(() => {})
-    } else {
-      setModules([])
-    }
   }, [form.project_id])
 
   const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || e.name || 'Unnamed'
@@ -98,7 +95,7 @@ export default function NewTaskPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Project</label>
-              <select value={form.project_id} onChange={e => update('project_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
+              <select value={form.project_id} onChange={e => { update('project_id', e.target.value); setModules([]) }} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
                 <option value="">No project</option>
                 {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>

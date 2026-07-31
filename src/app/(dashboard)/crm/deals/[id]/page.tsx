@@ -23,32 +23,46 @@ export default function DealDetailPage() {
   const [actionLoading, setActionLoading] = useState(false)
   const confirm = useConfirm()
 
-  useEffect(() => { load() }, [id])
 
   const load = async () => {
+    let dealData: any = null
+    let customerData: any = null
+    let activitiesData: any[] = []
     try {
       const res = await fetch(`/api/crm/deals/${id}`)
       if (res.ok) {
         const d = await res.json()
-        const data = d.data || d
-        setDeal(data)
-        if (data.stage === 'won' && data.customer_id) {
-          const cRes = await fetch(`/api/customers/${data.customer_id}`)
+        dealData = d.data || d
+        if (dealData.stage === 'won' && dealData.customer_id) {
+          const cRes = await fetch(`/api/customers/${dealData.customer_id}`)
           if (cRes.ok) {
             const c = await cRes.json()
-            setCustomer(c.data || c)
+            customerData = c.data || c
           }
         }
       }
       const actRes = await fetch(`/api/crm/activities?entity_type=deal&entity_id=${id}&limit=20`)
       if (actRes.ok) {
         const a = await actRes.json()
-        setActivities(a.data || a || [])
+        activitiesData = a.data || a || []
       }
-    } catch {} finally {
-      setLoading(false)
-    }
+    } catch {}
+    return { deal: dealData, customer: customerData, activities: activitiesData }
   }
+
+  useEffect(() => {
+    let ignore = false
+    load().then(({ deal, customer, activities }) => {
+      if (ignore) return
+      setDeal(deal)
+      setCustomer(customer)
+      setActivities(activities)
+    }).finally(() => {
+      if (!ignore) setLoading(false)
+    })
+    return () => { ignore = true }
+  }, [id])
+
 
   const changeStage = async (newStage: string) => {
     if (!(await confirm(`Mark deal as ${stageLabels[newStage]}?`))) return
@@ -61,7 +75,9 @@ export default function DealDetailPage() {
       })
       if (res.ok) {
         setDeal((prev: any) => ({ ...prev, stage: newStage }))
-        if (newStage === 'won' || newStage === 'lost') load()
+        if (newStage === 'won' || newStage === 'lost') {
+          load().then(({ deal }) => { if (deal) setDeal(deal) })
+        }
       }
     } finally {
       setActionLoading(false)

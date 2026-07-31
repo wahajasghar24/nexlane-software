@@ -41,7 +41,6 @@ export default function ChartOfAccountsPage() {
   })
 
   const fetchAccounts = () => {
-    setLoading(true)
     const params = new URLSearchParams({ limit: '100' })
     if (search) params.set('search', search)
     fetch(`/api/accounting/accounts?${params}`)
@@ -177,7 +176,7 @@ export default function ChartOfAccountsPage() {
           type="text"
           placeholder="Search accounts..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => { setLoading(true); setSearch(e.target.value) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
       </div>

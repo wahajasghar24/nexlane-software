@@ -1013,8 +1013,8 @@ export const accountingService = {
     if (error) throw new DatabaseError(error)
 
     let operatingCashFlow = 0
-    let investingCashFlow = 0
-    let financingCashFlow = 0
+    const investingCashFlow = 0
+    const financingCashFlow = 0
     const beginningCash = 0
 
     const transactions: any[] = []

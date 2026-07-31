@@ -43,7 +43,6 @@ export default function LeadsPage() {
   const confirm = useConfirm()
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '20' })
     if (search) params.set('search', search)
     if (statusFilter) params.set('status', statusFilter)

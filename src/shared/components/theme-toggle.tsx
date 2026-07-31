@@ -1,13 +1,14 @@
 'use client'
 
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+
+const emptySubscribe = () => () => {}
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
+  // Hydration-safe mount detection without an effect (React-recommended pattern)
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
 
   if (!mounted) return <div className="h-9 w-9" />
 

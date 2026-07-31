@@ -56,29 +56,34 @@ export default function TaskDetailPage() {
   const [timeHours, setTimeHours] = useState('')
   const [timeDesc, setTimeDesc] = useState('')
 
+
   useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/tasks/${id}`)
+        if (res.ok) {
+          const d = await res.json()
+          const data = d.data || d
+          if (!ignore) {
+            setTask(data)
+            setAssignees(data.assignees || [])
+            setLabels(data.labels || [])
+            setChecklists(data.checklists || [])
+            setComments(data.comments || [])
+            setAttachments(data.attachments || [])
+            setWatchers(data.watchers || [])
+            setDependencies(data.dependencies || [])
+          }
+        }
+      } catch {} finally {
+        if (!ignore) setLoading(false)
+      }
+    }
     load()
+    return () => { ignore = true }
   }, [id])
 
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/tasks/${id}`)
-      if (res.ok) {
-        const d = await res.json()
-        const data = d.data || d
-        setTask(data)
-        setAssignees(data.assignees || [])
-        setLabels(data.labels || [])
-        setChecklists(data.checklists || [])
-        setComments(data.comments || [])
-        setAttachments(data.attachments || [])
-        setWatchers(data.watchers || [])
-        setDependencies(data.dependencies || [])
-      }
-    } catch {} finally {
-      setLoading(false)
-    }
-  }
 
   const toggleChecklist = async (itemId: string, is_completed: boolean) => {
     const res = await fetch(`/api/tasks/${id}/checklist/${itemId}`, {

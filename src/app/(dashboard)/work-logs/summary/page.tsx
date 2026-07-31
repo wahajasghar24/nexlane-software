@@ -18,7 +18,6 @@ export default function WorkLogsSummaryPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ period: view, limit: '50' })
     fetch(`/api/work-logs/summary?${params}`)
       .then(r => r.json())

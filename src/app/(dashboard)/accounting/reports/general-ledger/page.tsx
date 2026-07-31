@@ -46,7 +46,6 @@ export default function GeneralLedgerPage() {
   }, [])
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '50' })
     if (accountId) params.set('account_id', accountId)
     if (fromDate) params.set('from_date', fromDate)
@@ -77,7 +76,7 @@ export default function GeneralLedgerPage() {
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
           <label className="block text-xs text-muted-foreground mb-1">Account</label>
-          <select value={accountId} onChange={e => { setAccountId(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
+          <select value={accountId} onChange={e => { setLoading(true); setAccountId(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
             <option value="">All Accounts</option>
             {accounts.map(a => (
               <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
@@ -86,11 +85,11 @@ export default function GeneralLedgerPage() {
         </div>
         <div>
           <label className="block text-xs text-muted-foreground mb-1">From</label>
-          <input type="date" value={fromDate} onChange={e => { setFromDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <input type="date" value={fromDate} onChange={e => { setLoading(true); setFromDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
         <div>
           <label className="block text-xs text-muted-foreground mb-1">To</label>
-          <input type="date" value={toDate} onChange={e => { setToDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <input type="date" value={toDate} onChange={e => { setLoading(true); setToDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
 
@@ -137,8 +136,8 @@ export default function GeneralLedgerPage() {
           <div className="flex items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
+              <button onClick={() => { setLoading(true); setPage(p => p + 1) }} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
             </div>
           </div>
         </>

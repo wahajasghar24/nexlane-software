@@ -37,7 +37,6 @@ export default function PaymentsPage() {
   })
 
   const fetchPayments = () => {
-    setLoading(true)
     fetch(`/api/accounting/payments?page=${page}&limit=20`)
       .then(r => r.json())
       .then(d => {
@@ -230,14 +229,14 @@ export default function PaymentsPage() {
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
                 Previous
               </button>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >

@@ -15,7 +15,6 @@ export default function DepartmentsPage() {
   const confirm = useConfirm()
 
   const load = () => {
-    setLoading(true)
     fetch('/api/departments?limit=100')
       .then(r => r.json())
       .then(d => setDepartments(d.data || d || []))

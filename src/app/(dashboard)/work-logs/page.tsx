@@ -18,7 +18,6 @@ export default function WorkLogsPage() {
   })
 
   const load = () => {
-    setLoading(true)
     const params = new URLSearchParams({ limit: '50' })
     if (currentDate) {
       params.set('date_from', new Date(currentDate).toISOString())

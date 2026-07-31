@@ -22,7 +22,6 @@ export default function ActivitiesPage() {
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: '30' })
     if (typeFilter) params.set('type', typeFilter)
     if (entityTypeFilter) params.set('entity_type', entityTypeFilter)

@@ -15,7 +15,6 @@ export default function DesignationsPage() {
   const confirm = useConfirm()
 
   const load = () => {
-    setLoading(true)
     fetch('/api/designations?limit=100')
       .then(r => r.json())
       .then(d => setDesignations(d.data || d || []))

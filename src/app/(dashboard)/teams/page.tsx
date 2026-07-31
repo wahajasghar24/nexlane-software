@@ -14,7 +14,6 @@ export default function TeamsPage() {
   const [saving, setSaving] = useState(false)
 
   const load = () => {
-    setLoading(true)
     Promise.all([
       fetch('/api/teams?limit=100').then(r => r.json()),
       fetch('/api/employees?limit=200').then(r => r.json()),

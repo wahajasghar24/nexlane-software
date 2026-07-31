@@ -31,7 +31,6 @@ export default function SettingsPage() {
   const [companyForm, setCompanyForm] = useState({ name: '', domain: '', phone: '' })
 
   useEffect(() => {
-    setLoading(true)
     Promise.all([
       fetch('/api/settings/profile').then(r => r.json()),
       fetch('/api/settings/company').then(r => r.json()),

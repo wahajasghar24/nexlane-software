@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 
@@ -27,27 +27,44 @@ export default function FilesPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  const fetchFiles = useCallback(async () => {
-    setLoading(true)
+  const fetchFiles = async () => {
+    const res = await fetch(`/api/files?page=${page}&limit=20`)
+    const d = await res.json()
+    const paginated = d.data || d
+    return {
+      files: Array.isArray(paginated) ? paginated : (paginated?.data || []),
+      totalPages: paginated?.totalPages || 1,
+    }
+  }
+
+  const refreshFiles = async () => {
     try {
-      const res = await fetch(`/api/files?page=${page}&limit=20`)
-      const d = await res.json()
-      const paginated = d.data || d
-      setFiles(Array.isArray(paginated) ? paginated : (paginated?.data || []))
-      setTotalPages(paginated?.totalPages || 1)
+      const { files, totalPages } = await fetchFiles()
+      setFiles(files)
+      setTotalPages(totalPages)
     } catch {
       setFiles([])
-    } finally {
-      setLoading(false)
     }
-  }, [page])
+  }
 
-  useEffect(() => { fetchFiles() }, [fetchFiles])
+  useEffect(() => {
+    let ignore = false
+    fetchFiles().then(({ files, totalPages }) => {
+      if (ignore) return
+      setFiles(files)
+      setTotalPages(totalPages)
+    }).catch(() => {
+      if (!ignore) setFiles([])
+    }).finally(() => {
+      if (!ignore) setLoading(false)
+    })
+    return () => { ignore = true }
+  }, [page])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this file?')) return
     await fetch(`/api/files/${id}`, { method: 'DELETE' })
-    fetchFiles()
+    refreshFiles()
   }
 
   const getIcon = (mime: string) => {

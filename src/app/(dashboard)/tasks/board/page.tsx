@@ -37,7 +37,6 @@ export default function TaskBoardPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    setLoading(true)
     const params = new URLSearchParams({ limit: '100' })
     if (search) params.set('search', search)
     fetch(`/api/tasks?${params}`)

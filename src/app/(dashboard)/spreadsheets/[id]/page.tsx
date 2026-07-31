@@ -39,21 +39,30 @@ export default function SpreadsheetViewPage() {
   const [newColumn, setNewColumn] = useState({ name: '', key: '', type: 'text' })
   const [saving, setSaving] = useState(false)
 
-  const fetchSheet = useCallback(async () => {
+  const fetchSheet = async () => {
     try {
       const res = await fetch(`/api/spreadsheets/${id}`)
       const d = await res.json()
-      setSheet(d.data || null)
+      return d.data || null
     } catch {
-      setSheet(null)
-    } finally {
-      setLoading(false)
+      return null
     }
-  }, [id])
+  }
+
+  const refreshSheet = async () => {
+    const s = await fetchSheet()
+    if (s) setSheet(s)
+  }
 
   useEffect(() => {
-    fetchSheet()
-  }, [fetchSheet])
+    let ignore = false
+    fetchSheet().then((data) => {
+      if (ignore) return
+      setSheet(data)
+      setLoading(false)
+    })
+    return () => { ignore = true }
+  }, [id])
 
   const handleExport = () => {
     window.open(`/api/spreadsheets/${id}/export`, '_blank')
@@ -67,7 +76,7 @@ export default function SpreadsheetViewPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       })
-      await fetchSheet()
+      await refreshSheet()
     } catch {
       alert('Failed to add row')
     } finally {
@@ -81,7 +90,7 @@ export default function SpreadsheetViewPage() {
       await fetch(`/api/spreadsheets/${id}/rows/${rowId}`, {
         method: 'DELETE',
       })
-      await fetchSheet()
+      await refreshSheet()
     } catch {
       alert('Failed to delete row')
     }
@@ -93,7 +102,7 @@ export default function SpreadsheetViewPage() {
       await fetch(`/api/spreadsheets/${id}/columns/${columnId}`, {
         method: 'DELETE',
       })
-      await fetchSheet()
+      await refreshSheet()
     } catch {
       alert('Failed to delete column')
     }
@@ -122,7 +131,7 @@ export default function SpreadsheetViewPage() {
       })
       setShowAddColumn(false)
       setNewColumn({ name: '', key: '', type: 'text' })
-      await fetchSheet()
+      await refreshSheet()
     } catch {
       alert('Failed to add column')
     } finally {

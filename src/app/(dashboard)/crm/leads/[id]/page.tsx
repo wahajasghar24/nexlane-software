@@ -26,29 +26,34 @@ export default function LeadDetailPage() {
   const [addingNote, setAddingNote] = useState(false)
   const confirm = useConfirm()
 
-  useEffect(() => { load() }, [id])
 
-  const load = async () => {
-    try {
-      const res = await fetch(`/api/crm/leads/${id}`)
-      if (res.ok) {
-        const d = await res.json()
-        setLead(d.data || d)
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/crm/leads/${id}`)
+        if (res.ok) {
+          const d = await res.json()
+          if (!ignore) setLead(d.data || d)
+        }
+        const notesRes = await fetch(`/api/crm/leads/${id}/notes`)
+        if (notesRes.ok) {
+          const n = await notesRes.json()
+          if (!ignore) setNotes(n.data || n || [])
+        }
+        const actRes = await fetch(`/api/crm/activities?entity_type=lead&entity_id=${id}&limit=20`)
+        if (actRes.ok) {
+          const a = await actRes.json()
+          if (!ignore) setActivities(a.data || a || [])
+        }
+      } catch {} finally {
+        if (!ignore) setLoading(false)
       }
-      const notesRes = await fetch(`/api/crm/leads/${id}/notes`)
-      if (notesRes.ok) {
-        const n = await notesRes.json()
-        setNotes(n.data || n || [])
-      }
-      const actRes = await fetch(`/api/crm/activities?entity_type=lead&entity_id=${id}&limit=20`)
-      if (actRes.ok) {
-        const a = await actRes.json()
-        setActivities(a.data || a || [])
-      }
-    } catch {} finally {
-      setLoading(false)
     }
-  }
+    load()
+    return () => { ignore = true }
+  }, [id])
+
 
   const addNote = async () => {
     if (!newNote.trim()) return
