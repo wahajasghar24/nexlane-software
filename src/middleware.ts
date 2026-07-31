@@ -20,14 +20,25 @@ function isPublicPath(path: string): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const response = await updateSession(request)
+  let response: NextResponse
+  try {
+    response = await updateSession(request)
+  } catch {
+    // Supabase unavailable (missing env / network) — fall back to cookie-only routing
+    response = NextResponse.next({ request })
+  }
 
   if (isPublicPath(pathname)) {
     return response
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // Without Supabase env config, skip the auth gate (routes enforce their own auth)
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response
+  }
 
   const { createServerClient } = await import('@supabase/ssr')
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -37,7 +48,13 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: { id: string } | null = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    user = null
+  }
 
   if (!user && !pathname.startsWith('/api/')) {
     const loginUrl = new URL('/login', request.url)
