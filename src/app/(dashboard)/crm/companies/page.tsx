@@ -60,7 +60,7 @@ export default function CompaniesPage() {
       </div>
 
       {loading ? (
-        <div className="rounded-lg border">
+        <div className="rounded-xl border bg-card shadow-sm">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="p-4 border-b last:border-b-0 animate-pulse">
               <div className="h-5 w-48 bg-muted rounded mb-2" />
@@ -94,7 +94,7 @@ export default function CompaniesPage() {
             ))}
           </div>
           {/* Desktop table view */}
-          <div className="rounded-lg border overflow-x-auto hidden sm:block">
+          <div className="rounded-xl border bg-card shadow-sm overflow-x-auto hidden sm:block">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
