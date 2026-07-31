@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 
@@ -77,7 +78,11 @@ export default function ChartOfAccountsPage() {
       if (res.ok) {
         setForm({ code: '', name: '', type: '', parent_id: '', description: '' })
         setShowForm(false)
+        toast.success('Account created successfully')
         fetchAccounts()
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed to create account')
       }
     } finally {
       setSubmitting(false)

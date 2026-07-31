@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 interface InvoiceItem {
@@ -81,7 +82,11 @@ export default function NewInvoicePage() {
         body: JSON.stringify(body),
       })
       if (res.ok) {
+        toast.success('Invoice created')
         router.push('/accounting/invoices')
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed')
       }
     } finally {
       setSubmitting(false)

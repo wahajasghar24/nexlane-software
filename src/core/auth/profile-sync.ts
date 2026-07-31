@@ -162,6 +162,7 @@ export async function ensureEmployee(
   const { error: insertError } = await admin.from('employees').insert({
     company_id: companyId,
     profile_id: profileId,
+    full_name: fullName,
     employee_code: employeeCode,
     employment_status: 'active',
     position: 'Member',

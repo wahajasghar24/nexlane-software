@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -37,7 +38,11 @@ export default function TeamsPage() {
       if (res.ok) {
         setShowModal(false)
         setForm({ name: '', description: '', lead_id: '', member_ids: [] })
+        toast.success('Team created successfully')
         load()
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed to create team')
       }
     } finally {
       setSaving(false)

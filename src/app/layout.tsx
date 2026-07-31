@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 import { Fira_Code, Fira_Sans } from 'next/font/google'
 import { ThemeProvider } from '@/shared/components/theme-provider'
 import { QueryProvider } from '@/shared/components/query-provider'
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <ConfirmProvider>
               {children}
+              <Toaster position="bottom-right" richColors closeButton />
             </ConfirmProvider>
           </ThemeProvider>
         </QueryProvider>

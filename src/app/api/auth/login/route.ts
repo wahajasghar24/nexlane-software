@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/core/supabase/server'
 import { loginSchema } from '@/features/auth/schemas/auth.schema'
 import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
+import { ZodError } from 'zod'
 
 export async function POST(request: Request) {
   try {

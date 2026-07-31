@@ -3,6 +3,7 @@ import { createClient } from '@/core/supabase/server'
 import { createAdminClient } from '@/core/supabase/admin'
 import { signupSchema } from '@/features/auth/schemas/auth.schema'
 import { syncProfile, ensureEmployee, syncEmployeeForUser } from '@/core/auth/profile-sync'
+import { ZodError } from 'zod'
 
 export async function POST(request: Request) {
   try {

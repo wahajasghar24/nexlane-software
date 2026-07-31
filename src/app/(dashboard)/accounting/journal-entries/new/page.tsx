@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 interface EntryLine {
@@ -85,7 +86,11 @@ export default function NewJournalEntryPage() {
         body: JSON.stringify(body),
       })
       if (res.ok) {
+        toast.success('Journal entry created')
         router.push('/accounting/journal-entries')
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed')
       }
     } finally {
       setSubmitting(false)

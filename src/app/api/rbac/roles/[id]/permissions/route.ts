@@ -4,6 +4,7 @@ import { authorize } from '@/core/auth/authorize'
 import { Permissions } from '@/core/auth/permissions'
 import { rbacService } from '@/features/rbac/services/rbacService'
 import { assignPermissionsSchema } from '@/features/rbac/schemas/rbac.schema'
+import { ZodError } from 'zod'
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

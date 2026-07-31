@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 export default function NewLeadPage() {
@@ -39,7 +40,11 @@ export default function NewLeadPage() {
       })
       if (res.ok) {
         const data = await res.json()
+        toast.success('Lead created')
         router.push(`/crm/leads/${data.data?.id || data.id}`)
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed')
       }
     } finally {
       setSubmitting(false)

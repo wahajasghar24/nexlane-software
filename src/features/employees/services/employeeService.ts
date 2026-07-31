@@ -1,4 +1,6 @@
 import { createClient } from '@/core/supabase/server'
+import { createAdminClient } from '@/core/supabase/admin'
+import { AppError } from '@/core/errors/app-error'
 import { DatabaseError } from '@/core/errors/database-error'
 import { eventBus } from '@/core/events/event-bus'
 import { EventTypes } from '@/core/events/types'
@@ -70,6 +72,41 @@ export const employeeService = {
     const parsed = createEmployeeSchema.parse(input)
     const supabase = await createClient()
 
+    // Resolve the profile: explicit profile_id wins; otherwise link by email,
+    // auto-creating an auth account + profile so "Add Employee" works for anyone.
+    let profileId = parsed.profile_id
+    if (!profileId) {
+      if (!parsed.email) {
+        throw new AppError('VALIDATION', 'Email is required to create an employee', 400)
+      }
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', parsed.email)
+        .maybeSingle()
+      if (existingProfile?.id) {
+        profileId = existingProfile.id
+      } else {
+        const admin = createAdminClient()
+        const password = crypto.randomUUID()
+        const { data: authUser, error: authError } = await admin.auth.admin.createUser({
+          email: parsed.email,
+          password,
+          email_confirm: true,
+          user_metadata: { full_name: `${parsed.first_name} ${parsed.last_name}`.trim() },
+        })
+        if (authError) throw new DatabaseError(authError)
+        profileId = authUser.user.id
+        const { error: profileError } = await admin.from('profiles').insert({
+          id: profileId,
+          email: parsed.email,
+          full_name: `${parsed.first_name} ${parsed.last_name}`.trim(),
+          phone: parsed.phone,
+        })
+        if (profileError) throw new DatabaseError(profileError)
+      }
+    }
+
     const updateData: Record<string, string> = {}
     if (parsed.first_name || parsed.last_name) {
       updateData.full_name = `${parsed.first_name || ''} ${parsed.last_name || ''}`.trim()
@@ -81,20 +118,26 @@ export const employeeService = {
       const { error: profileError } = await supabase
         .from('profiles')
         .update(updateData)
-        .eq('id', parsed.profile_id)
+        .eq('id', profileId)
 
       if (profileError) throw new DatabaseError(profileError)
     }
+
+    const employeeCode =
+      parsed.employee_code ??
+      `EMP-${`${parsed.first_name}${parsed.last_name}`.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3).padEnd(3, 'X')}${Date.now().toString(36).toUpperCase().slice(-5)}`
 
     const { data, error } = await supabase
       .from('employees')
       .insert({
         company_id: companyId,
-        profile_id: parsed.profile_id,
+        profile_id: profileId,
+        full_name: `${parsed.first_name} ${parsed.last_name}`.trim(),
+        email: parsed.email,
         department_id: parsed.department_id,
         designation_id: parsed.designation_id,
         employment_status: parsed.employment_status,
-        employee_code: parsed.employee_code,
+        employee_code: employeeCode,
         position: parsed.position,
         hire_date: parsed.hire_date,
         salary: parsed.salary,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 export default function NewEmployeePage() {
@@ -9,6 +10,7 @@ export default function NewEmployeePage() {
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([])
   const [designations, setDesignations] = useState<{ id: string; name: string }[]>([])
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
     department_id: '', designation_id: '', position: '',
@@ -23,16 +25,26 @@ export default function NewEmployeePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setError(null)
     try {
       const res = await fetch('/api/employees', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
+      const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        const data = await res.json()
+        toast.success('Employee created successfully')
         router.push(`/employees/${data.data?.id || data.id}`)
+      } else {
+        const message = data.error || 'Failed to create employee'
+        setError(message)
+        toast.error(message)
       }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong'
+      setError(message)
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
@@ -45,6 +57,11 @@ export default function NewEmployeePage() {
       <PageHeader title="Add Employee" description="Create a new employee record" />
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">First Name *</label>
@@ -57,8 +74,8 @@ export default function NewEmployeePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input type="email" value={form.email} onChange={e => update('email', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+              <label className="block text-sm font-medium mb-1">Email *</label>
+              <input type="email" required value={form.email} onChange={e => update('email', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Phone *</label>

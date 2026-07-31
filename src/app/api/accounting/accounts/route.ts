@@ -4,6 +4,7 @@ import { authorize } from '@/core/auth/authorize'
 import { Permissions } from '@/core/auth/permissions'
 import { accountingService } from '@/features/accounting/services/accountingService'
 import type { AccountQuery } from '@/features/accounting/schemas'
+import { ZodError } from 'zod'
 
 export async function GET(request: Request) {
   try {
@@ -30,8 +31,8 @@ export async function GET(request: Request) {
       )
     }
     return NextResponse.json(
-      { data: null, error: 'Internal server error' },
-      { status: 500 }
+      { data: null, error: err instanceof ZodError ? (err.issues[0]?.message ?? 'Validation failed') : 'Internal server error' },
+      { status: err instanceof ZodError ? 400 : 500 }
     )
   }
 }
@@ -53,8 +54,8 @@ export async function POST(request: Request) {
       )
     }
     return NextResponse.json(
-      { data: null, error: 'Internal server error' },
-      { status: 500 }
+      { data: null, error: err instanceof ZodError ? (err.issues[0]?.message ?? 'Validation failed') : 'Internal server error' },
+      { status: err instanceof ZodError ? 400 : 500 }
     )
   }
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const createEmployeeSchema = z.object({
-  profile_id: z.string().uuid(),
+  profile_id: z.string().uuid().optional(),
   first_name: z.string().min(1).max(255),
   last_name: z.string().min(1).max(255),
   email: z.string().email().optional(),

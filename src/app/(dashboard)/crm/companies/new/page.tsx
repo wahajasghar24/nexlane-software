@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 export default function NewCompanyPage() {
@@ -38,7 +39,11 @@ export default function NewCompanyPage() {
       })
       if (res.ok) {
         const data = await res.json()
+        toast.success('Company created')
         router.push(`/crm/companies/${data.data?.id || data.id}`)
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed')
       }
     } finally {
       setSubmitting(false)

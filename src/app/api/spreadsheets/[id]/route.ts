@@ -4,6 +4,7 @@ import { authorize } from '@/core/auth/authorize'
 import { Permissions } from '@/core/auth/permissions'
 import { sheetTableService } from '@/features/spreadsheets/services/sheetTableService'
 import { updateSheetTableSchema } from '@/features/spreadsheets/schemas/sheet-table.schema'
+import { ZodError } from 'zod'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -22,8 +23,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       )
     }
     return NextResponse.json(
-      { data: null, error: 'Internal server error' },
-      { status: 500 }
+      { data: null, error: err instanceof ZodError ? (err.issues[0]?.message ?? 'Validation failed') : 'Internal server error' },
+      { status: err instanceof ZodError ? 400 : 500 }
     )
   }
 }
@@ -46,8 +47,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       )
     }
     return NextResponse.json(
-      { data: null, error: 'Internal server error' },
-      { status: 500 }
+      { data: null, error: err instanceof ZodError ? (err.issues[0]?.message ?? 'Validation failed') : 'Internal server error' },
+      { status: err instanceof ZodError ? 400 : 500 }
     )
   }
 }
@@ -69,8 +70,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       )
     }
     return NextResponse.json(
-      { data: null, error: 'Internal server error' },
-      { status: 500 }
+      { data: null, error: err instanceof ZodError ? (err.issues[0]?.message ?? 'Validation failed') : 'Internal server error' },
+      { status: err instanceof ZodError ? 400 : 500 }
     )
   }
 }

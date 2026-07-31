@@ -3,6 +3,7 @@ import { authenticate } from '@/core/auth/authenticate'
 import { authorize } from '@/core/auth/authorize'
 import { Permissions } from '@/core/auth/permissions'
 import { createAdminClient } from '@/core/supabase/admin'
+import { ZodError } from 'zod'
 
 export async function GET(request: Request) {
   try {

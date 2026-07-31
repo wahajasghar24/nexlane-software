@@ -3,6 +3,7 @@ import { authenticate } from '@/core/auth/authenticate'
 import { authorize } from '@/core/auth/authorize'
 import { Permissions } from '@/core/auth/permissions'
 import { rbacService } from '@/features/rbac/services/rbacService'
+import { ZodError } from 'zod'
 
 export async function GET() {
   try {

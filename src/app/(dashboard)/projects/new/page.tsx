@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 
 export default function NewProjectPage() {
@@ -36,7 +37,11 @@ export default function NewProjectPage() {
       })
       if (res.ok) {
         const data = await res.json()
+        toast.success('Project created')
         router.push(`/projects/${data.data?.id || data.id}`)
+      } else {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error || 'Failed')
       }
     } finally {
       setSubmitting(false)
