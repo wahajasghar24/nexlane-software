@@ -36,7 +36,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const { rowId } = await params
     const { cells } = await request.json()
-    await sheetTableService.batchUpdateCells(context.companyId, rowId, cells)
+    // Accept both `{ [columnId]: value }` map and `[{ column_id, value }]` array contracts
+    const normalized = Array.isArray(cells)
+      ? Object.fromEntries(cells.map((c: { column_id: string; value: unknown }) => [c.column_id, c.value]))
+      : cells
+    await sheetTableService.batchUpdateCells(context.companyId, rowId, normalized)
 
     return NextResponse.json({ data: { success: true }, error: null })
   } catch (err) {

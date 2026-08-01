@@ -238,6 +238,7 @@ export const leadService = {
     const { data, error } = await supabase
       .from('lead_notes')
       .insert({
+        company_id: companyId,
         lead_id: leadId,
         content: parsed.content,
         created_by: actorId,
