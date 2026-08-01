@@ -171,6 +171,25 @@ export const workLogService = {
     return data
   },
 
+  async reject(companyId: string, id: string, rejectedBy: string) {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+      .from('work_logs')
+      .update({
+        status: 'rejected',
+        rejected_by: rejectedBy,
+        rejected_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .eq('company_id', companyId)
+      .select()
+      .single()
+
+    if (error) throw new DatabaseError(error)
+    return data
+  },
+
   async getSummary(companyId: string, query: Record<string, unknown>) {
     const supabase = await createClient()
     let dbQuery = supabase

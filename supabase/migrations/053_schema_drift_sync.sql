@@ -10,6 +10,8 @@ ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS blockers TEXT;
 ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS next_step TEXT;
 ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS approved_by UUID REFERENCES profiles(id);
 ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS approved_at TIMESTAMPTZ;
+ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS rejected_by UUID REFERENCES profiles(id);
+ALTER TABLE work_logs ADD COLUMN IF NOT EXISTS rejected_at TIMESTAMPTZ;
 
 -- contacts: designation (was 'position' in an older schema), whatsapp, notes
 ALTER TABLE contacts ADD COLUMN IF NOT EXISTS designation TEXT;

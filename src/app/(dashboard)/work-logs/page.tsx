@@ -78,6 +78,11 @@ export default function WorkLogsPage() {
 
   const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || 'Unnamed'
 
+  const handleReview = async (id: string, action: 'approve' | 'reject') => {
+    const res = await fetch(`/api/work-logs/${id}/${action}`, { method: 'POST' })
+    if (res.ok) load()
+  }
+
   const totalHours = logs.reduce((sum, l) => sum + (l.hours || 0), 0)
 
   return (
@@ -153,6 +158,12 @@ export default function WorkLogsPage() {
                   <span className="font-medium">{log.hours}h</span>
                   <span className="text-muted-foreground truncate max-w-[200px]">{log.description || '-'}</span>
                 </div>
+                {log.status === 'submitted' && (
+                  <div className="flex gap-2 pt-2">
+                    <button onClick={() => handleReview(log.id, 'approve')} className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">Approve</button>
+                    <button onClick={() => handleReview(log.id, 'reject')} className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700">Reject</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -166,6 +177,7 @@ export default function WorkLogsPage() {
                   <th className="text-left p-3 text-sm font-medium text-muted-foreground">Hours</th>
                   <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
                   <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -186,6 +198,14 @@ export default function WorkLogsPage() {
                       }`}>
                         {log.status}
                       </span>
+                    </td>
+                    <td className="p-3">
+                      {log.status === 'submitted' && (
+                        <div className="flex gap-2">
+                          <button onClick={() => handleReview(log.id, 'approve')} className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">Approve</button>
+                          <button onClick={() => handleReview(log.id, 'reject')} className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700">Reject</button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
