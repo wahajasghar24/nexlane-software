@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
+import { cleanFormPayload } from '@/core/utils/payload'
 
 export default function NewTaskPage() {
   const router = useRouter()
@@ -47,7 +48,7 @@ export default function NewTaskPage() {
       const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(cleanFormPayload(body)),
       })
       if (res.ok) {
         const data = await res.json()

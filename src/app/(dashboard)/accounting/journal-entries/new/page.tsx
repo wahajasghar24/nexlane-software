@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
+import { cleanFormPayload } from '@/core/utils/payload'
 
 interface EntryLine {
   id: string
@@ -83,7 +84,7 @@ export default function NewJournalEntryPage() {
       const res = await fetch('/api/accounting/journal-entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(cleanFormPayload(body)),
       })
       if (res.ok) {
         toast.success('Journal entry created')

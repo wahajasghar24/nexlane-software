@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
+import { cleanFormPayload } from '@/core/utils/payload'
 
 export default function EditLeadPage() {
   const params = useParams()
@@ -58,7 +59,7 @@ export default function EditLeadPage() {
       const res = await fetch(`/api/crm/leads/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(cleanFormPayload(body)),
       })
       if (res.ok) router.push(`/crm/leads/${id}`)
     } finally {

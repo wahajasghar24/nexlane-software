@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
+import { cleanFormPayload } from '@/core/utils/payload'
 
 export default function NewEmployeePage() {
   const router = useRouter()
@@ -30,7 +31,7 @@ export default function NewEmployeePage() {
       const res = await fetch('/api/employees', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(cleanFormPayload(form)),
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {

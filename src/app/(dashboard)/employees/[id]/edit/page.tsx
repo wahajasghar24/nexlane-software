@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
+import { cleanFormPayload } from '@/core/utils/payload'
 
 export default function EditEmployeePage() {
   const params = useParams()
@@ -62,7 +63,7 @@ export default function EditEmployeePage() {
       const res = await fetch(`/api/employees/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(cleanFormPayload(form)),
       })
       if (res.ok) router.push(`/employees/${id}`)
     } finally {
