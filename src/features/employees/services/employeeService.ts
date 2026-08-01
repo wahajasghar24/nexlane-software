@@ -88,7 +88,7 @@ export const employeeService = {
         profileId = existingProfile.id
       } else {
         const admin = createAdminClient()
-        const password = crypto.randomUUID()
+        const password = parsed.password || crypto.randomUUID()
         const { data: authUser, error: authError } = await admin.auth.admin.createUser({
           email: parsed.email,
           password,

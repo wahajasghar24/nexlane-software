@@ -6,6 +6,7 @@ export const createEmployeeSchema = z.object({
   last_name: z.string().min(1).max(255),
   email: z.string().email().optional(),
   phone: z.string().min(1).max(50),
+  password: z.string().min(6).max(100).optional(),
   department_id: z.string().uuid().optional(),
   designation_id: z.string().uuid().optional(),
   employment_status: z.enum(['active', 'inactive', 'on_leave', 'terminated']),

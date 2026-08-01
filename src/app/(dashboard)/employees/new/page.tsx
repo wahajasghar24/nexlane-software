@@ -15,7 +15,7 @@ export default function NewEmployeePage() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', phone: '',
     department_id: '', designation_id: '', position: '',
-    hire_date: '', employment_status: 'active', bio: '',
+    hire_date: '', employment_status: 'active', bio: '', password: '',
   })
 
   useEffect(() => {
@@ -108,6 +108,10 @@ export default function NewEmployeePage() {
               <label className="block text-sm font-medium mb-1">Hire Date</label>
               <input type="date" value={form.hire_date} onChange={e => update('hire_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Login Password</label>
+            <input type="text" value={form.password} onChange={e => update('password', e.target.value)} placeholder="Employee apni email + is password se login karega (min 6 chars; khali = random)" className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Employment Status *</label>
