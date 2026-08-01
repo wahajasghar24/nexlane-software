@@ -39,7 +39,7 @@ export default function EmployeesPage() {
     fetch(`/api/employees?page=${page}&limit=20${search ? `&search=${search}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}${departmentFilter ? `&department_id=${departmentFilter}` : ''}${designationFilter ? `&designation_id=${designationFilter}` : ''}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data || d || []
+        const data = d.data?.data || d.data || d || []
         setEmployees(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

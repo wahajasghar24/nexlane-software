@@ -37,7 +37,7 @@ export default function NewJournalEntryPage() {
     fetch('/api/accounting/accounts?limit=200')
       .then(r => r.json())
       .then(d => {
-        const data = d.data || d || []
+        const data = d.data?.data || d.data || d || []
         setAccounts(Array.isArray(data) ? data : [])
       })
       .catch(() => {})
