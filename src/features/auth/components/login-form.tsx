@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -59,6 +60,11 @@ export function LoginForm() {
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
         {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+      </div>
+      <div className="flex justify-end -mt-2">
+        <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+          Forgot password?
+        </Link>
       </div>
       <button
         type="submit"
