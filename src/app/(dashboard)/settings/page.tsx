@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
+import { createClient } from '@/core/supabase/client'
 
 interface Profile {
   id: string
@@ -21,7 +22,7 @@ interface Company {
 }
 
 export default function SettingsPage() {
-  const [activeSection, setActiveSection] = useState<'profile' | 'company'>('profile')
+  const [activeSection, setActiveSection] = useState<'profile' | 'company' | 'security'>('profile')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
@@ -29,6 +30,83 @@ export default function SettingsPage() {
   const [message, setMessage] = useState('')
   const [profileForm, setProfileForm] = useState({ name: '', phone: '' })
   const [companyForm, setCompanyForm] = useState({ name: '', domain: '', phone: '' })
+
+  // --- MFA state ---
+  const [mfaFactors, setMfaFactors] = useState<{ id: string; friendly_name?: string }[]>([])
+  const [mfaStatus, setMfaStatus] = useState('')
+  const [mfaError, setMfaError] = useState<string | null>(null)
+  const [enrollData, setEnrollData] = useState<{ id: string; qr?: string; secret: string; uri: string } | null>(null)
+  const [enrollCode, setEnrollCode] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const loadMfa = useCallback(async () => {
+    try {
+      const supabase = createClient()
+      const { data } = await supabase.auth.mfa.listFactors()
+      setMfaFactors((data?.totp || []).filter(f => f.status === 'verified').map(f => ({ id: f.id, friendly_name: f.friendly_name })))
+      setMfaError(null)
+    } catch { setMfaError('Could not load security settings') }
+  }, [])
+
+  const startEnroll = async () => {
+    setBusy(true)
+    setMfaError(null)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
+      if (error) throw error
+      setEnrollData({ id: data.id, qr: data.totp.qr_code, secret: data.totp.secret, uri: data.totp.uri })
+      setEnrollCode('')
+    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Enrollment failed') }
+    finally { setBusy(false) }
+  }
+
+  const verifyEnroll = async () => {
+    setBusy(true)
+    setMfaError(null)
+    try {
+      const supabase = createClient()
+      if (!enrollData) throw new Error('No pending enrollment')
+      const { data: challenge, error: cError } = await supabase.auth.mfa.challenge({ factorId: enrollData.id })
+      if (cError) throw cError
+      const { error: vError } = await supabase.auth.mfa.verify({ factorId: enrollData.id, challengeId: challenge.id, code: enrollCode })
+      if (vError) throw new Error('Invalid code. Check the code in your authenticator app.')
+      setEnrollData(null)
+      setEnrollCode('')
+      setMfaStatus('Authenticator app connected successfully!')
+      await loadMfa()
+      // Verify response upgrades the session to AAL2; guard the edge case where it didn't
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      if (aal?.currentLevel !== 'aal2') {
+        await supabase.auth.signOut()
+        window.location.href = '/login?mfa=enabled'
+      }
+    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Verification failed') }
+    finally { setBusy(false) }
+  }
+
+  const cancelEnroll = async () => {
+    try {
+      const supabase = createClient()
+      if (enrollData) await supabase.auth.mfa.unenroll({ factorId: enrollData.id })
+    } catch {}
+    setEnrollData(null)
+    setEnrollCode('')
+  }
+
+  const disableMfa = async (factorId: string) => {
+    if (!confirm('Disable two-factor authentication for this account?')) return
+    setBusy(true)
+    setMfaError(null)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.mfa.unenroll({ factorId })
+      if (error) throw error
+      setMfaStatus('Two-factor authentication disabled.')
+      await loadMfa()
+    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Failed to disable 2FA') }
+    finally { setBusy(false) }
+  }
 
   useEffect(() => {
     Promise.all([
@@ -97,15 +175,18 @@ export default function SettingsPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border-b">
-        {(['profile', 'company'] as const).map(tab => (
+        {(['profile', 'company', 'security'] as const).map(tab => (
           <button
             key={tab}
-            onClick={() => setActiveSection(tab)}
+            onClick={() => {
+              setActiveSection(tab)
+              if (tab === 'security') loadMfa()
+            }}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors capitalize ${
               activeSection === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            {tab === 'profile' ? 'Profile Settings' : 'Company Settings'}
+            {tab === 'profile' ? 'Profile Settings' : tab === 'company' ? 'Company Settings' : 'Security (2FA)'}
           </button>
         ))}
       </div>
@@ -205,6 +286,91 @@ export default function SettingsPage() {
               {saving ? 'Saving...' : 'Save Company'}
             </button>
           </form>
+        </div>
+      )}
+      {activeSection === 'security' && (
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-lg font-semibold mb-1">Two-Factor Authentication</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Add an extra layer of security with an authenticator app (Google Authenticator, Authy, etc.).
+            Once enabled, you&apos;ll be asked for a code every time you sign in.
+          </p>
+
+          {mfaStatus && (
+            <div className="p-3 rounded-lg mb-4 text-sm bg-green-50 text-green-700 border border-green-200">{mfaStatus}</div>
+          )}
+          {mfaError && (
+            <div className="p-3 rounded-lg mb-4 text-sm bg-red-50 text-red-700 border border-red-200">{mfaError}</div>
+          )}
+
+          {mfaFactors.length > 0 ? (
+            <div className="space-y-3 max-w-lg">
+              <div className="flex items-center justify-between rounded-md border p-3">
+                <div>
+                  <p className="text-sm font-medium">Authenticator app</p>
+                  <p className="text-xs text-muted-foreground">Active · used at every sign-in</p>
+                </div>
+                <button
+                  onClick={() => disableMfa(mfaFactors[0].id)}
+                  disabled={busy}
+                  className="rounded-md border px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive hover:text-white disabled:opacity-50"
+                >
+                  Disable
+                </button>
+              </div>
+            </div>
+          ) : enrollData ? (
+            <div className="space-y-4 max-w-lg">
+              <div className="rounded-md border border-primary/30 bg-primary/5 p-4 text-sm">
+                <p className="font-medium mb-2">1. Scan the QR code with your authenticator app</p>
+                {enrollData.qr && enrollData.qr.startsWith('data:') ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={enrollData.qr} alt="2FA QR code" className="h-44 w-44 rounded bg-white p-2" />
+                ) : (
+                  <p className="font-mono text-xs break-all text-muted-foreground">{enrollData.uri}</p>
+                )}
+                <p className="text-xs text-muted-foreground mt-3">Can&apos;t scan? Manually enter this secret:</p>
+                <p className="font-mono text-xs bg-background border rounded p-2 mt-1 select-all break-all">{enrollData.secret}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">2. Enter the 6-digit code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  value={enrollCode}
+                  onChange={e => setEnrollCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono tracking-widest"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={verifyEnroll}
+                  disabled={busy || enrollCode.length !== 6}
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {busy ? 'Verifying...' : 'Verify & Enable'}
+                </button>
+                <button
+                  onClick={cancelEnroll}
+                  disabled={busy}
+                  className="rounded-md border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={startEnroll}
+              disabled={busy}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {busy ? 'Starting...' : 'Enable 2FA'}
+            </button>
+          )}
         </div>
       )}
     </div>

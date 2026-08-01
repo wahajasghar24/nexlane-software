@@ -4,12 +4,39 @@ import { AppError } from '@/core/errors/app-error'
 import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
 import type { UserContext } from '@/core/types/common'
 
+// Decode the `aal` claim from a JWT access token without any dependency
+// (payload is base64url-encoded JSON). Returns undefined when unreadable.
+function decodeAal(accessToken?: string): string | undefined {
+  if (!accessToken) return undefined
+  try {
+    const payload = accessToken.split('.')[1]
+    const json = Buffer.from(payload, 'base64url').toString('utf-8')
+    return JSON.parse(json).aal as string | undefined
+  } catch {
+    return undefined
+  }
+}
+
 export async function authenticate(request?: Request): Promise<UserContext> {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
     throw new AppError('UNAUTHENTICATED', 'Authentication required', 401)
+  }
+
+  // 0. MFA/AAL2 enforcement — users with a verified TOTP factor must present an aal2 token
+  const { data: { session } } = await supabase.auth.getSession()
+  const aal = decodeAal(session?.access_token)
+  if (aal !== 'aal2') {
+    const admin = createAdminClient()
+    const { data: adminUser } = await admin.auth.admin.getUserById(user.id)
+    const hasVerifiedTotp = (adminUser?.user?.factors || []).some(
+      f => f.factor_type === 'totp' && f.status === 'verified'
+    )
+    if (hasVerifiedTotp) {
+      throw new AppError('MFA_REQUIRED', 'Two-factor authentication required', 403)
+    }
   }
 
   // 1. Sync profile — ensures profile row exists and is up-to-date

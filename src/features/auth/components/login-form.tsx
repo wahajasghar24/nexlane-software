@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useLogin } from '@/features/auth/hooks/useAuth'
+import { createClient } from '@/core/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const loginSchema = z.object({
@@ -28,7 +29,10 @@ export function LoginForm() {
     setError(null)
     try {
       await login.mutateAsync(data)
-      router.push('/')
+      // If the user has MFA enrolled, they must complete the TOTP challenge first
+      const supabase = createClient()
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      router.push(aal?.nextLevel === 'aal2' ? '/mfa' : '/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     }
