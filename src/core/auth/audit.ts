@@ -38,7 +38,7 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       null
     const userAgent = entry.request?.headers.get('user-agent') || null
 
-    await supabase.from('audit_logs').insert({
+    const { error: insertError } = await supabase.from('audit_logs').insert({
       company_id: entry.companyId ?? null,
       actor_id: actorId,
       action: entry.action,
@@ -48,6 +48,9 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       ip_address: ip,
       user_agent: userAgent,
     })
+    if (insertError) {
+      console.warn('[audit] insert failed:', insertError.message)
+    }
   } catch (err) {
     console.warn('[audit] failed to write log:', err)
   }

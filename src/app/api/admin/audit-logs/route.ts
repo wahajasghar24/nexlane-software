@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const admin = createAdminClient()
     const { data, error } = await admin
       .from('audit_logs')
-      .select('*, actor_id as user_id')
+      .select('*, actor_id:user_id')
       .order('created_at', { ascending: false })
       .limit(50)
 
