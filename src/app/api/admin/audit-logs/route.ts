@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const admin = createAdminClient()
     const { data, error } = await admin
       .from('audit_logs')
-      .select('*, actor_id:user_id')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(50)
 
@@ -20,7 +20,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ data: null, error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data, error: null })
+    // Admin UI reads log.user_id — map from actor_id (profiles.id)
+    const rows = (data || []).map(log => ({ ...log, user_id: log.actor_id }))
+
+    return NextResponse.json({ data: rows, error: null })
   } catch (err) {
     const status = err instanceof Error && 'status' in err ? (err as { status?: number }).status : 500
     return NextResponse.json(
