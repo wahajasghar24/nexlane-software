@@ -13,24 +13,12 @@ export interface AuditEntry {
 
 /**
  * Write an audit log entry (service role — bypasses RLS).
- * Uses the Phase-8 audit_logs schema: actor_id = company_members.id.
+ * actor_id references profiles(id) — profiles.id == auth user id.
  * Audit failures never break the request: log and move on.
  */
 export async function logAudit(entry: AuditEntry): Promise<void> {
   try {
     const supabase = createAdminClient()
-
-    // Resolve actor_id (company_members.id) from user + company when available
-    let actorId: string | null = null
-    if (entry.userId && entry.companyId) {
-      const { data: member } = await supabase
-        .from('company_members')
-        .select('id')
-        .eq('profile_id', entry.userId)
-        .eq('company_id', entry.companyId)
-        .maybeSingle()
-      actorId = member?.id || null
-    }
 
     const ip =
       entry.request?.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -40,7 +28,7 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
 
     const { error: insertError } = await supabase.from('audit_logs').insert({
       company_id: entry.companyId ?? null,
-      actor_id: actorId,
+      actor_id: entry.userId ?? null,
       action: entry.action,
       entity_type: entry.entityType,
       entity_id: entry.entityId ?? null,
