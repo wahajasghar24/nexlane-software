@@ -1,33 +1,30 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/core/supabase/admin'
+import { logAudit } from '@/core/auth/audit'
 
-export async function GET() {
+export async function GET(request: Request) {
   const out: Record<string, unknown> = {}
   try {
-    const admin = createAdminClient()
-    out.srKeySet = !!process.env.SUPABASE_SERVICE_ROLE_KEY
-    out.url = process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 30)
-
-    const { data: member, error: mErr } = await admin
-      .from('company_members')
-      .select('id')
-      .eq('profile_id', 'ab2e12a5-f8b4-4bfd-8a3f-a283c2a6a66f')
-      .limit(1)
-      .maybeSingle()
-    out.memberErr = mErr?.message ?? null
-    out.memberId = member?.id ?? null
-
-    const { error: insErr } = await admin.from('audit_logs').insert({
-      company_id: null,
-      actor_id: null,
-      action: 'DEBUG test insert',
-      entity_type: 'debug',
-      entity_id: null,
-      changes: null,
-      ip_address: null,
-      user_agent: null,
+    // 1. helper se insert (companyId + userId ke saath — asli flow jaisa)
+    await logAudit({
+      companyId: '00000000-0000-0000-0000-000000000001',
+      userId: 'ab2e12a5-f8b4-4bfd-8a3f-a283c2a6a66f',
+      email: 'alex@nexlane.com',
+      action: 'DEBUG helper call',
+      entityType: 'debug',
+      request,
     })
-    out.insertErr = insErr?.message ?? null
+
+    // 2. check karo ke row aayi
+    const admin = createAdminClient()
+    const { data, error } = await admin
+      .from('audit_logs')
+      .select('action, actor_id, company_id')
+      .eq('action', 'DEBUG helper call')
+      .order('created_at', { ascending: false })
+      .limit(3)
+    out.rowsAfterHelper = data ?? null
+    out.queryError = error?.message ?? null
   } catch (err) {
     out.thrown = err instanceof Error ? err.message : String(err)
   }
