@@ -2,6 +2,7 @@ import { createClient } from '@/core/supabase/server'
 import { createAdminClient } from '@/core/supabase/admin'
 import { AppError } from '@/core/errors/app-error'
 import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
+import { logAudit } from '@/core/auth/audit'
 import type { UserContext } from '@/core/types/common'
 
 // Decode the `aal` claim from a JWT access token without any dependency
@@ -157,6 +158,18 @@ export async function authenticate(request?: Request): Promise<UserContext> {
 
   const ip = request?.headers.get('x-forwarded-for') || undefined
   const userAgent = request?.headers.get('user-agent') || undefined
+
+  // Audit every authenticated API action (enterprise audit trail)
+  const method = request?.method || 'UNKNOWN'
+  const path = request?.url ? new URL(request.url).pathname : 'unknown'
+  await logAudit({
+    companyId,
+    userId: user.id,
+    email: profile?.email || user.email || '',
+    action: `${method} ${path}`,
+    entityType: 'api',
+    request,
+  })
 
   return {
     userId: user.id,

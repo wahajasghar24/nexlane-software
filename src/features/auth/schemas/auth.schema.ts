@@ -7,7 +7,12 @@ export const loginSchema = z.object({
 
 export const signupSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(100),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(100)
+    .regex(/[A-Za-z]/, 'Password must contain a letter')
+    .regex(/[0-9]/, 'Password must contain a number'),
   fullName: z.string().min(1).max(255),
   companyName: z.string().min(1).max(255).optional(),
 })
@@ -17,7 +22,12 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const resetPasswordSchema = z.object({
-  password: z.string().min(8).max(100),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(100)
+    .regex(/[A-Za-z]/, 'Password must contain a letter')
+    .regex(/[0-9]/, 'Password must contain a number'),
   code: z.string(),
 })
 

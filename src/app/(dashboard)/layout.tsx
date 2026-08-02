@@ -3,11 +3,13 @@ import { QueryProvider } from '@/shared/components/query-provider'
 import { Sidebar } from '@/shared/layouts/sidebar'
 import { Header } from '@/shared/layouts/header'
 import { MobileNav } from '@/shared/layouts/mobile-nav'
+import { IdleLogout } from '@/shared/components/idle-logout'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <QueryProvider>
+        <IdleLogout />
         <div className="flex min-h-screen">
           <Sidebar />
           <div className="flex-1 flex flex-col">

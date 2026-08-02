@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/core/supabase/server'
 import { loginSchema } from '@/features/auth/schemas/auth.schema'
 import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
+import { logAudit } from '@/core/auth/audit'
 import { ZodError } from 'zod'
 
 export async function POST(request: Request) {
@@ -16,10 +17,30 @@ export async function POST(request: Request) {
     })
 
     if (error) {
+      // Audit failed login attempts (brute-force detection / security review)
+      await logAudit({
+        email: parsed.email,
+        action: 'auth.login.failed',
+        entityType: 'auth',
+        changes: { email: parsed.email, reason: error.message },
+        request,
+      })
       return NextResponse.json(
         { data: null, error: { code: 'AUTH_ERROR', message: error.message } },
         { status: 401 }
       )
+    }
+
+    // Audit successful login
+    if (data.user) {
+      await logAudit({
+        userId: data.user.id,
+        email: data.user.email || parsed.email,
+        action: 'auth.login.success',
+        entityType: 'auth',
+        changes: { email: data.user.email || parsed.email },
+        request,
+      })
     }
 
     // Ensure profile exists and sync last_sign_in_at / email / avatar
