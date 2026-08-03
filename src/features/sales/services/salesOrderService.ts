@@ -278,7 +278,7 @@ export const salesOrderService = {
         invoice_number: invoiceNumber,
         customer_id: order.customer_id,
         status: 'draft',
-        issue_date: new Date().toISOString().slice(0, 10),
+        invoice_date: new Date().toISOString().slice(0, 10),
         due_date: order.valid_until || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
         subtotal: order.subtotal,
         tax_amount: order.tax_amount,
@@ -291,12 +291,12 @@ export const salesOrderService = {
     if (invErr) throw new DatabaseError(invErr)
 
     const invoiceItems = items.map((i) => ({
-      company_id: companyId,
       invoice_id: invoice.id,
       description: i.description,
       quantity: i.quantity,
       unit_price: i.unit_price,
-      total: i.total,
+      amount: i.total,
+      tax_amount: 0,
     }))
     const { error: invItemsErr } = await supabase.from('invoice_items').insert(invoiceItems)
     if (invItemsErr) throw new DatabaseError(invItemsErr)

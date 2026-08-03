@@ -227,10 +227,10 @@ export const purchaseOrderService = {
       .select('*')
       .eq('id', orderId)
       .eq('company_id', companyId)
-      .in('status', ['confirmed', 'sent'])
+      .in('status', ['draft', 'sent', 'confirmed'])
       .single()
     if (orderError) throw new DatabaseError(orderError)
-    if (!order) throw new AppError('CONFLICT', 'Only confirmed purchase orders can be received', 409)
+    if (!order) throw new AppError('CONFLICT', 'Only draft/sent/confirmed purchase orders can be received', 409)
 
     const { data: items, error: itemsError } = await supabase
       .from('purchase_order_items')

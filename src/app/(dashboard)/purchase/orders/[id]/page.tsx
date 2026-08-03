@@ -73,7 +73,7 @@ export default function PurchaseOrderDetailPage() {
         {order.expected_date && (
           <span className="text-xs text-muted-foreground">Expected: {new Date(order.expected_date).toLocaleDateString()}</span>
         )}
-        {(order.status === 'confirmed' || order.status === 'sent') && (
+        {(order.status === 'draft' || order.status === 'sent' || order.status === 'confirmed') && (
           <button
             onClick={handleReceive}
             disabled={busy}

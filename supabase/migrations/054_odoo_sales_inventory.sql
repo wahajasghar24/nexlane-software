@@ -143,7 +143,9 @@ CREATE TRIGGER trg_purchase_orders_updated_at BEFORE UPDATE ON purchase_orders
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ============================================================
--- RLS (company-scoped, same pattern as all other tables)
+-- RLS (company-scoped, same company_members pattern as all other tables —
+-- NOTE: auth_company_id() reads the JWT company_id claim which is NOT set;
+-- the real pattern is an inline company_members subquery)
 -- ============================================================
 ALTER TABLE products           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stock_movements    ENABLE ROW LEVEL SECURITY;
@@ -152,31 +154,42 @@ ALTER TABLE sales_order_items  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purchase_orders    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE purchase_order_items ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY products_select ON products FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY products_insert ON products FOR INSERT WITH CHECK (company_id = auth_company_id());
-CREATE POLICY products_update ON products FOR UPDATE USING (company_id = auth_company_id());
-CREATE POLICY products_delete ON products FOR DELETE USING (company_id = auth_company_id());
+-- Company scope helper (same expression used by leads/contacts etc.)
+CREATE OR REPLACE FUNCTION company_scope()
+RETURNS SETOF uuid
+LANGUAGE sql
+STABLE
+AS $function$
+  SELECT company_members.company_id
+  FROM company_members
+  WHERE company_members.profile_id = auth.uid();
+$function$;
 
-CREATE POLICY stock_movements_select ON stock_movements FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY stock_movements_insert ON stock_movements FOR INSERT WITH CHECK (company_id = auth_company_id());
+CREATE POLICY rlsp_products_select ON products FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_products_insert ON products FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_products_update ON products FOR UPDATE USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_products_delete ON products FOR DELETE USING (company_id IN (SELECT company_scope()));
 
-CREATE POLICY sales_orders_select ON sales_orders FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY sales_orders_insert ON sales_orders FOR INSERT WITH CHECK (company_id = auth_company_id());
-CREATE POLICY sales_orders_update ON sales_orders FOR UPDATE USING (company_id = auth_company_id());
-CREATE POLICY sales_orders_delete ON sales_orders FOR DELETE USING (company_id = auth_company_id());
+CREATE POLICY rlsp_stock_movements_select ON stock_movements FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_stock_movements_insert ON stock_movements FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
 
-CREATE POLICY sales_items_select ON sales_order_items FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY sales_items_insert ON sales_order_items FOR INSERT WITH CHECK (company_id = auth_company_id());
-CREATE POLICY sales_items_delete ON sales_order_items FOR DELETE USING (company_id = auth_company_id());
+CREATE POLICY rlsp_sales_orders_select ON sales_orders FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_sales_orders_insert ON sales_orders FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_sales_orders_update ON sales_orders FOR UPDATE USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_sales_orders_delete ON sales_orders FOR DELETE USING (company_id IN (SELECT company_scope()));
 
-CREATE POLICY purchase_orders_select ON purchase_orders FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY purchase_orders_insert ON purchase_orders FOR INSERT WITH CHECK (company_id = auth_company_id());
-CREATE POLICY purchase_orders_update ON purchase_orders FOR UPDATE USING (company_id = auth_company_id());
-CREATE POLICY purchase_orders_delete ON purchase_orders FOR DELETE USING (company_id = auth_company_id());
+CREATE POLICY rlsp_sales_items_select ON sales_order_items FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_sales_items_insert ON sales_order_items FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_sales_items_delete ON sales_order_items FOR DELETE USING (company_id IN (SELECT company_scope()));
 
-CREATE POLICY purchase_items_select ON purchase_order_items FOR SELECT USING (company_id = auth_company_id());
-CREATE POLICY purchase_items_insert ON purchase_order_items FOR INSERT WITH CHECK (company_id = auth_company_id());
-CREATE POLICY purchase_items_delete ON purchase_order_items FOR DELETE USING (company_id = auth_company_id());
+CREATE POLICY rlsp_purchase_orders_select ON purchase_orders FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_purchase_orders_insert ON purchase_orders FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_purchase_orders_update ON purchase_orders FOR UPDATE USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_purchase_orders_delete ON purchase_orders FOR DELETE USING (company_id IN (SELECT company_scope()));
+
+CREATE POLICY rlsp_purchase_items_select ON purchase_order_items FOR SELECT USING (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_purchase_items_insert ON purchase_order_items FOR INSERT WITH CHECK (company_id IN (SELECT company_scope()));
+CREATE POLICY rlsp_purchase_items_delete ON purchase_order_items FOR DELETE USING (company_id IN (SELECT company_scope()));
 
 -- ============================================================
 -- PERMISSIONS (inventory / sales / purchase) — Owner gets all
