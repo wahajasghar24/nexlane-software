@@ -188,6 +188,15 @@ export const Permissions = {
   PURCHASE_ORDERS_RECEIVE: 'purchase_orders.receive',
   PURCHASE_ORDERS_DELETE: 'purchase_orders.delete',
 
+  // HR - Attendance & Time Off
+  ATTENDANCE_LIST: 'attendance.list',
+  ATTENDANCE_CHECKIN: 'attendance.checkin',
+  ATTENDANCE_CHECKOUT: 'attendance.checkout',
+  TIMEOFF_LIST: 'timeoff.list',
+  TIMEOFF_CREATE: 'timeoff.create',
+  TIMEOFF_APPROVE: 'timeoff.approve',
+  TIMEOFF_DELETE: 'timeoff.delete',
+
   // Admin
   ADMIN_ACCESS: 'admin.access',
   ADMIN_MANAGE_JOBS: 'admin.manage_jobs',

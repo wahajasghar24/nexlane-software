@@ -62,6 +62,11 @@ const salesItems = [
   { label: 'Purchase Orders', href: '/purchase/orders', icon: svg.purchase },
 ]
 
+const hrItems = [
+  { label: 'Attendance', href: '/hr/attendance', icon: svg.workLogs },
+  { label: 'Time Off', href: '/hr/time-off', icon: svg.tasks },
+]
+
 function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
   const pathname = usePathname()
   const active = pathname === href || pathname.startsWith(href + '/')
@@ -121,6 +126,12 @@ export function Sidebar() {
           <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Sales & Inventory</p>
         </div>
         {salesItems.map(item => (
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+        ))}
+        <div className="pt-3 pb-1">
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">HR</p>
+        </div>
+        {hrItems.map(item => (
           <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
         ))}
         <div className="pt-3 pb-1">
