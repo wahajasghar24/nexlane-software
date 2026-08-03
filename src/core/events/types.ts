@@ -140,6 +140,24 @@ export const EventTypes = {
   ACTIVITY_UPDATED: 'activity.updated',
   ACTIVITY_DELETED: 'activity.deleted',
 
+  // Sales & Inventory
+  PRODUCT_CREATED: 'product.created',
+  PRODUCT_UPDATED: 'product.updated',
+  PRODUCT_DELETED: 'product.deleted',
+  PRODUCT_STOCK_ADJUSTED: 'product.stock_adjusted',
+  SALES_ORDER_CREATED: 'sales_order.created',
+  SALES_ORDER_CONFIRMED: 'sales_order.confirmed',
+  SALES_ORDER_CANCELLED: 'sales_order.cancelled',
+  PURCHASE_ORDER_CREATED: 'purchase_order.created',
+  PURCHASE_ORDER_RECEIVED: 'purchase_order.received',
+  PURCHASE_ORDER_CANCELLED: 'purchase_order.cancelled',
+
+  // HR - Attendance & Time Off
+  ATTENDANCE_CLOCKED_IN: 'attendance.clocked_in',
+  ATTENDANCE_CLOCKED_OUT: 'attendance.clocked_out',
+  TIMEOFF_REQUESTED: 'timeoff.requested',
+  TIMEOFF_DECIDED: 'timeoff.decided',
+
   // System
   JOB_FAILED: 'job.failed',
   EVENT_REPLAYED: 'event.replayed',

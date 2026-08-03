@@ -1,6 +1,8 @@
 import { createClient } from '@/core/supabase/server'
 import { DatabaseError } from '@/core/errors/database-error'
 import { AppError } from '@/core/errors/app-error'
+import { eventBus } from '@/core/events/event-bus'
+import { EventTypes } from '@/core/events/types'
 import type { PaginatedResult } from '@/core/types/common'
 import {
   createPurchaseOrderSchema,
@@ -130,6 +132,14 @@ export const purchaseOrderService = {
     const { error: itemsError } = await supabase.from('purchase_order_items').insert(items)
     if (itemsError) throw new DatabaseError(itemsError)
 
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PURCHASE_ORDER_CREATED,
+      entityType: 'purchase_order',
+      entityId: order.id,
+      payload: { order_number: orderNumber, total: subtotal + taxAmount },
+    })
+
     return this.getById(companyId, order.id)
   },
 
@@ -203,6 +213,13 @@ export const purchaseOrderService = {
       .select()
       .single()
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PURCHASE_ORDER_CANCELLED,
+      entityType: 'purchase_order',
+      entityId: data.id,
+      payload: { order_number: data.order_number },
+    })
     return data
   },
 
@@ -267,6 +284,14 @@ export const purchaseOrderService = {
       .select()
       .single()
     if (upErr) throw new DatabaseError(upErr)
+
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PURCHASE_ORDER_RECEIVED,
+      entityType: 'purchase_order',
+      entityId: orderId,
+      payload: { order_number: order.order_number, total: order.total },
+    })
 
     return this.getById(companyId, orderId)
   },

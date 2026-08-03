@@ -1,0 +1,232 @@
+{
+  "name": "Nexlane: Google Maps → Leads Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nexlane-leads",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Incoming Leads (Google Maps scrape)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "nexlane-leads"
+    },
+    {
+      "parameters": {
+        "url": "https://nexlane-software.vercel.app/api/auth/login",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{$env.NEXLANE_BOT_EMAIL}}\",\n  \"password\": \"{{$env.NEXLANE_BOT_PASSWORD}}\"\n}",
+        "options": {
+          "cookies": {
+            "send": true,
+            "receive": true,
+            "sessionId": "nexlane-session"
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "login",
+      "name": "1. Login (get session cookie)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "url": "=https://nexlane-software.vercel.app/api/crm/leads",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{$('Incoming Leads (Google Maps scrape)').item.json.name}}\",\n  \"email\": \"{{$('Incoming Leads (Google Maps scrape)').item.json.email}}\",\n  \"phone\": \"{{$('Incoming Leads (Google Maps scrape)').item.json.phone}}\",\n  \"company\": \"{{$('Incoming Leads (Google Maps scrape)').item.json.company}}\",\n  \"source\": \"google_maps\",\n  \"status\": \"new\",\n  \"notes\": \"{{$('Incoming Leads (Google Maps scrape)').item.json.notes}}\"\n}",
+        "options": {
+          "cookies": {
+            "send": true,
+            "receive": false,
+            "sessionId": "nexlane-session"
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "create-lead",
+      "name": "2. Create lead in Nexlane",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "url": "=https://nexlane-software.vercel.app/api/crm/leads/{{$json.data.id}}",
+        "method": "PATCH",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"contacted\",\n  \"notes\": \"Auto-contacted via n8n\"\n}",
+        "options": {
+          "cookies": {
+            "send": true,
+            "receive": false,
+            "sessionId": "nexlane-session"
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "mark-contacted",
+      "name": "3. Mark as contacted",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "{{$env.NEXLANE_SMTP_FROM}}",
+        "toEmail": "={{$('Incoming Leads (Google Maps scrape)').item.json.email}}",
+        "subject": "Special offer for {{$('Incoming Leads (Google Maps scrape)').item.json.company}}",
+        "emailFormat": "text",
+        "text": "=Hi {{$('Incoming Leads (Google Maps scrape)').item.json.name}},\n\nWe help Amazon sellers like you save on fees. Want a free 15-min audit?\n\n— Nexlane Solutions",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "4. Send intro email (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [960, 0]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 48
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "followup-timer",
+      "name": "Wait 48h (follow-up)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1200, 0]
+    },
+    {
+      "parameters": {
+        "url": "=https://nexlane-software.vercel.app/api/crm/leads/{{$('Incoming Leads (Google Maps scrape)').item.json.id}}",
+        "method": "PATCH",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"contacted\",\n  \"notes\": \"Follow-up sent\"\n}",
+        "options": {
+          "cookies": {
+            "send": true,
+            "receive": false,
+            "sessionId": "nexlane-session"
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "followup-patch",
+      "name": "5. Follow-up note",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1440, 0]
+    }
+  ],
+  "connections": {
+    "Incoming Leads (Google Maps scrape)": {
+      "main": [
+        [
+          {
+            "node": "1. Login (get session cookie)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Login (get session cookie)": {
+      "main": [
+        [
+          {
+            "node": "2. Create lead in Nexlane",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Create lead in Nexlane": {
+      "main": [
+        [
+          {
+            "node": "3. Mark as contacted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Mark as contacted": {
+      "main": [
+        [
+          {
+            "node": "4. Send intro email (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Send intro email (SMTP)": {
+      "main": [
+        [
+          {
+            "node": "Wait 48h (follow-up)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 48h (follow-up)": {
+      "main": [
+        [
+          {
+            "node": "5. Follow-up note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

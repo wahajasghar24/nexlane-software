@@ -1,6 +1,8 @@
 import { createClient } from '@/core/supabase/server'
 import { DatabaseError } from '@/core/errors/database-error'
 import { AppError } from '@/core/errors/app-error'
+import { eventBus } from '@/core/events/event-bus'
+import { EventTypes } from '@/core/events/types'
 import type { PaginatedResult } from '@/core/types/common'
 
 // Resolve the current user's employee row for a company
@@ -75,6 +77,13 @@ export const hrService = {
       .select()
       .single()
     if (insErr) throw new DatabaseError(insErr)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.ATTENDANCE_CLOCKED_IN,
+      entityType: 'attendance',
+      entityId: row.id,
+      payload: { work_date: row.work_date },
+    })
     return row
   },
 
@@ -100,6 +109,13 @@ export const hrService = {
       .select()
       .single()
     if (updErr) throw new DatabaseError(updErr)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.ATTENDANCE_CLOCKED_OUT,
+      entityType: 'attendance',
+      entityId: row.id,
+      payload: { work_date: row.work_date },
+    })
     return row
   },
 
@@ -148,6 +164,13 @@ export const hrService = {
       .select()
       .single()
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.TIMEOFF_REQUESTED,
+      entityType: 'time_off_request',
+      entityId: data.id,
+      payload: { type: data.type, start_date: data.start_date, end_date: data.end_date, days: data.days },
+    })
     return data
   },
 
@@ -174,6 +197,13 @@ export const hrService = {
       .select()
       .single()
     if (updErr) throw new DatabaseError(updErr)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.TIMEOFF_DECIDED,
+      entityType: 'time_off_request',
+      entityId: id,
+      payload: { decision },
+    })
     return row
   },
 

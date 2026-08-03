@@ -13,6 +13,17 @@ const WEBHOOK_EVENTS = new Set([
   'deal.won',
   'deal.lost',
   'activity.created',
+  'product.created',
+  'sales_order.created',
+  'sales_order.confirmed',
+  'sales_order.cancelled',
+  'purchase_order.created',
+  'purchase_order.received',
+  'purchase_order.cancelled',
+  'attendance.clocked_in',
+  'attendance.clocked_out',
+  'timeoff.requested',
+  'timeoff.decided',
 ])
 
 export async function webhookHandler(event: DomainEvent): Promise<void> {

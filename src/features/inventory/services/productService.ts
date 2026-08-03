@@ -1,7 +1,9 @@
 import { createClient } from '@/core/supabase/server'
 import { DatabaseError } from '@/core/errors/database-error'
-import type { PaginatedResult } from '@/core/types/common'
+import { eventBus } from '@/core/events/event-bus'
+import { EventTypes } from '@/core/events/types'
 import { createProductSchema, updateProductSchema, productQuerySchema, stockAdjustSchema } from '@/features/inventory/schemas/product.schema'
+import type { PaginatedResult } from '@/core/types/common'
 import type { CreateProductInput, UpdateProductInput, ProductQuery, StockAdjustInput } from '@/features/inventory/schemas/product.schema'
 
 export const productService = {
@@ -71,6 +73,13 @@ export const productService = {
       .select()
       .single()
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PRODUCT_CREATED,
+      entityType: 'product',
+      entityId: data.id,
+      payload: { sku: data.sku, name: data.name },
+    })
     return data
   },
 
@@ -85,6 +94,13 @@ export const productService = {
       .select()
       .single()
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PRODUCT_UPDATED,
+      entityType: 'product',
+      entityId: data.id,
+      payload: { sku: data.sku, name: data.name },
+    })
     return data
   },
 
@@ -96,6 +112,13 @@ export const productService = {
       .eq('id', productId)
       .eq('company_id', companyId)
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PRODUCT_DELETED,
+      entityType: 'product',
+      entityId: productId,
+      payload: {},
+    })
   },
 
   /** Manual stock adjustment — writes a stock_movement and updates product.stock_qty. */
@@ -123,6 +146,14 @@ export const productService = {
       p_delta: parsed.quantity,
     })
     if (upErr) throw new DatabaseError(upErr)
+
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.PRODUCT_STOCK_ADJUSTED,
+      entityType: 'product',
+      entityId: productId,
+      payload: { delta: parsed.quantity, note: parsed.note },
+    })
 
     return movement
   },

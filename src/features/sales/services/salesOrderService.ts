@@ -3,6 +3,8 @@ import { DatabaseError } from '@/core/errors/database-error'
 import { AppError } from '@/core/errors/app-error'
 import type { PaginatedResult } from '@/core/types/common'
 import { accountingService } from '@/features/accounting/services/accountingService'
+import { eventBus } from '@/core/events/event-bus'
+import { EventTypes } from '@/core/events/types'
 import {
   createSalesOrderSchema,
   updateSalesOrderSchema,
@@ -135,6 +137,14 @@ export const salesOrderService = {
     const { error: itemsError } = await supabase.from('sales_order_items').insert(items)
     if (itemsError) throw new DatabaseError(itemsError)
 
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.SALES_ORDER_CREATED,
+      entityType: 'sales_order',
+      entityId: order.id,
+      payload: { order_number: orderNumber, total: subtotal + taxAmount },
+    })
+
     return this.getById(companyId, order.id)
   },
 
@@ -209,6 +219,13 @@ export const salesOrderService = {
       .select()
       .single()
     if (error) throw new DatabaseError(error)
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.SALES_ORDER_CANCELLED,
+      entityType: 'sales_order',
+      entityId: data.id,
+      payload: { order_number: data.order_number },
+    })
     return data
   },
 
@@ -310,6 +327,14 @@ export const salesOrderService = {
       .select()
       .single()
     if (upErr) throw new DatabaseError(upErr)
+
+    await eventBus.emit({
+      companyId,
+      eventType: EventTypes.SALES_ORDER_CONFIRMED,
+      entityType: 'sales_order',
+      entityId: orderId,
+      payload: { order_number: order.order_number, invoice_number: invoiceNumber, total: order.total },
+    })
 
     return this.getById(companyId, orderId)
   },
