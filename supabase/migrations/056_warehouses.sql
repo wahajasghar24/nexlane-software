@@ -54,8 +54,8 @@ CREATE POLICY rlsp_product_stock_update ON product_stock FOR UPDATE USING (compa
 CREATE POLICY rlsp_product_stock_delete ON product_stock FOR DELETE USING (company_id IN (SELECT company_scope()));
 
 -- Warehouse-aware stock adjust (replaces single-location adjust_product_stock).
--- Upserts product_stock row; products.stock_qty stays as the company-wide total
--- for backward compatibility and is kept in sync here.
+-- Drop the old 3-arg overload first so RPC calls are unambiguous.
+DROP FUNCTION IF EXISTS adjust_product_stock(uuid, uuid, numeric);
 CREATE OR REPLACE FUNCTION adjust_product_stock(
   p_company_id uuid,
   p_product_id uuid,
