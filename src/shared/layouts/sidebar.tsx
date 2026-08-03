@@ -23,6 +23,9 @@ const svg = {
   leads: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>,
   deals: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/></svg>,
   activities: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 13v-3M12 13V7M17 13v-5"/><path d="M7 16h.01M12 16h.01M17 16h.01"/></svg>,
+  inventory: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>,
+  sales: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>,
+  purchase: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>,
 }
 
 const managementItems = [
@@ -51,6 +54,12 @@ const crmItems = [
   { label: 'Leads', href: '/crm/leads', icon: svg.leads },
   { label: 'Deals', href: '/crm/deals', icon: svg.deals },
   { label: 'Activities', href: '/crm/activities', icon: svg.activities },
+]
+
+const salesItems = [
+  { label: 'Products', href: '/inventory/products', icon: svg.inventory },
+  { label: 'Sales Orders', href: '/sales/orders', icon: svg.sales },
+  { label: 'Purchase Orders', href: '/purchase/orders', icon: svg.purchase },
 ]
 
 function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
@@ -106,6 +115,12 @@ export function Sidebar() {
           <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">CRM</p>
         </div>
         {crmItems.map(item => (
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+        ))}
+        <div className="pt-3 pb-1">
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Sales & Inventory</p>
+        </div>
+        {salesItems.map(item => (
           <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
         ))}
         <div className="pt-3 pb-1">

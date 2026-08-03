@@ -165,6 +165,29 @@ export const Permissions = {
   CRM_NOTES_CREATE: 'crm_notes.create',
   CRM_NOTES_READ: 'crm_notes.read',
 
+  // Inventory - Products
+  PRODUCTS_LIST: 'products.list',
+  PRODUCTS_READ: 'products.read',
+  PRODUCTS_CREATE: 'products.create',
+  PRODUCTS_UPDATE: 'products.update',
+  PRODUCTS_DELETE: 'products.delete',
+
+  // Sales Orders (quotations)
+  SALES_ORDERS_LIST: 'sales_orders.list',
+  SALES_ORDERS_READ: 'sales_orders.read',
+  SALES_ORDERS_CREATE: 'sales_orders.create',
+  SALES_ORDERS_UPDATE: 'sales_orders.update',
+  SALES_ORDERS_CONFIRM: 'sales_orders.confirm',
+  SALES_ORDERS_DELETE: 'sales_orders.delete',
+
+  // Purchase Orders
+  PURCHASE_ORDERS_LIST: 'purchase_orders.list',
+  PURCHASE_ORDERS_READ: 'purchase_orders.read',
+  PURCHASE_ORDERS_CREATE: 'purchase_orders.create',
+  PURCHASE_ORDERS_UPDATE: 'purchase_orders.update',
+  PURCHASE_ORDERS_RECEIVE: 'purchase_orders.receive',
+  PURCHASE_ORDERS_DELETE: 'purchase_orders.delete',
+
   // Admin
   ADMIN_ACCESS: 'admin.access',
   ADMIN_MANAGE_JOBS: 'admin.manage_jobs',

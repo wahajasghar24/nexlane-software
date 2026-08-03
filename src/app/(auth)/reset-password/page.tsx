@@ -20,16 +20,16 @@ export default function ResetPasswordPage() {
     const params = new URLSearchParams(window.location.hash.substring(1))
     const accessToken = params.get('access_token')
     const refreshToken = params.get('refresh_token')
-    if (accessToken && refreshToken) {
-      supabase.auth
-        .setSession({ access_token: accessToken, refresh_token: refreshToken })
-        .then(({ error }) => {
-          if (error) setError('Invalid or expired reset link. Request a new one.')
-          else setReady(true)
-        })
-    } else {
-      setError('Invalid reset link. Request a new one.')
+    const boot = async () => {
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+        if (error) setError('Invalid or expired reset link. Request a new one.')
+        else setReady(true)
+      } else {
+        setError('Invalid reset link. Request a new one.')
+      }
     }
+    boot()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
