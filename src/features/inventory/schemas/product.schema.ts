@@ -9,6 +9,7 @@ export const createProductSchema = z.object({
   purchase_price: z.coerce.number().nonnegative().default(0),
   sale_price: z.coerce.number().nonnegative().default(0),
   min_stock: z.coerce.number().nonnegative().default(0),
+  default_warehouse_id: z.string().uuid().optional().nullable(),
 })
 
 export const updateProductSchema = createProductSchema.partial()
@@ -24,6 +25,7 @@ export const productQuerySchema = z.object({
 export const stockAdjustSchema = z.object({
   quantity: z.coerce.number(), // signed: + add / - remove
   note: z.string().max(500).optional().nullable(),
+  warehouse_id: z.string().uuid().optional().nullable(),
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>

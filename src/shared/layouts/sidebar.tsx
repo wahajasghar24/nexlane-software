@@ -58,6 +58,7 @@ const crmItems = [
 
 const salesItems = [
   { label: 'Products', href: '/inventory/products', icon: svg.inventory },
+  { label: 'Warehouses', href: '/inventory/warehouses', icon: svg.building },
   { label: 'Sales Orders', href: '/sales/orders', icon: svg.sales },
   { label: 'Purchase Orders', href: '/purchase/orders', icon: svg.purchase },
 ]

@@ -188,6 +188,12 @@ export const Permissions = {
   PURCHASE_ORDERS_RECEIVE: 'purchase_orders.receive',
   PURCHASE_ORDERS_DELETE: 'purchase_orders.delete',
 
+  // Warehouses
+  WAREHOUSES_LIST: 'warehouses.list',
+  WAREHOUSES_CREATE: 'warehouses.create',
+  WAREHOUSES_UPDATE: 'warehouses.update',
+  WAREHOUSES_DELETE: 'warehouses.delete',
+
   // HR - Attendance & Time Off
   ATTENDANCE_LIST: 'attendance.list',
   ATTENDANCE_CHECKIN: 'attendance.checkin',

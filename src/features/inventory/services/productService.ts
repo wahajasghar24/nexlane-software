@@ -68,6 +68,7 @@ export const productService = {
         purchase_price: parsed.purchase_price,
         sale_price: parsed.sale_price,
         min_stock: parsed.min_stock,
+        default_warehouse_id: parsed.default_warehouse_id ?? null,
         created_by: actorId,
       })
       .select()
@@ -144,6 +145,7 @@ export const productService = {
       p_company_id: companyId,
       p_product_id: productId,
       p_delta: parsed.quantity,
+      p_warehouse_id: parsed.warehouse_id ?? null,
     })
     if (upErr) throw new DatabaseError(upErr)
 
@@ -152,7 +154,7 @@ export const productService = {
       eventType: EventTypes.PRODUCT_STOCK_ADJUSTED,
       entityType: 'product',
       entityId: productId,
-      payload: { delta: parsed.quantity, note: parsed.note },
+      payload: { delta: parsed.quantity, note: parsed.note, warehouse_id: parsed.warehouse_id ?? null },
     })
 
     return movement
