@@ -140,7 +140,6 @@ export function Sidebar() {
         </div>
         <NavLink href="/notifications" icon={svg.notifications} label="Notifications" />
         <NavLink href="/files" icon={svg.files} label="Files" />
-        <NavLink href="/admin" icon={svg.admin} label="Admin" />
         <div className="pt-3 mt-3 border-t space-y-0.5">
           <NavLink href="/settings" icon={svg.settings} label="Settings" />
         </div>
