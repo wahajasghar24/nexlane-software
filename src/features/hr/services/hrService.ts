@@ -23,7 +23,7 @@ async function fetchEmployeeBriefs(companyId: string): Promise<Map<string, Emplo
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('employees')
-    .select('id, employee_code, profiles(full_name)')
+    .select('id, employee_code, profiles!employees_profile_id_fkey(full_name)')
     .eq('company_id', companyId)
     .is('deleted_at', null)
   if (error) throw new DatabaseError(error)
