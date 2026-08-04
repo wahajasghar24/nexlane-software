@@ -567,3 +567,41 @@
 ---
 
 *Mark each test case as ✅ Pass, ❌ Fail, or ⏭ Not Applicable. For failures, include the browser/device used and steps to reproduce.*
+
+---
+
+# Part 2: Nexlane ERP v2 — Test Data Guide (2026-08-03)
+
+## App URL
+- **https://nexlane-software.vercel.app** — login: `alex@nexlane.com` / `password123`
+- (Purana URL `nexlane-projects-nexlane.vercel.app` bhi same build serve karta hai — naya URL use karo)
+
+## Live Test Data (seed ho chuka hai)
+
+| Module | Data |
+|--------|------|
+| Inventory | 8 products (SRV-ACC, SRV-ADS, SRV-OA, SRV-CONT, SRV-REP, SRV-SUP, PROD-TOOL, PROD-REPORT) + Main Warehouse (WH-MAIN) + per-warehouse stock (100–200 units) |
+| CRM | 4 customers (Ahmed Traders, Luna Beauty PK, TechMart PK, Sunrise Exports), 5 leads, 3 deals (proposal_sent / contacted / won) |
+| Sales | **SO-202608-00001** — CONFIRMED, auto-invoice **INV-202608-00001** ($1,097), stock deducted (ACC 100→98, ADS 100→99) |
+| Purchase | **PO-202608-00001** — RECEIVED, stock in (REP 200→210, SUP 200→205) |
+| Accounting | Invoice INV-202608-00001 + payment (bank, $1,097) + 5 journal entries |
+| Projects | 3 projects (Website Redesign, Mobile App, AI Chatbot) + 4 tasks + 2 work logs |
+| HR | 3 employees (alex, Moiz, wahaj), attendance entry today, 2 time-off requests (1 approved annual, 1 pending sick) |
+
+## Test Flow (recommended order)
+
+1. **Login** → Dashboard loads with sidebar sections (Management, Accounting, CRM, Sales & Inventory, HR, Tools)
+2. **Employees** (`/employees`) → 3 rows; click name → detail page (tabs: Overview/Projects/Tasks/Work Logs/Activity); Edit → form pre-filled
+3. **Projects** → 3 projects; click → detail; **Work Logs** → 2 logs
+4. **CRM → Leads** → 5 leads; **Deals** → 3 deals (stage filter); **Companies** → 3; click any → detail page
+5. **Inventory → Products** → 8 products with stock; **Warehouses** → WH-MAIN row; product detail → Stock Adjustment
+6. **Sales Orders** → SO-202608-00001 (Confirmed); detail → items + linked invoice; **New Quotation** → create + confirm (stock deduct + invoice auto-generate hota hai)
+7. **Purchase Orders** → PO-202608-00001 (Received); detail → items
+8. **Accounting → Invoices** → INV-202608-00001 (Paid); **Payments** → payment row; **Reports** → GL / Balance Sheet / Cash Flow
+9. **HR → Attendance** → today's entry (check-in/out); **Time Off** → 1 approved + 1 pending (approve/reject karke dekho)
+10. **Notifications / Files / Settings** → render check
+
+## Known notes
+- New Quotation form: item `description` required hai
+- Reports: `/accounting/reports` (sidebar link); `/reports` URL exist nahi karta
+- n8n webhook events: sales/inventory/HR actions `domain_events` table + webhook URL (agar set ho) pe fire karte hain
