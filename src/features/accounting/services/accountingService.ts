@@ -678,14 +678,18 @@ export const accountingService = {
     if (error) throw new DatabaseError(error)
 
     // If payment is linked to an invoice, update invoice status to 'paid'
+    let paidInvoiceId: string | null = null
     if (parsed.invoice_id) {
-      const { error: invoiceError } = await supabase
+      const { data: invData, error: invoiceError } = await supabase
         .from('invoices')
         .update({ status: 'paid' })
         .eq('id', parsed.invoice_id)
         .eq('company_id', companyId)
+        .select('id, invoice_number, total')
+        .single()
 
       if (invoiceError) throw new DatabaseError(invoiceError)
+      paidInvoiceId = invData?.id || null
     }
 
     await eventBus.emit({
@@ -695,6 +699,16 @@ export const accountingService = {
       entityId: data.id,
       payload: { payment: data, actorId },
     })
+
+    if (paidInvoiceId) {
+      await eventBus.emit({
+        companyId,
+        eventType: 'invoice.paid',
+        entityType: 'invoice',
+        entityId: paidInvoiceId,
+        payload: { paymentId: data.id, actorId },
+      })
+    }
 
     return data
   },

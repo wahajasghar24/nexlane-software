@@ -54,6 +54,10 @@ export function registerEventHandlers() {
     EventTypes.CRM_COMPANY_CREATED,
     EventTypes.CONTACT_CREATED,
     EventTypes.ACTIVITY_CREATED,
+    // Accounting → n8n
+    'account.created',
+    'journal_entry.created',
+    'journal_entry.posted',
   ]
 
   for (const eventType of webhookEvents) {
