@@ -17,7 +17,7 @@ export default function DepartmentsPage() {
   const load = () => {
     fetch('/api/departments?limit=100')
       .then(r => r.json())
-      .then(d => setDepartments(d.data || d || []))
+      .then(d => setDepartments((d?.data) || (Array.isArray(d) ? d : [])))
       .catch(() => setDepartments([]))
       .finally(() => setLoading(false))
   }

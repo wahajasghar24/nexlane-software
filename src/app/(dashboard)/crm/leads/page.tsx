@@ -50,7 +50,7 @@ export default function LeadsPage() {
     fetch(`/api/crm/leads?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setLeads(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

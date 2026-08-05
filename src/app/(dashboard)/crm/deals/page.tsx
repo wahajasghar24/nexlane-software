@@ -30,7 +30,7 @@ export default function DealsPipelinePage() {
     fetch('/api/crm/deals?limit=200')
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setDeals(Array.isArray(data) ? data : [])
       })
       .catch(() => setDeals([]))

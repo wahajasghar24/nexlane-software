@@ -19,8 +19,8 @@ export default function NewEmployeePage() {
   })
 
   useEffect(() => {
-    fetch('/api/departments?limit=100').then(r => r.json()).then(d => setDepartments(d.data || d || [])).catch(() => {})
-    fetch('/api/designations?limit=100').then(r => r.json()).then(d => setDesignations(d.data || d || [])).catch(() => {})
+    fetch('/api/departments?limit=100').then(r => r.json()).then(d => setDepartments((d?.data) || (Array.isArray(d) ? d : []))).catch(() => {})
+    fetch('/api/designations?limit=100').then(r => r.json()).then(d => setDesignations((d?.data) || (Array.isArray(d) ? d : []))).catch(() => {})
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {

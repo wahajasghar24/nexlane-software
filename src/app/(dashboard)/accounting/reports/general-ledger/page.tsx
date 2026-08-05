@@ -39,7 +39,7 @@ export default function GeneralLedgerPage() {
     fetch('/api/accounting/accounts?limit=200')
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setAccounts(Array.isArray(data) ? data : [])
       })
       .catch(() => {})
@@ -54,7 +54,7 @@ export default function GeneralLedgerPage() {
     fetch(`/api/accounting/reports/general-ledger?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setLines(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || d.data?.totalPages || Math.ceil((d.total || 0) / 50) || 1)
       })

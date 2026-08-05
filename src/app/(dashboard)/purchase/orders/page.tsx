@@ -42,7 +42,7 @@ export default function PurchaseOrdersPage() {
     fetch(`/api/purchase/orders?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setOrders(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

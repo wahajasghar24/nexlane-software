@@ -36,7 +36,7 @@ export default function ProductsPage() {
     fetch(`/api/inventory/products?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setProducts(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

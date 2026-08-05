@@ -32,7 +32,7 @@ export default function CompanyDetailPage() {
         const dealRes = await fetch(`/api/crm/deals?crm_company_id=${id}&limit=50`)
         if (dealRes.ok) {
           const d = await dealRes.json()
-          if (!ignore) setDeals(d.data?.data || d.data || d || [])
+          if (!ignore) setDeals(d.data?.data || (d?.data) || (Array.isArray(d) ? d : []))
         }
       } catch {} finally {
         if (!ignore) setLoading(false)

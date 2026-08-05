@@ -40,7 +40,7 @@ export default function PaymentsPage() {
     fetch(`/api/accounting/payments?page=${page}&limit=20`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setPayments(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || d.data?.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

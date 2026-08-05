@@ -23,7 +23,7 @@ export default function TrialBalancePage() {
     fetch(`/api/accounting/reports/trial-balance${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data || d || []
+        const data = (d?.data) || (Array.isArray(d) ? d : [])
         setAccounts(Array.isArray(data) ? data : [])
       })
       .catch(() => setAccounts([]))

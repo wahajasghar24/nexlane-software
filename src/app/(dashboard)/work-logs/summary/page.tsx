@@ -22,7 +22,7 @@ export default function WorkLogsSummaryPage() {
     fetch(`/api/work-logs/summary?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.logs || d.data || d || []
+        const data = d.data?.logs || (d?.data) || (Array.isArray(d) ? d : [])
         setSummary(Array.isArray(data) ? data : [])
       })
       .catch(() => setSummary([]))

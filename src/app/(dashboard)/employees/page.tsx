@@ -39,7 +39,7 @@ export default function EmployeesPage() {
     fetch(`/api/employees?page=${page}&limit=20${search ? `&search=${search}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}${departmentFilter ? `&department_id=${departmentFilter}` : ''}${designationFilter ? `&designation_id=${designationFilter}` : ''}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setEmployees(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })
@@ -48,8 +48,8 @@ export default function EmployeesPage() {
   }, [page, search, statusFilter, departmentFilter, designationFilter])
 
   useEffect(() => {
-    fetch('/api/departments?limit=100').then(r => r.json()).then(d => setDepartments(d.data || d || [])).catch(() => {})
-    fetch('/api/designations?limit=100').then(r => r.json()).then(d => setDesignations(d.data || d || [])).catch(() => {})
+    fetch('/api/departments?limit=100').then(r => r.json()).then(d => setDepartments((d?.data) || (Array.isArray(d) ? d : []))).catch(() => {})
+    fetch('/api/designations?limit=100').then(r => r.json()).then(d => setDesignations((d?.data) || (Array.isArray(d) ? d : []))).catch(() => {})
   }, [])
 
   const getDisplayName = (e: Employee) => e.profile?.full_name || 'Unnamed'

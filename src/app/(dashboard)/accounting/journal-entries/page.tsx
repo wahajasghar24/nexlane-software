@@ -36,7 +36,7 @@ export default function JournalEntriesPage() {
     fetch(`/api/accounting/journal-entries?page=${page}&limit=${limit}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setEntries(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || Math.ceil((d.total || 0) / limit) || 1)
       })

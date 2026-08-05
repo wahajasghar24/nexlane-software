@@ -36,7 +36,7 @@ export default function TimelinePage() {
     let hasMore = false
     if (res.ok) {
       const d = await res.json()
-      const items = d.data?.items || d.items || d.data?.data || d.data || d || []
+      const items = d.data?.items || d.items || d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
       const raw = Array.isArray(items) ? items : []
       hasMore = raw.length === 20
       list = raw

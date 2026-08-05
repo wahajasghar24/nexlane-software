@@ -42,7 +42,7 @@ export default function TaskBoardPage() {
     fetch(`/api/tasks?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setTasks(Array.isArray(data) ? data : [])
       })
       .catch(() => setTasks([]))

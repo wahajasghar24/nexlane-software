@@ -47,7 +47,7 @@ export default function ChartOfAccountsPage() {
     fetch(`/api/accounting/accounts?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setAccounts(Array.isArray(data) ? data : [])
       })
       .catch(() => setAccounts([]))

@@ -17,7 +17,7 @@ export default function DesignationsPage() {
   const load = () => {
     fetch('/api/designations?limit=100')
       .then(r => r.json())
-      .then(d => setDesignations(d.data || d || []))
+      .then(d => setDesignations((d?.data) || (Array.isArray(d) ? d : [])))
       .catch(() => setDesignations([]))
       .finally(() => setLoading(false))
   }

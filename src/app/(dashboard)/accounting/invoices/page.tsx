@@ -39,7 +39,7 @@ export default function InvoicesPage() {
     fetch(`/api/accounting/invoices?${params}`)
       .then(r => r.json())
       .then(d => {
-        const data = d.data?.data || d.data || d || []
+        const data = d.data?.data || (d?.data) || (Array.isArray(d) ? d : [])
         setInvoices(Array.isArray(data) ? data : [])
         setTotalPages(d.totalPages || d.data?.totalPages || Math.ceil((d.total || 0) / 20) || 1)
       })

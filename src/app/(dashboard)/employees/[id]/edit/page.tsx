@@ -46,11 +46,11 @@ export default function EditEmployeePage() {
       }
       if (depRes.ok) {
         const d = await depRes.json()
-        setDepartments(d.data || d || [])
+        setDepartments((d?.data) || (Array.isArray(d) ? d : []))
       }
       if (desRes.ok) {
         const d = await desRes.json()
-        setDesignations(d.data || d || [])
+        setDesignations((d?.data) || (Array.isArray(d) ? d : []))
       }
       setLoading(false)
     }).catch(() => setLoading(false))
