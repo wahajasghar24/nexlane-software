@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { currencySchema } from './journal.schema'
 
 export const createPaymentSchema = z.object({
   invoice_id: z.string().uuid().optional().nullable(),
@@ -8,6 +9,7 @@ export const createPaymentSchema = z.object({
   method: z.enum(['cash', 'bank', 'check', 'credit_card', 'other']).default('bank'),
   reference: z.string().optional(),
   notes: z.string().optional(),
+  currency: currencySchema.optional(),
 })
 
 export const paymentQuerySchema = z.object({

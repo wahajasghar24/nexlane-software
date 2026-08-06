@@ -267,6 +267,8 @@ export const accountingService = {
         entry_date: parsed.entry_date || new Date().toISOString().slice(0, 10),
         description: parsed.description,
         reference: parsed.reference || null,
+        currency: parsed.currency,
+        fx_rate: parsed.fx_rate,
         created_by: actorId,
       })
       .select()
@@ -524,6 +526,8 @@ export const accountingService = {
         total,
         notes: parsed.notes || null,
         terms: parsed.terms || null,
+        currency: parsed.currency,
+        fx_rate: parsed.fx_rate,
         created_by: actorId,
       })
       .select()
@@ -670,6 +674,7 @@ export const accountingService = {
         method: parsed.method,
         reference: parsed.reference || null,
         notes: parsed.notes || null,
+        currency: parsed.currency,
         created_by: actorId,
       })
       .select()
@@ -781,6 +786,25 @@ export const accountingService = {
   // REPORTS
   // ========================================================================
 
+  // Base/reporting currency for a company (company_settings, fallback USD)
+  async getBaseCurrency(companyId: string): Promise<string> {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('company_settings')
+      .select('value')
+      .eq('company_id', companyId)
+      .eq('key', 'base_currency')
+      .maybeSingle()
+    const v = (data?.value as string) || 'USD'
+    return ['PKR', 'USD', 'AED', 'QAR'].includes(v) ? v : 'USD'
+  },
+
+  // Convert transaction amount to base currency (fx_rate = value of 1 unit
+  // of the entry's currency in base currency; default 1 = no conversion)
+  convertAmount(amount: number, currency?: string, fxRate?: number | null): number {
+    return (Number(amount) || 0) * (Number(fxRate) || 1)
+  },
+
   async getTrialBalance(companyId: string, asOfDate?: string) {
     const supabase = await createClient()
 
@@ -788,7 +812,7 @@ export const accountingService = {
       .from('journal_entry_lines')
       .select(`
         debit, credit,
-        journal_entry:journal_entry_id!inner(company_id, status, entry_date),
+        journal_entry:journal_entry_id!inner(company_id, status, entry_date, currency, fx_rate),
         account:account_id!inner(code, name, type)
       `)
       .eq('journal_entry.company_id', companyId)
@@ -809,13 +833,14 @@ export const accountingService = {
     for (const row of data || []) {
       const acc = row.account as any
       if (!acc) continue
+      const je = row.journal_entry as any
       const key = acc.code
       if (!accountMap.has(key)) {
         accountMap.set(key, { code: acc.code, name: acc.name, type: acc.type, totalDebit: 0, totalCredit: 0 })
       }
       const entry = accountMap.get(key)!
-      entry.totalDebit += Number(row.debit) || 0
-      entry.totalCredit += Number(row.credit) || 0
+      entry.totalDebit += this.convertAmount(row.debit, je?.currency, je?.fx_rate)
+      entry.totalCredit += this.convertAmount(row.credit, je?.currency, je?.fx_rate)
     }
 
     return Array.from(accountMap.values()).sort((a, b) => a.code.localeCompare(b.code))
@@ -834,7 +859,7 @@ export const accountingService = {
       .from('journal_entry_lines')
       .select(`
         id, debit, credit, description,
-        journal_entry:journal_entry_id!inner(id, entry_number, entry_date, description, reference, status),
+        journal_entry:journal_entry_id!inner(id, entry_number, entry_date, description, reference, status, currency, fx_rate),
         account:account_id!inner(code, name, type)
       `, { count: 'exact' })
       .eq('journal_entry.company_id', companyId)
@@ -872,7 +897,7 @@ export const accountingService = {
       .from('journal_entry_lines')
       .select(`
         debit, credit,
-        journal_entry:journal_entry_id!inner(company_id, status, entry_date),
+        journal_entry:journal_entry_id!inner(company_id, status, entry_date, currency, fx_rate),
         account:account_id!inner(code, name, type)
       `)
       .eq('journal_entry.company_id', companyId)
@@ -893,8 +918,9 @@ export const accountingService = {
     for (const row of data || []) {
       const acc = row.account as any
       if (!acc) continue
-      const debit = Number(row.debit) || 0
-      const credit = Number(row.credit) || 0
+      const je = row.journal_entry as any
+      const debit = this.convertAmount(row.debit, je?.currency, je?.fx_rate)
+      const credit = this.convertAmount(row.credit, je?.currency, je?.fx_rate)
 
       if (acc.type === 'revenue') {
         const balance = credit - debit
@@ -929,7 +955,7 @@ export const accountingService = {
       .from('journal_entry_lines')
       .select(`
         debit, credit,
-        journal_entry:journal_entry_id!inner(company_id, status, entry_date),
+        journal_entry:journal_entry_id!inner(company_id, status, entry_date, currency, fx_rate),
         account:account_id!inner(code, name, type)
       `)
       .eq('journal_entry.company_id', companyId)
@@ -954,8 +980,9 @@ export const accountingService = {
     for (const row of data || []) {
       const acc = row.account as any
       if (!acc) continue
-      const debit = Number(row.debit) || 0
-      const credit = Number(row.credit) || 0
+      const je = row.journal_entry as any
+      const debit = this.convertAmount(row.debit, je?.currency, je?.fx_rate)
+      const credit = this.convertAmount(row.credit, je?.currency, je?.fx_rate)
 
       if (acc.type === 'asset') {
         const balance = debit - credit
@@ -1014,7 +1041,7 @@ export const accountingService = {
       .from('journal_entry_lines')
       .select(`
         debit, credit,
-        journal_entry:journal_entry_id!inner(entry_date, description, status),
+        journal_entry:journal_entry_id!inner(entry_date, description, status, currency, fx_rate),
         account:account_id!inner(code, name, type)
       `)
       .eq('journal_entry.company_id', companyId)
@@ -1038,8 +1065,8 @@ export const accountingService = {
       const je = row.journal_entry as any
       if (!acc || !je) continue
 
-      const debit = Number(row.debit) || 0
-      const credit = Number(row.credit) || 0
+      const debit = this.convertAmount(row.debit, je?.currency, je?.fx_rate)
+      const credit = this.convertAmount(row.credit, je?.currency, je?.fx_rate)
       const isCashAccount = /cash|bank/i.test(acc.name)
 
       // Simplified cash flow categorization

@@ -28,6 +28,8 @@ export default function NewJournalEntryPage() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [description, setDescription] = useState('')
   const [reference, setReference] = useState('')
+  const [currency, setCurrency] = useState('USD')
+  const [fxRate, setFxRate] = useState('1')
   const [lines, setLines] = useState<EntryLine[]>([
     { id: '1', account_id: '', description: '', debit: '', credit: '' },
     { id: '2', account_id: '', description: '', debit: '', credit: '' },
@@ -71,6 +73,8 @@ export default function NewJournalEntryPage() {
         entry_date: new Date(date).toISOString(),
         description,
         reference: reference || undefined,
+        currency,
+        fx_rate: parseFloat(fxRate) || undefined,
         lines: lines
           .filter(l => l.account_id)
           .map(l => ({
@@ -132,6 +136,28 @@ export default function NewJournalEntryPage() {
                 onChange={e => setReference(e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                 placeholder="Optional reference"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Currency</label>
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              >
+                {['PKR', 'USD', 'AED', 'QAR'].map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">FX Rate (to base)</label>
+              <input
+                type="number" min="0" step="any" value={fxRate}
+                onChange={e => setFxRate(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder="1.0 (USD entries: 1 = no conversion)"
               />
             </div>
           </div>

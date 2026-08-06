@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+export const CURRENCY_CODES = ['PKR', 'USD', 'AED', 'QAR'] as const
+export const currencySchema = z.enum(CURRENCY_CODES)
+
 export const journalLineSchema = z.object({
   account_id: z.string().uuid(),
   description: z.string().optional(),
@@ -12,6 +15,8 @@ export const createJournalEntrySchema = z.object({
   entry_date: z.string().optional(),
   description: z.string().min(1),
   reference: z.string().optional(),
+  currency: currencySchema.optional(),
+  fx_rate: z.number().positive().optional(),
   lines: z.array(journalLineSchema).min(2, 'Need at least 2 lines (debit and credit)'),
 })
 

@@ -14,8 +14,9 @@ export async function GET(request: Request) {
     const asOfDate = url.searchParams.get('asOfDate') || undefined
 
     const data = await accountingService.getTrialBalance(context.companyId, asOfDate)
+    const currency = await accountingService.getBaseCurrency(context.companyId)
 
-    return NextResponse.json({ data, error: null })
+    return NextResponse.json({ data, currency, error: null })
   } catch (err) {
     if (err && typeof err === 'object' && 'status' in err) {
       return NextResponse.json(

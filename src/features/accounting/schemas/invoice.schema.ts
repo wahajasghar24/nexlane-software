@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { currencySchema } from './journal.schema'
 
 export const invoiceItemSchema = z.object({
   description: z.string().min(1),
@@ -14,6 +15,8 @@ export const createInvoiceSchema = z.object({
   due_date: z.string().min(1),
   notes: z.string().optional(),
   terms: z.string().optional(),
+  currency: currencySchema.optional(),
+  fx_rate: z.number().positive().optional(),
   items: z.array(invoiceItemSchema).min(1, 'Need at least 1 item'),
 })
 

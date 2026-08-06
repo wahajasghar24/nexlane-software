@@ -20,6 +20,8 @@ export default function NewInvoicePage() {
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0])
   const [dueDate, setDueDate] = useState('')
   const [notes, setNotes] = useState('')
+  const [currency, setCurrency] = useState('USD')
+  const [fxRate, setFxRate] = useState('1')
   const [items, setItems] = useState<InvoiceItem[]>([
     { id: '1', description: '', quantity: '1', unit_price: '', tax_rate: '0' },
   ])
@@ -66,6 +68,8 @@ export default function NewInvoicePage() {
         invoice_date: new Date(invoiceDate).toISOString(),
         due_date: new Date(dueDate).toISOString(),
         notes: notes || undefined,
+        currency,
+        fx_rate: parseFloat(fxRate) || undefined,
         items: items
           .filter(i => i.description)
           .map(i => ({
@@ -124,6 +128,28 @@ export default function NewInvoicePage() {
                 type="date" required value={dueDate}
                 onChange={e => setDueDate(e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Currency</label>
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+              >
+                {['PKR', 'USD', 'AED', 'QAR'].map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">FX Rate (to base)</label>
+              <input
+                type="number" min="0" step="any" value={fxRate}
+                onChange={e => setFxRate(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                placeholder="1.0 (USD entries: 1 = no conversion)"
               />
             </div>
           </div>
