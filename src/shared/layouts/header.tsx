@@ -1,12 +1,14 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ThemeToggle } from '@/shared/components/theme-toggle'
 import { LanguageSwitcher } from '@/shared/components/language-switcher'
 import { useUser, useLogout } from '@/features/auth/hooks/useAuth'
 
 export function Header() {
   const router = useRouter()
+  const t = useTranslations('common')
   const { data: userData } = useUser()
   const logout = useLogout()
 
@@ -26,7 +28,7 @@ export function Header() {
           {userData?.profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
         </div>
         <div className="hidden md:block leading-tight">
-          <p className="text-sm font-medium">{userData?.profile?.full_name || 'User'}</p>
+          <p className="text-sm font-medium">{userData?.profile?.full_name || t('user')}</p>
           <p className="text-xs text-muted-foreground">{userData?.profile?.email}</p>
         </div>
         <button
@@ -34,7 +36,7 @@ export function Header() {
           disabled={logout.isPending}
           className="ml-2 rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-destructive hover:text-white disabled:opacity-50"
         >
-          {logout.isPending ? 'Logging out...' : 'Logout'}
+          {logout.isPending ? t('loggingOut') : t('logout')}
         </button>
       </div>
     </header>

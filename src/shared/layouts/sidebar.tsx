@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/core/utils/cn'
 
 const svg = {
@@ -29,43 +30,43 @@ const svg = {
 }
 
 const managementItems = [
-  { label: 'Employees', href: '/employees', icon: svg.employees },
-  { label: 'Departments', href: '/departments', icon: svg.departments },
-  { label: 'Designations', href: '/designations', icon: svg.projects },
-  { label: 'Teams', href: '/teams', icon: svg.employees },
-  { label: 'Projects', href: '/projects', icon: svg.projects },
-  { label: 'Tasks', href: '/tasks', icon: svg.tasks },
-  { label: 'Work Logs', href: '/work-logs', icon: svg.workLogs },
-  { label: 'Timeline', href: '/timeline', icon: svg.timeline },
-  { label: 'Spreadsheets', href: '/spreadsheets', icon: svg.spreadsheet },
+  { labelKey: 'employees', href: '/employees', icon: svg.employees },
+  { labelKey: 'departments', href: '/departments', icon: svg.departments },
+  { labelKey: 'designations', href: '/designations', icon: svg.projects },
+  { labelKey: 'teams', href: '/teams', icon: svg.employees },
+  { labelKey: 'projects', href: '/projects', icon: svg.projects },
+  { labelKey: 'tasks', href: '/tasks', icon: svg.tasks },
+  { labelKey: 'work_logs', href: '/work-logs', icon: svg.workLogs },
+  { labelKey: 'timeline', href: '/timeline', icon: svg.timeline },
+  { labelKey: 'spreadsheets', href: '/spreadsheets', icon: svg.spreadsheet },
 ]
 
 const accountingItems = [
-  { label: 'Accounts', href: '/accounting/accounts', icon: svg.accounting },
-  { label: 'Journal Entries', href: '/accounting/journal-entries', icon: svg.tasks },
-  { label: 'Invoices', href: '/accounting/invoices', icon: svg.projects },
-  { label: 'Payments', href: '/accounting/payments', icon: svg.spreadsheet },
-  { label: 'Reports', href: '/accounting/reports', icon: svg.timeline },
+  { labelKey: 'accounts', href: '/accounting/accounts', icon: svg.accounting },
+  { labelKey: 'journal_entries', href: '/accounting/journal-entries', icon: svg.tasks },
+  { labelKey: 'invoices', href: '/accounting/invoices', icon: svg.projects },
+  { labelKey: 'payments', href: '/accounting/payments', icon: svg.spreadsheet },
+  { labelKey: 'reports', href: '/accounting/reports', icon: svg.timeline },
 ]
 
 const crmItems = [
-  { label: 'Companies', href: '/crm/companies', icon: svg.building },
-  { label: 'Contacts', href: '/crm/contacts', icon: svg.contacts },
-  { label: 'Leads', href: '/crm/leads', icon: svg.leads },
-  { label: 'Deals', href: '/crm/deals', icon: svg.deals },
-  { label: 'Activities', href: '/crm/activities', icon: svg.activities },
+  { labelKey: 'companies', href: '/crm/companies', icon: svg.building },
+  { labelKey: 'contacts', href: '/crm/contacts', icon: svg.contacts },
+  { labelKey: 'leads', href: '/crm/leads', icon: svg.leads },
+  { labelKey: 'deals', href: '/crm/deals', icon: svg.deals },
+  { labelKey: 'activities', href: '/crm/activities', icon: svg.activities },
 ]
 
 const salesItems = [
-  { label: 'Products', href: '/inventory/products', icon: svg.inventory },
-  { label: 'Warehouses', href: '/inventory/warehouses', icon: svg.building },
-  { label: 'Sales Orders', href: '/sales/orders', icon: svg.sales },
-  { label: 'Purchase Orders', href: '/purchase/orders', icon: svg.purchase },
+  { labelKey: 'products', href: '/inventory/products', icon: svg.inventory },
+  { labelKey: 'warehouses', href: '/inventory/warehouses', icon: svg.building },
+  { labelKey: 'sales_orders', href: '/sales/orders', icon: svg.sales },
+  { labelKey: 'purchase_orders', href: '/purchase/orders', icon: svg.purchase },
 ]
 
 const hrItems = [
-  { label: 'Attendance', href: '/hr/attendance', icon: svg.workLogs },
-  { label: 'Time Off', href: '/hr/time-off', icon: svg.tasks },
+  { labelKey: 'attendance', href: '/hr/attendance', icon: svg.workLogs },
+  { labelKey: 'time_off', href: '/hr/time-off', icon: svg.tasks },
 ]
 
 function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
@@ -92,6 +93,7 @@ function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; l
 }
 
 export function Sidebar() {
+  const t = useTranslations('nav')
   return (
     <aside className="hidden md:flex md:w-64 flex-col border-r bg-card max-h-screen">
       <div className="flex items-center gap-2.5 p-4 border-b">
@@ -100,48 +102,48 @@ export function Sidebar() {
         </span>
         <div className="leading-tight">
           <p className="font-bold tracking-tight">Nexlane</p>
-          <p className="text-[11px] text-muted-foreground">Enterprise Suite</p>
+          <p className="text-[11px] text-muted-foreground">{t('enterprise_suite')}</p>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-        <NavLink href="/" icon={svg.dashboard} label="Dashboard" />
+        <NavLink href="/" icon={svg.dashboard} label={t('dashboard')} />
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Management</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('management')}</p>
         </div>
         {managementItems.map(item => (
-          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={t(item.labelKey)} />
         ))}
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Accounting</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('accounting')}</p>
         </div>
         {accountingItems.map(item => (
-          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={t(item.labelKey)} />
         ))}
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">CRM</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('crm')}</p>
         </div>
         {crmItems.map(item => (
-          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={t(item.labelKey)} />
         ))}
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Sales & Inventory</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('sales_inventory')}</p>
         </div>
         {salesItems.map(item => (
-          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={t(item.labelKey)} />
         ))}
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">HR</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('hr')}</p>
         </div>
         {hrItems.map(item => (
-          <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+          <NavLink key={item.href} href={item.href} icon={item.icon} label={t(item.labelKey)} />
         ))}
         <div className="pt-3 pb-1">
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">Tools</p>
+          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">{t('tools')}</p>
         </div>
-        <NavLink href="/notifications" icon={svg.notifications} label="Notifications" />
-        <NavLink href="/files" icon={svg.files} label="Files" />
+        <NavLink href="/notifications" icon={svg.notifications} label={t('notifications')} />
+        <NavLink href="/files" icon={svg.files} label={t('files')} />
         <div className="pt-3 mt-3 border-t space-y-0.5">
-          <NavLink href="/settings" icon={svg.settings} label="Settings" />
+          <NavLink href="/settings" icon={svg.settings} label={t('settings')} />
         </div>
       </nav>
     </aside>

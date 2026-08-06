@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/core/utils/cn'
 
 const svg = {
@@ -15,20 +16,21 @@ const svg = {
 }
 
 const allItems = [
-  { label: 'Home', href: '/', icon: svg.home },
-  { label: 'Projects', href: '/projects', icon: svg.projects },
-  { label: 'Tasks', href: '/tasks', icon: svg.tasks },
-  { label: 'Work Logs', href: '/work-logs', icon: svg.workLogs },
-  { label: 'Employees', href: '/employees', icon: svg.employees },
-  { label: 'Accounting', href: '/accounting', icon: svg.crm },
-  { label: 'CRM', href: '/crm/companies', icon: svg.crm },
-  { label: 'Teams', href: '/teams', icon: svg.employees },
-  { label: 'Timeline', href: '/timeline', icon: svg.workLogs },
-  { label: 'Spreadsheets', href: '/spreadsheets', icon: svg.workLogs },
+  { labelKey: 'dashboard', href: '/', icon: svg.home },
+  { labelKey: 'projects', href: '/projects', icon: svg.projects },
+  { labelKey: 'tasks', href: '/tasks', icon: svg.tasks },
+  { labelKey: 'work_logs', href: '/work-logs', icon: svg.workLogs },
+  { labelKey: 'employees', href: '/employees', icon: svg.employees },
+  { labelKey: 'accounting', href: '/accounting', icon: svg.crm },
+  { labelKey: 'crm', href: '/crm/companies', icon: svg.crm },
+  { labelKey: 'teams', href: '/teams', icon: svg.employees },
+  { labelKey: 'timeline', href: '/timeline', icon: svg.workLogs },
+  { labelKey: 'spreadsheets', href: '/spreadsheets', icon: svg.workLogs },
 ]
 
 export function MobileNav() {
   const pathname = usePathname()
+  const t = useTranslations('nav')
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
@@ -48,7 +50,7 @@ export function MobileNav() {
             )}
           >
             <span className="text-base">{item.icon}</span>
-            <span className="truncate max-w-[64px]">{item.label}</span>
+            <span className="truncate max-w-[64px]">{t(item.labelKey)}</span>
           </Link>
         ))}
       </div>
