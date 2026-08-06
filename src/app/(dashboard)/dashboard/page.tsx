@@ -34,16 +34,16 @@ const icons = {
 }
 
 const quickLinkKeys = [
-  { href: '/employees/new', labelKey: 'quick.employee', icon: icons.employees },
-  { href: '/projects/new', labelKey: 'quick.project', icon: icons.projects },
-  { href: '/tasks/new', labelKey: 'quick.task', icon: icons.tasks },
+  { href: '/employees/new', labelKey: 'quick_employee', icon: icons.employees },
+  { href: '/projects/new', labelKey: 'quick_project', icon: icons.projects },
+  { href: '/tasks/new', labelKey: 'quick_task', icon: icons.tasks },
 ]
 
 const kpiConfig = [
-  { key: 'total_employees', labelKey: 'kpi.employees', icon: icons.employees, chip: 'bg-primary/10 text-primary' },
-  { key: 'active_projects', labelKey: 'kpi.projects', icon: icons.projects, chip: 'bg-sky-500/10 text-sky-600 dark:text-sky-400' },
-  { key: 'open_tasks', labelKey: 'kpi.tasks', icon: icons.tasks, chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
-  { key: 'today_logs', labelKey: 'kpi.logs', icon: icons.logs, chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
+  { key: 'total_employees', labelKey: 'kpi_employees', icon: icons.employees, chip: 'bg-primary/10 text-primary' },
+  { key: 'active_projects', labelKey: 'kpi_projects', icon: icons.projects, chip: 'bg-sky-500/10 text-sky-600 dark:text-sky-400' },
+  { key: 'open_tasks', labelKey: 'kpi_tasks', icon: icons.tasks, chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
+  { key: 'today_logs', labelKey: 'kpi_logs', icon: icons.logs, chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
 ] as const
 
 function initials(name: string) {

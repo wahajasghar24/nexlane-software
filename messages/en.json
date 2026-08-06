@@ -12,10 +12,10 @@
   "dashboard": {
     "title": "Dashboard",
     "description": "Welcome to Nexlane",
-    "kpi.employees": "Total Employees",
-    "kpi.projects": "Active Projects",
-    "kpi.tasks": "Open Tasks",
-    "kpi.logs": "Today's Work Logs",
+    "kpi_employees": "Total Employees",
+    "kpi_projects": "Active Projects",
+    "kpi_tasks": "Open Tasks",
+    "kpi_logs": "Today's Work Logs",
     "recentActivity": "Recent Activity",
     "noActivity": "No recent activity",
     "noActivityDesc": "Activity from your team will appear here",
@@ -24,9 +24,9 @@
     "hoursLogged": "Total hours logged across all work logs",
     "openWorkLogs": "Open Work Logs",
     "logWork": "Log Work",
-    "quick.employee": "New Employee",
-    "quick.project": "New Project",
-    "quick.task": "New Task"
+    "quick_employee": "New Employee",
+    "quick_project": "New Project",
+    "quick_task": "New Task"
   },
   "trialBalance": {
     "title": "Trial Balance",

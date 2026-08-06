@@ -12,10 +12,10 @@
   "dashboard": {
     "title": "لوحة التحكم",
     "description": "مرحباً بك في نكسلان",
-    "kpi.employees": "إجمالي الموظفين",
-    "kpi.projects": "المشاريع النشطة",
-    "kpi.tasks": "المهام المفتوحة",
-    "kpi.logs": "سجلت عمل اليوم",
+    "kpi_employees": "إجمالي الموظفين",
+    "kpi_projects": "المشاريع النشطة",
+    "kpi_tasks": "المهام المفتوحة",
+    "kpi_logs": "سجلت عمل اليوم",
     "recentActivity": "النشاط الأخير",
     "noActivity": "لا يوجد نشاط حديث",
     "noActivityDesc": "سيظهر نشاط فريقك هنا",
@@ -24,9 +24,9 @@
     "hoursLogged": "إجمالي الساعات المسجلة في جميع سجلات العمل",
     "openWorkLogs": "افتح سجلات العمل",
     "logWork": "تسجيل عمل",
-    "quick.employee": "موظف جديد",
-    "quick.project": "مشروع جديد",
-    "quick.task": "مهمة جديدة"
+    "quick_employee": "موظف جديد",
+    "quick_project": "مشروع جديد",
+    "quick_task": "مهمة جديدة"
   },
   "trialBalance": {
     "title": "ميزان المراجعة",
