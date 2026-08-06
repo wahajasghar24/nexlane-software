@@ -19,7 +19,8 @@ function decodeAal(accessToken?: string): string | undefined {
 }
 
 export async function authenticate(request?: Request): Promise<UserContext> {
-  const supabase = await createClient()
+  const bearer = request?.headers.get('authorization')?.match(/^Bearer\s+(.+)$/i)?.[1]
+  const supabase = await createClient(bearer)
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
