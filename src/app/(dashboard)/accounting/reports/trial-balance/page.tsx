@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -14,7 +15,10 @@ interface AccountBalance {
 }
 
 export default function TrialBalancePage() {
+  const t = useTranslations('trialBalance')
+  const locale = useLocale()
   const [accounts, setAccounts] = useState<AccountBalance[]>([])
+  const [currency, setCurrency] = useState('AED')
   const [loading, setLoading] = useState(true)
   const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split('T')[0])
 
@@ -25,13 +29,14 @@ export default function TrialBalancePage() {
       .then(d => {
         const data = (d?.data) || (Array.isArray(d) ? d : [])
         setAccounts(Array.isArray(data) ? data : [])
+        if (d?.currency) setCurrency(d.currency)
       })
       .catch(() => setAccounts([]))
       .finally(() => setLoading(false))
   }, [asOfDate])
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    new Intl.NumberFormat(locale === 'ar' ? 'ar-AE' : 'en-US', { style: 'currency', currency }).format(amount)
 
   const totalDebit = accounts.reduce((s, a) => s + a.totalDebit, 0)
   const totalCredit = accounts.reduce((s, a) => s + a.totalCredit, 0)
@@ -39,14 +44,14 @@ export default function TrialBalancePage() {
   return (
     <div>
       <PageHeader
-        title="Trial Balance"
-        description="Summary of all general ledger account balances"
-        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Back</Link>}
+        title={t('title')}
+        description={t('description')}
+        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('back')}</Link>}
       />
 
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">As of Date</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('asOfDate')}</label>
           <input type="date" value={asOfDate} onChange={e => { setLoading(true); setAsOfDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
@@ -61,17 +66,17 @@ export default function TrialBalancePage() {
           ))}
         </div>
       ) : accounts.length === 0 ? (
-        <EmptyState title="No data" description="Post some journal entries first to see the trial balance" />
+        <EmptyState title={t('noData')} description={t('postEntriesHint')} />
       ) : (
         <div className="rounded-lg border overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Code</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Account</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Type</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Debit</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Credit</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('code')}</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('account')}</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('type')}</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('debit')}</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('credit')}</th>
               </tr>
             </thead>
             <tbody>
@@ -87,7 +92,7 @@ export default function TrialBalancePage() {
             </tbody>
             <tfoot>
               <tr className="border-t bg-muted/30 font-semibold">
-                <td colSpan={3} className="p-3 text-sm text-right">Totals</td>
+                <td colSpan={3} className="p-3 text-sm text-right">{t('total')}</td>
                 <td className="p-3 text-sm text-right">{formatCurrency(totalDebit)}</td>
                 <td className="p-3 text-sm text-right">{formatCurrency(totalCredit)}</td>
               </tr>

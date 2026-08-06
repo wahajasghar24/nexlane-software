@@ -1,5 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
 import { Toaster } from 'sonner'
 import { Fira_Code, Fira_Sans } from 'next/font/google'
 import { ThemeProvider } from '@/shared/components/theme-provider'
@@ -28,18 +30,23 @@ export const metadata: Metadata = {
   description: 'Enterprise Company Management Platform',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body className={`min-h-screen bg-background font-sans antialiased ${firaSans.variable} ${firaCode.variable}`}>
-        <QueryProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <ConfirmProvider>
-              {children}
-              <Toaster position="bottom-right" richColors closeButton />
-            </ConfirmProvider>
-          </ThemeProvider>
-        </QueryProvider>
+        <NextIntlClientProvider messages={messages}>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <ConfirmProvider>
+                {children}
+                <Toaster position="bottom-right" richColors closeButton />
+              </ConfirmProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

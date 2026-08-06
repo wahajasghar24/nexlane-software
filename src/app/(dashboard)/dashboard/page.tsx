@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import { StaggerGroup, StaggerItem } from '@/shared/components/motion'
@@ -32,17 +33,17 @@ const icons = {
   arrow: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
 }
 
-const quickLinks = [
-  { href: '/employees/new', label: 'New Employee', icon: icons.employees },
-  { href: '/projects/new', label: 'New Project', icon: icons.projects },
-  { href: '/tasks/new', label: 'New Task', icon: icons.tasks },
+const quickLinkKeys = [
+  { href: '/employees/new', labelKey: 'quick.employee', icon: icons.employees },
+  { href: '/projects/new', labelKey: 'quick.project', icon: icons.projects },
+  { href: '/tasks/new', labelKey: 'quick.task', icon: icons.tasks },
 ]
 
 const kpiConfig = [
-  { key: 'total_employees', label: 'Total Employees', icon: icons.employees, chip: 'bg-primary/10 text-primary' },
-  { key: 'active_projects', label: 'Active Projects', icon: icons.projects, chip: 'bg-sky-500/10 text-sky-600 dark:text-sky-400' },
-  { key: 'open_tasks', label: 'Open Tasks', icon: icons.tasks, chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
-  { key: 'today_logs', label: "Today's Work Logs", icon: icons.logs, chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
+  { key: 'total_employees', labelKey: 'kpi.employees', icon: icons.employees, chip: 'bg-primary/10 text-primary' },
+  { key: 'active_projects', labelKey: 'kpi.projects', icon: icons.projects, chip: 'bg-sky-500/10 text-sky-600 dark:text-sky-400' },
+  { key: 'open_tasks', labelKey: 'kpi.tasks', icon: icons.tasks, chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
+  { key: 'today_logs', labelKey: 'kpi.logs', icon: icons.logs, chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' },
 ] as const
 
 function initials(name: string) {
@@ -56,6 +57,7 @@ function initials(name: string) {
 }
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard')
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
@@ -91,23 +93,23 @@ export default function DashboardPage() {
   return (
     <div>
       <PageHeader
-        title="Dashboard"
-        description="Welcome to Nexlane"
+        title={t('title')}
+        description={t('description')}
         actions={
           <div className="flex flex-wrap gap-2">
-            {quickLinks.map((q) => (
+            {quickLinkKeys.map((q) => (
               <Link
                 key={q.href}
                 href={q.href}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-shadow hover:bg-primary/90 hover:shadow"
               >
                 {q.icon}
-                {q.label}
+                {t(q.labelKey)}
               </Link>
             ))}
             <Link href="/work-logs" className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium hover:bg-accent/60">
               <span className="text-muted-foreground">{icons.clock}</span>
-              Log Work
+              {t('logWork')}
             </Link>
           </div>
         }
@@ -129,7 +131,7 @@ export default function DashboardPage() {
                 <div className="group rounded-xl border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">{kpi.label}</p>
+                      <p className="text-sm text-muted-foreground">{t(kpi.labelKey)}</p>
                       <p className="text-3xl font-bold tracking-tight mt-1 tabular-nums">{stats?.[kpi.key] ?? 0}</p>
                     </div>
                     <span className={`rounded-lg p-2.5 ${kpi.chip}`}>{kpi.icon}</span>
@@ -142,14 +144,14 @@ export default function DashboardPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-xl border bg-card shadow-sm">
               <div className="flex items-center justify-between p-5 border-b">
-                <h3 className="font-semibold">Recent Activity</h3>
+                <h3 className="font-semibold">{t('recentActivity')}</h3>
                 <Link href="/timeline" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                  View all {icons.arrow}
+                  {t('viewAll')} {icons.arrow}
                 </Link>
               </div>
               <div className="p-5">
                 {activities.length === 0 ? (
-                  <EmptyState title="No recent activity" description="Activity from your team will appear here" />
+                  <EmptyState title={t('noActivity')} description={t('noActivityDesc')} />
                 ) : (
                   <StaggerGroup className="space-y-4">
                     {activities.map((act) => (
@@ -176,16 +178,16 @@ export default function DashboardPage() {
 
             <div className="rounded-xl border bg-card shadow-sm">
               <div className="p-5 border-b">
-                <h3 className="font-semibold">Team Hours</h3>
+                <h3 className="font-semibold">{t('teamHours')}</h3>
               </div>
               <div className="p-5 flex flex-col items-center justify-center gap-2 text-center">
                 <p className="text-5xl font-bold tracking-tight tabular-nums">{stats?.total_logs_hours ?? 0}</p>
-                <p className="text-sm text-muted-foreground">Total hours logged across all work logs</p>
+                <p className="text-sm text-muted-foreground">{t('hoursLogged')}</p>
                 <Link
                   href="/work-logs"
                   className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                 >
-                  Open Work Logs {icons.arrow}
+                  {t('openWorkLogs')} {icons.arrow}
                 </Link>
               </div>
             </div>

@@ -1,0 +1,47 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "logout": "تسجيل الخروج",
+    "loggingOut": "جارٍ تسجيل الخروج...",
+    "user": "المستخدم",
+    "language": "اللغة"
+  },
+  "header": {
+    "appName": "نكسلان"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "description": "مرحباً بك في نكسلان",
+    "kpi.employees": "إجمالي الموظفين",
+    "kpi.projects": "المشاريع النشطة",
+    "kpi.tasks": "المهام المفتوحة",
+    "kpi.logs": "سجلت عمل اليوم",
+    "recentActivity": "النشاط الأخير",
+    "noActivity": "لا يوجد نشاط حديث",
+    "noActivityDesc": "سيظهر نشاط فريقك هنا",
+    "viewAll": "عرض الكل",
+    "teamHours": "ساعات الفريق",
+    "hoursLogged": "إجمالي الساعات المسجلة في جميع سجلات العمل",
+    "openWorkLogs": "افتح سجلات العمل",
+    "logWork": "تسجيل عمل",
+    "quick.employee": "موظف جديد",
+    "quick.project": "مشروع جديد",
+    "quick.task": "مهمة جديدة"
+  },
+  "trialBalance": {
+    "title": "ميزان المراجعة",
+    "description": "ملخص أرصدة جميع حسابات دفتر الأستاذ",
+    "back": "رجوع",
+    "asOfDate": "حتى تاريخ",
+    "noData": "لا توجد بيانات",
+    "postEntriesHint": "قم بترحيل القيود أولاً لرؤية ميزان المراجعة",
+    "account": "الحساب",
+    "code": "الرمز",
+    "type": "النوع",
+    "debit": "مدين",
+    "credit": "دائن",
+    "total": "الإجمالي",
+    "currency": "العملة",
+    "name": "الاسم"
+  }
+}

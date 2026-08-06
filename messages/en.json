@@ -1,0 +1,48 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "logout": "Logout",
+    "loggingOut": "Logging out...",
+    "user": "User",
+    "language": "Language"
+  },
+  "header": {
+    "appName": "Nexlane"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Welcome to Nexlane",
+    "kpi.employees": "Total Employees",
+    "kpi.projects": "Active Projects",
+    "kpi.tasks": "Open Tasks",
+    "kpi.logs": "Today's Work Logs",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    "noActivityDesc": "Activity from your team will appear here",
+    "viewAll": "View all",
+    "teamHours": "Team Hours",
+    "hoursLogged": "Total hours logged across all work logs",
+    "openWorkLogs": "Open Work Logs",
+    "logWork": "Log Work",
+    "quick.employee": "New Employee",
+    "quick.project": "New Project",
+    "quick.task": "New Task"
+  },
+  "trialBalance": {
+    "title": "Trial Balance",
+    "description": "Summary of all general ledger account balances",
+    "back": "Back",
+    "asOfDate": "As of Date",
+    "noData": "No data",
+    "postEntriesHint": "Post some journal entries first to see the trial balance",
+    "account": "Account",
+    "code": "Code",
+    "type": "Type",
+    "debit": "Debit",
+    "credit": "Credit",
+    "total": "Total",
+    "currency": "Currency",
+    "reportingIn": "Reporting in",
+    "name": "Name"
+  }
+}

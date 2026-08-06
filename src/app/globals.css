@@ -2,6 +2,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* RTL: Arabic glyphs need a proper Arabic-capable font stack */
+[dir="rtl"] body {
+  font-family: var(--font-fira-sans), "Segoe UI", Tahoma, "Noto Sans Arabic",
+    "Arabic Typesetting", system-ui, sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
