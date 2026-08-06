@@ -3,9 +3,11 @@ import type { NextRequest } from 'next/server'
 import { routing } from './src/i18n/routing'
 
 export default async function middleware(request: NextRequest) {
+  // probe: redirect /mwtest to prove middleware execution on Vercel
+  if (request.nextUrl.pathname === '/mwtest') {
+    return new Response('MW-RAN', { headers: { 'content-type': 'text/plain' } })
+  }
   const res = await createMiddleware(routing)(request)
-  res.headers.set('x-next-intl-matcher', 'RAN')
-  res.headers.append('set-cookie', 'mw_probe=1; Path=/; Max-Age=3600')
   return res
 }
 
