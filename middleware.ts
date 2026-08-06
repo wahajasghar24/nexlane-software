@@ -5,6 +5,7 @@ import { routing } from './src/i18n/routing'
 export default async function middleware(request: NextRequest) {
   const res = await createMiddleware(routing)(request)
   res.headers.set('x-next-intl-matcher', 'RAN')
+  res.headers.append('set-cookie', 'mw_probe=1; Path=/; Max-Age=3600')
   return res
 }
 
