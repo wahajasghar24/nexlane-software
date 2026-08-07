@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -26,6 +27,7 @@ interface GLLine {
 }
 
 export default function GeneralLedgerPage() {
+  const t = useTranslations('acc')
   const [lines, setLines] = useState<GLLine[]>([])
   const [accounts, setAccounts] = useState<{ id: string; code: string; name: string }[]>([])
   const [loading, setLoading] = useState(true)
@@ -68,27 +70,27 @@ export default function GeneralLedgerPage() {
   return (
     <div>
       <PageHeader
-        title="General Ledger"
-        description="Detailed transaction history"
-        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Back</Link>}
+        title={t('general_ledger.title')}
+        description={t('general_ledger.description')}
+        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('general_ledger.back')}</Link>}
       />
 
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">Account</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('general_ledger.account')}</label>
           <select value={accountId} onChange={e => { setLoading(true); setAccountId(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-            <option value="">All Accounts</option>
+            <option value="">{t('general_ledger.all_accounts')}</option>
             {accounts.map(a => (
               <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">From</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('general_ledger.from')}</label>
           <input type="date" value={fromDate} onChange={e => { setLoading(true); setFromDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">To</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('general_ledger.to')}</label>
           <input type="date" value={toDate} onChange={e => { setLoading(true); setToDate(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
@@ -103,19 +105,19 @@ export default function GeneralLedgerPage() {
           ))}
         </div>
       ) : lines.length === 0 ? (
-        <EmptyState title="No transactions found" description="Try adjusting your filters" />
+        <EmptyState title={t('general_ledger.no_transactions')} description={t('general_ledger.no_transactions_hint')} />
       ) : (
         <>
           <div className="rounded-lg border overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Entry #</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Account</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Debit</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Credit</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.date')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.entry_no')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.account')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.description')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.debit')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('general_ledger.credit')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,10 +136,10 @@ export default function GeneralLedgerPage() {
           </div>
 
           <div className="flex items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('general_ledger.page_of', { page, total: totalPages })}</p>
             <div className="flex gap-2">
-              <button onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => { setLoading(true); setPage(p => p + 1) }} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('general_ledger.previous')}</button>
+              <button onClick={() => { setLoading(true); setPage(p => p + 1) }} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('general_ledger.next')}</button>
             </div>
           </div>
         </>

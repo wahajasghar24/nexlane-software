@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -22,16 +23,8 @@ const accountTypeColors: Record<string, string> = {
   expense: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 }
 
-const accountTypes = [
-  { value: '', label: 'Select type' },
-  { value: 'asset', label: 'Asset' },
-  { value: 'liability', label: 'Liability' },
-  { value: 'equity', label: 'Equity' },
-  { value: 'revenue', label: 'Revenue' },
-  { value: 'expense', label: 'Expense' },
-]
-
 export default function ChartOfAccountsPage() {
+  const t = useTranslations('acc')
   const [accounts, setAccounts] = useState<Account[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -40,6 +33,15 @@ export default function ChartOfAccountsPage() {
   const [form, setForm] = useState({
     code: '', name: '', type: '', parent_id: '', description: '',
   })
+
+  const accountTypes = [
+    { value: '', label: t('accounts.select_type') },
+    { value: 'asset', label: t('account_types.asset') },
+    { value: 'liability', label: t('account_types.liability') },
+    { value: 'equity', label: t('account_types.equity') },
+    { value: 'revenue', label: t('account_types.revenue') },
+    { value: 'expense', label: t('account_types.expense') },
+  ]
 
   const fetchAccounts = () => {
     const params = new URLSearchParams({ limit: '100' })
@@ -78,11 +80,11 @@ export default function ChartOfAccountsPage() {
       if (res.ok) {
         setForm({ code: '', name: '', type: '', parent_id: '', description: '' })
         setShowForm(false)
-        toast.success('Account created successfully')
+        toast.success(t('accounts.created_success'))
         fetchAccounts()
       } else {
         const err = await res.json().catch(() => ({}))
-        toast.error(err.error || 'Failed to create account')
+        toast.error(err.error || t('accounts.create_failed'))
       }
     } finally {
       setSubmitting(false)
@@ -90,7 +92,7 @@ export default function ChartOfAccountsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this account?')) return
+    if (!confirm(t('accounts.delete_confirm'))) return
     try {
       const res = await fetch(`/api/accounting/accounts/${id}`, { method: 'DELETE' })
       if (res.ok) fetchAccounts()
@@ -102,55 +104,55 @@ export default function ChartOfAccountsPage() {
   return (
     <div>
       <PageHeader
-        title="Chart of Accounts"
-        description="Manage your chart of accounts"
+        title={t('accounts.title')}
+        description={t('accounts.description')}
         actions={
           <button
             onClick={() => setShowForm(!showForm)}
             className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            {showForm ? 'Cancel' : 'New Account'}
+            {showForm ? t('accounts.cancel') : t('accounts.new_account')}
           </button>
         }
       />
 
       {showForm && (
         <div className="max-w-2xl rounded-lg border bg-card p-6 mb-6">
-          <h3 className="text-base font-semibold mb-4">New Account</h3>
+          <h3 className="text-base font-semibold mb-4">{t('accounts.new_account')}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Code *</label>
+                <label className="block text-sm font-medium mb-1">{t('accounts.code')} *</label>
                 <input
                   type="text" required value={form.code}
                   onChange={e => update('code', e.target.value)}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                  placeholder="e.g. 1000"
+                  placeholder={t('accounts.code_placeholder')}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Account Name *</label>
+                <label className="block text-sm font-medium mb-1">{t('accounts.account_name')} *</label>
                 <input
                   type="text" required value={form.name}
                   onChange={e => update('name', e.target.value)}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                  placeholder="e.g. Cash"
+                  placeholder={t('accounts.name_placeholder')}
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Account Type *</label>
+                <label className="block text-sm font-medium mb-1">{t('accounts.account_type')} *</label>
                 <select required value={form.type} onChange={e => update('type', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                  {accountTypes.map(t => (
-                    <option key={t.value} value={t.value} disabled={!t.value}>{t.label}</option>
+                  {accountTypes.map(at => (
+                    <option key={at.value} value={at.value} disabled={!at.value}>{at.label}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Parent Account</label>
+                <label className="block text-sm font-medium mb-1">{t('accounts.parent_account')}</label>
                 <select value={form.parent_id} onChange={e => update('parent_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                  <option value="">None (Top-level)</option>
+                  <option value="">{t('accounts.none_top_level')}</option>
                   {accounts.map(a => (
                     <option key={a.id} value={a.id}>{a.code} - {a.name}</option>
                   ))}
@@ -158,19 +160,19 @@ export default function ChartOfAccountsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className="block text-sm font-medium mb-1">{t('accounts.description')}</label>
               <textarea
                 rows={2} value={form.description}
                 onChange={e => update('description', e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="Optional description"
+                placeholder={t('accounts.optional_description')}
               />
             </div>
             <div className="flex gap-3 pt-2">
               <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                {submitting ? 'Creating...' : 'Create Account'}
+                {submitting ? t('accounts.creating') : t('accounts.create_account')}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+              <button type="button" onClick={() => setShowForm(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('accounts.cancel')}</button>
             </div>
           </form>
         </div>
@@ -179,7 +181,7 @@ export default function ChartOfAccountsPage() {
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search accounts..."
+          placeholder={t('accounts.search_placeholder')}
           value={search}
           onChange={e => { setLoading(true); setSearch(e.target.value) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
@@ -197,11 +199,11 @@ export default function ChartOfAccountsPage() {
         </div>
       ) : accounts.length === 0 ? (
         <EmptyState
-          title="No accounts found"
-          description="Create your first account to build the chart of accounts"
+          title={t('accounts.no_accounts')}
+          description={t('accounts.no_accounts_hint')}
           action={
             <button onClick={() => setShowForm(true)} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-              New Account
+              {t('accounts.new_account')}
             </button>
           }
         />
@@ -210,11 +212,11 @@ export default function ChartOfAccountsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Code</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Type</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('accounts.code')}</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('accounts.name')}</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('accounts.type')}</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('accounts.description')}</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('accounts.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -224,7 +226,7 @@ export default function ChartOfAccountsPage() {
                   <td className="p-3 text-sm font-medium">{account.name}</td>
                   <td className="p-3">
                     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${accountTypeColors[account.type] || ''}`}>
-                      {account.type}
+                      {t(`account_types.${account.type}`)}
                     </span>
                   </td>
                   <td className="p-3 text-sm text-muted-foreground">{account.description || '-'}</td>
@@ -233,7 +235,7 @@ export default function ChartOfAccountsPage() {
                       onClick={() => handleDelete(account.id)}
                       className="text-sm text-muted-foreground hover:text-red-500"
                     >
-                      Delete
+                      {t('accounts.delete')}
                     </button>
                   </td>
                 </tr>

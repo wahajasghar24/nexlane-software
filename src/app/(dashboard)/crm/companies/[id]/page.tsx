@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -9,6 +11,7 @@ import Link from 'next/link'
 export default function CompanyDetailPage() {
   const params = useParams()
   const id = params.id as string
+  const t = useTranslations('crm')
   const [company, setCompany] = useState<any>(null)
   const [contacts, setContacts] = useState<any[]>([])
   const [deals, setDeals] = useState<any[]>([])
@@ -44,7 +47,7 @@ export default function CompanyDetailPage() {
 
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
-  if (!company) return <EmptyState title="Company not found" />
+  if (!company) return <EmptyState title={t('company_detail_not_found')} />
 
   const addr = company.address || {}
 
@@ -54,23 +57,23 @@ export default function CompanyDetailPage() {
         title={company.name}
         description={company.industry || ''}
         actions={
-          <Link href={`/crm/companies/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Edit</Link>
+          <Link href={`/crm/companies/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('common_edit')}</Link>
         }
       />
 
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 rounded-lg border bg-card p-4">
-          <h3 className="font-semibold mb-3">Company Info</h3>
+          <h3 className="font-semibold mb-3">{t('company_detail_info')}</h3>
           <dl className="space-y-2 text-sm">
-            <div className="flex justify-between"><dt className="text-muted-foreground">Industry</dt><dd>{company.industry || '-'}</dd></div>
-            <div className="flex justify-between"><dt className="text-muted-foreground">Website</dt><dd>{company.website ? <a href={company.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary">{company.website}</a> : '-'}</dd></div>
-            <div className="flex justify-between"><dt className="text-muted-foreground">Phone</dt><dd>{company.phone || '-'}</dd></div>
-            <div className="flex justify-between"><dt className="text-muted-foreground">Email</dt><dd>{company.email || '-'}</dd></div>
-            <div className="flex justify-between"><dt className="text-muted-foreground">Address</dt><dd>{typeof addr === 'string' ? addr : [addr.street, addr.city, addr.state, addr.zip, addr.country].filter(Boolean).join(', ') || '-'}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">{t('company_detail_industry')}</dt><dd>{company.industry || '-'}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">{t('company_detail_website')}</dt><dd>{company.website ? <a href={company.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary">{company.website}</a> : '-'}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">{t('company_detail_phone')}</dt><dd>{company.phone || '-'}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">{t('company_detail_email')}</dt><dd>{company.email || '-'}</dd></div>
+            <div className="flex justify-between"><dt className="text-muted-foreground">{t('company_detail_address')}</dt><dd>{typeof addr === 'string' ? addr : [addr.street, addr.city, addr.state, addr.zip, addr.country].filter(Boolean).join(', ') || '-'}</dd></div>
           </dl>
           {company.notes && (
             <div className="mt-3 pt-3 border-t">
-              <p className="text-xs text-muted-foreground mb-1">Notes</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('company_detail_notes')}</p>
               <p className="text-sm">{company.notes}</p>
             </div>
           )}
@@ -78,9 +81,9 @@ export default function CompanyDetailPage() {
 
         <div className="md:col-span-2 space-y-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Contacts ({contacts.length})</h3>
+            <h3 className="font-semibold mb-3">{t('company_detail_contacts', { count: contacts.length })}</h3>
             {contacts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No contacts linked</p>
+              <p className="text-sm text-muted-foreground">{t('company_detail_no_contacts')}</p>
             ) : (
               <div className="space-y-2">
                 {contacts.map((c: any) => (
@@ -94,9 +97,9 @@ export default function CompanyDetailPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Deals ({deals.length})</h3>
+            <h3 className="font-semibold mb-3">{t('company_detail_deals', { count: deals.length })}</h3>
             {deals.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No deals for this company</p>
+              <p className="text-sm text-muted-foreground">{t('company_detail_no_deals')}</p>
             ) : (
               <div className="space-y-2">
                 {deals.map((d: any) => (

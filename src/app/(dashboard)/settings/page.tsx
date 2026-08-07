@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useCallback } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { createClient } from '@/core/supabase/client'
@@ -22,6 +24,7 @@ interface Company {
 }
 
 export default function SettingsPage() {
+  const t = useTranslations('misc')
   const [activeSection, setActiveSection] = useState<'profile' | 'company' | 'security'>('profile')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [company, setCompany] = useState<Company | null>(null)
@@ -45,7 +48,7 @@ export default function SettingsPage() {
       const { data } = await supabase.auth.mfa.listFactors()
       setMfaFactors((data?.totp || []).filter(f => f.status === 'verified').map(f => ({ id: f.id, friendly_name: f.friendly_name })))
       setMfaError(null)
-    } catch { setMfaError('Could not load security settings') }
+    } catch { setMfaError(t('settings_2fa_load_failed')) }
   }, [])
 
   const startEnroll = async () => {
@@ -57,7 +60,7 @@ export default function SettingsPage() {
       if (error) throw error
       setEnrollData({ id: data.id, qr: data.totp.qr_code, secret: data.totp.secret, uri: data.totp.uri })
       setEnrollCode('')
-    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Enrollment failed') }
+    } catch (e) { setMfaError(e instanceof Error ? e.message : t('settings_2fa_enroll_failed')) }
     finally { setBusy(false) }
   }
 
@@ -66,14 +69,14 @@ export default function SettingsPage() {
     setMfaError(null)
     try {
       const supabase = createClient()
-      if (!enrollData) throw new Error('No pending enrollment')
+      if (!enrollData) throw new Error(t('settings_2fa_no_pending'))
       const { data: challenge, error: cError } = await supabase.auth.mfa.challenge({ factorId: enrollData.id })
       if (cError) throw cError
       const { error: vError } = await supabase.auth.mfa.verify({ factorId: enrollData.id, challengeId: challenge.id, code: enrollCode })
-      if (vError) throw new Error('Invalid code. Check the code in your authenticator app.')
+      if (vError) throw new Error(t('settings_2fa_invalid_code'))
       setEnrollData(null)
       setEnrollCode('')
-      setMfaStatus('Authenticator app connected successfully!')
+      setMfaStatus(t('settings_2fa_connected'))
       await loadMfa()
       // Verify response upgrades the session to AAL2; guard the edge case where it didn't
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
@@ -81,7 +84,7 @@ export default function SettingsPage() {
         await supabase.auth.signOut()
         window.location.href = '/login?mfa=enabled'
       }
-    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Verification failed') }
+    } catch (e) { setMfaError(e instanceof Error ? e.message : t('settings_2fa_verify_failed')) }
     finally { setBusy(false) }
   }
 
@@ -95,16 +98,16 @@ export default function SettingsPage() {
   }
 
   const disableMfa = async (factorId: string) => {
-    if (!confirm('Disable two-factor authentication for this account?')) return
+    if (!confirm(t('settings_2fa_disable_confirm'))) return
     setBusy(true)
     setMfaError(null)
     try {
       const supabase = createClient()
       const { error } = await supabase.auth.mfa.unenroll({ factorId })
       if (error) throw error
-      setMfaStatus('Two-factor authentication disabled.')
+      setMfaStatus(t('settings_2fa_disabled'))
       await loadMfa()
-    } catch (e) { setMfaError(e instanceof Error ? e.message : 'Failed to disable 2FA') }
+    } catch (e) { setMfaError(e instanceof Error ? e.message : t('settings_2fa_disable_failed')) }
     finally { setBusy(false) }
   }
 
@@ -136,8 +139,8 @@ export default function SettingsPage() {
       })
       const data = await res.json()
       if (data.error) setMessage(`Error: ${data.error}`)
-      else { setMessage('Profile updated successfully!'); setProfile(data.data) }
-    } catch { setMessage('Failed to save') }
+      else { setMessage(t('settings_profile_updated')); setProfile(data.data) }
+    } catch { setMessage(t('settings_save_failed')) }
     finally { setSaving(false); setTimeout(() => setMessage(''), 3000) }
   }
 
@@ -153,7 +156,7 @@ export default function SettingsPage() {
       })
       const data = await res.json()
       if (data.error) setMessage(`Error: ${data.error}`)
-      else { setMessage('Company updated successfully!'); setCompany(data.data) }
+      else { setMessage(t('settings_company_updated')); setCompany(data.data) }
     } catch { setMessage('Failed to save') }
     finally { setSaving(false); setTimeout(() => setMessage(''), 3000) }
   }
@@ -186,7 +189,7 @@ export default function SettingsPage() {
               activeSection === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            {tab === 'profile' ? 'Profile Settings' : tab === 'company' ? 'Company Settings' : 'Security (2FA)'}
+            {tab === 'profile' ? t('settings_tab_profile') : tab === 'company' ? t('settings_tab_company') : t('settings_tab_security')}
           </button>
         ))}
       </div>
@@ -201,30 +204,30 @@ export default function SettingsPage() {
 
       {activeSection === 'profile' && profile && (
         <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Profile Settings</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('settings_profile_title')}</h3>
           <form onSubmit={saveProfile} className="space-y-4 max-w-lg">
             <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
+              <label className="block text-sm font-medium mb-1">{t('settings_email')}</label>
               <input
                 type="email"
                 value={profile.email}
                 disabled
                 className="w-full rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground"
               />
-              <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('settings_email_fixed')}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
+              <label className="block text-sm font-medium mb-1">{t('settings_name')}</label>
               <input
                 type="text"
                 value={profileForm.name}
                 onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="Your name"
+                placeholder={t('settings_name_placeholder')}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Phone</label>
+              <label className="block text-sm font-medium mb-1">{t('settings_phone')}</label>
               <input
                 type="tel"
                 value={profileForm.phone}
@@ -238,7 +241,7 @@ export default function SettingsPage() {
               disabled={saving}
               className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save Profile'}
+              {saving ? t('settings_saving') : t('settings_save_profile')}
             </button>
           </form>
         </div>
@@ -246,26 +249,26 @@ export default function SettingsPage() {
 
       {activeSection === 'company' && company && (
         <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Company Settings</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('settings_company_title')}</h3>
           <form onSubmit={saveCompany} className="space-y-4 max-w-lg">
             <div>
-              <label className="block text-sm font-medium mb-1">Company Name</label>
+              <label className="block text-sm font-medium mb-1">{t('settings_company_name')}</label>
               <input
                 type="text"
                 value={companyForm.name}
                 onChange={e => setCompanyForm(c => ({ ...c, name: e.target.value }))}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="Company name"
+                placeholder={t('settings_company_name_placeholder')}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Domain</label>
+              <label className="block text-sm font-medium mb-1">{t('settings_domain')}</label>
               <input
                 type="text"
                 value={companyForm.domain}
                 onChange={e => setCompanyForm(c => ({ ...c, domain: e.target.value }))}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="example.com"
+                placeholder={t('settings_domain_placeholder')}
               />
             </div>
             <div>
@@ -283,14 +286,14 @@ export default function SettingsPage() {
               disabled={saving}
               className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save Company'}
+              {saving ? t('settings_saving') : t('settings_save_company')}
             </button>
           </form>
         </div>
       )}
       {activeSection === 'security' && (
         <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-1">Two-Factor Authentication</h3>
+          <h3 className="text-lg font-semibold mb-1">{t('settings_2fa_title')}</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Add an extra layer of security with an authenticator app (Google Authenticator, Authy, etc.).
             Once enabled, you&apos;ll be asked for a code every time you sign in.
@@ -325,7 +328,7 @@ export default function SettingsPage() {
                 <p className="font-medium mb-2">1. Scan the QR code with your authenticator app</p>
                 {enrollData.qr && enrollData.qr.startsWith('data:') ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={enrollData.qr} alt="2FA QR code" className="h-44 w-44 rounded bg-white p-2" />
+                  <img src={enrollData.qr} alt={t('settings_2fa_qr_alt')} className="h-44 w-44 rounded bg-white p-2" />
                 ) : (
                   <p className="font-mono text-xs break-all text-muted-foreground">{enrollData.uri}</p>
                 )}
@@ -341,7 +344,7 @@ export default function SettingsPage() {
                   maxLength={6}
                   value={enrollCode}
                   onChange={e => setEnrollCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="000000"
+                  placeholder={t('settings_2fa_code_placeholder')}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono tracking-widest"
                 />
               </div>
@@ -351,7 +354,7 @@ export default function SettingsPage() {
                   disabled={busy || enrollCode.length !== 6}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {busy ? 'Verifying...' : 'Verify & Enable'}
+                  {busy ? t('settings_2fa_verifying') : t('settings_2fa_verify_enable')}
                 </button>
                 <button
                   onClick={cancelEnroll}
@@ -368,7 +371,7 @@ export default function SettingsPage() {
               disabled={busy}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
-              {busy ? 'Starting...' : 'Enable 2FA'}
+              {busy ? t('settings_2fa_starting') : t('settings_2fa_enable')}
             </button>
           )}
         </div>

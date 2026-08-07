@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -23,7 +25,7 @@ export default function ForgotPasswordPage() {
     const d = await res.json().catch(() => ({}))
     setLoading(false)
     if (!res.ok) {
-      setError(d.error?.message || 'Something went wrong. Try again.')
+      setError(d.error?.message || t('forgot_password.generic_error'))
       return
     }
     setSent(true)
@@ -37,19 +39,19 @@ export default function ForgotPasswordPage() {
           <span className="text-xl font-bold">Nexlane</span>
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Reset your password</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('forgot_password.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {sent ? 'Check your inbox for a reset link.' : 'Enter your email and we\'ll send you a reset link.'}
+            {sent ? t('forgot_password.hint_sent') : t('forgot_password.hint')}
           </p>
         </div>
         {sent ? (
           <div className="rounded-md border border-green-200 bg-green-50 p-4 text-center text-sm text-green-800">
-            Reset link sent to <strong>{email}</strong>. Open it from your inbox to choose a new password.
+            {t('forgot_password.sent_box', { email })}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">{t('forgot_password.email')}</label>
               <input
                 id="email"
                 type="email"
@@ -65,12 +67,12 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
-              {loading ? 'Sending...' : 'Send Reset Link'}
+              {loading ? t('forgot_password.sending') : t('forgot_password.send_reset_link')}
             </button>
           </form>
         )}
         <p className="text-center text-sm text-muted-foreground">
-          <Link href="/login" className="font-medium text-primary hover:underline">Back to login</Link>
+          <Link href="/login" className="font-medium text-primary hover:underline">{t('forgot_password.back_to_login')}</Link>
         </p>
       </div>
     </div>

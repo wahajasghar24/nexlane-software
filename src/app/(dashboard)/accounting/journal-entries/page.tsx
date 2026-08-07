@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -26,6 +27,7 @@ const statusBadge = (status: string) => {
 }
 
 export default function JournalEntriesPage() {
+  const t = useTranslations('acc')
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -48,7 +50,7 @@ export default function JournalEntriesPage() {
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 
   const voidEntry = async (id: string) => {
-    if (!confirm('Are you sure you want to void this journal entry?')) return
+    if (!confirm(t('journal_entries.void_confirm'))) return
     try {
       const res = await fetch(`/api/accounting/journal-entries/${id}`, {
         method: 'PATCH',
@@ -64,14 +66,14 @@ export default function JournalEntriesPage() {
   return (
     <div>
       <PageHeader
-        title="Journal Entries"
-        description="View and manage journal entries"
+        title={t('journal_entries.title')}
+        description={t('journal_entries.description')}
         actions={
           <Link
             href="/accounting/journal-entries/new"
             className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            New Entry
+            {t('journal_entries.new_entry')}
           </Link>
         }
       />
@@ -87,11 +89,11 @@ export default function JournalEntriesPage() {
         </div>
       ) : entries.length === 0 ? (
         <EmptyState
-          title="No journal entries"
-          description="Create your first journal entry to record transactions"
+          title={t('journal_entries.no_entries')}
+          description={t('journal_entries.no_entries_hint')}
           action={
             <Link href="/accounting/journal-entries/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-              New Entry
+              {t('journal_entries.new_entry')}
             </Link>
           }
         />
@@ -101,13 +103,13 @@ export default function JournalEntriesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Entry #</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Reference</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Total</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.entry_no')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.date')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.description')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.reference')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.status')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.total')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('journal_entries.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,7 +121,7 @@ export default function JournalEntriesPage() {
                     <td className="p-3 text-sm text-muted-foreground">{entry.reference || '-'}</td>
                     <td className="p-3">
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge(entry.status)}`}>
-                        {entry.status}
+                        {t(`status.${entry.status}`)}
                       </span>
                     </td>
                     <td className="p-3 text-sm text-right">{formatCurrency(entry.total_debit || 0)}</td>
@@ -129,7 +131,7 @@ export default function JournalEntriesPage() {
                           onClick={() => voidEntry(entry.id)}
                           className="text-sm text-muted-foreground hover:text-red-500"
                         >
-                          Void
+                          {t('journal_entries.void')}
                         </button>
                       )}
                       {entry.status === 'posted' && (
@@ -143,21 +145,21 @@ export default function JournalEntriesPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('journal_entries.page_of', { page, total: totalPages })}</p>
             <div className="flex gap-2">
               <button
                 onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Previous
+                {t('journal_entries.previous')}
               </button>
               <button
                 onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Next
+                {t('journal_entries.next')}
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -15,6 +16,7 @@ interface AttendanceRow {
 }
 
 export default function AttendancePage() {
+  const t = useTranslations('hr')
   const [rows, setRows] = useState<AttendanceRow[]>([])
   const [myStatus, setMyStatus] = useState<string>('')
   const [busy, setBusy] = useState(false)
@@ -63,17 +65,17 @@ export default function AttendancePage() {
     try {
       const res = await fetch(action === 'in' ? '/api/hr/attendance' : '/api/hr/attendance/clock-out', { method: 'POST' })
       const data = await res.json()
-      if (!res.ok) setError(data.error || 'Failed')
+      if (!res.ok) setError(data.error || t('common.failed'))
       else await load()
-    } catch { setError('Network error') }
+    } catch { setError(t('common.network_error')) }
     setBusy(false)
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Attendance"
-        description="Clock in/out and review attendance records"
+        title={t('attendance.title')}
+        description={t('attendance.description')}
         actions={
           <div className="flex gap-2">
             <button
@@ -81,31 +83,31 @@ export default function AttendancePage() {
               disabled={busy || myStatus !== 'none'}
               className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40"
             >
-              Clock In
+              {t('attendance.clock_in')}
             </button>
             <button
               onClick={() => clock('out')}
               disabled={busy || myStatus !== 'in'}
               className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-40"
             >
-              Clock Out
+              {t('attendance.clock_out')}
             </button>
           </div>
         }
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       {rows.length === 0 ? (
-        <EmptyState title="No attendance records yet" description="Clock in to start today's record." />
+        <EmptyState title={t('attendance.no_records')} description={t('attendance.no_records_desc')} />
       ) : (
         <div className="rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-muted-foreground">
-                <th className="px-4 py-3">Employee</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Check In</th>
-                <th className="px-4 py-3">Check Out</th>
-                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">{t('fields.employee')}</th>
+                <th className="px-4 py-3">{t('common.date')}</th>
+                <th className="px-4 py-3">{t('attendance.check_in')}</th>
+                <th className="px-4 py-3">{t('attendance.check_out')}</th>
+                <th className="px-4 py-3">{t('common.status')}</th>
               </tr>
             </thead>
             <tbody>

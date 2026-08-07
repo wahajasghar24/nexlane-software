@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -17,6 +18,7 @@ interface CFData {
 }
 
 export default function CashFlowPage() {
+  const t = useTranslations('acc')
   const [data, setData] = useState<CFData | null>(null)
   const [loading, setLoading] = useState(true)
   const now = new Date()
@@ -37,18 +39,18 @@ export default function CashFlowPage() {
   return (
     <div>
       <PageHeader
-        title="Cash Flow Statement"
-        description="Cash inflows and outflows"
-        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Back</Link>}
+        title={t('cash_flow.title')}
+        description={t('cash_flow.description')}
+        actions={<Link href="/accounting/reports" className="rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('cash_flow.back')}</Link>}
       />
 
       <div className="flex flex-wrap gap-3 mb-4">
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">From</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('cash_flow.from')}</label>
           <input type="date" value={fromDate} onChange={e => { setLoading(true); setFromDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
         <div>
-          <label className="block text-xs text-muted-foreground mb-1">To</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t('cash_flow.to')}</label>
           <input type="date" value={toDate} onChange={e => { setLoading(true); setToDate(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
         </div>
       </div>
@@ -60,46 +62,46 @@ export default function CashFlowPage() {
           ))}
         </div>
       ) : !data ? (
-        <EmptyState title="No data" description="Post some journal entries first" />
+        <EmptyState title={t('cash_flow.no_data')} description={t('cash_flow.post_entries_hint')} />
       ) : (
         <div className="max-w-2xl rounded-lg border bg-card divide-y">
           {/* Operating */}
           <div className="px-4 py-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-blue-700 dark:text-blue-400">Operating Activities</h3>
+              <h3 className="font-semibold text-blue-700 dark:text-blue-400">{t('cash_flow.operating')}</h3>
               <span className={`text-sm font-semibold ${data.operatingCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {formatCurrency(data.operatingCashFlow)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">Cash generated from core business operations</p>
+            <p className="text-xs text-muted-foreground">{t('cash_flow.operating_hint')}</p>
           </div>
 
           {/* Investing */}
           <div className="px-4 py-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-purple-700 dark:text-purple-400">Investing Activities</h3>
+              <h3 className="font-semibold text-purple-700 dark:text-purple-400">{t('cash_flow.investing')}</h3>
               <span className={`text-sm font-semibold ${data.investingCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {formatCurrency(data.investingCashFlow)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">Cash used in investing activities</p>
+            <p className="text-xs text-muted-foreground">{t('cash_flow.investing_hint')}</p>
           </div>
 
           {/* Financing */}
           <div className="px-4 py-4">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-amber-700 dark:text-amber-400">Financing Activities</h3>
+              <h3 className="font-semibold text-amber-700 dark:text-amber-400">{t('cash_flow.financing')}</h3>
               <span className={`text-sm font-semibold ${data.financingCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {formatCurrency(data.financingCashFlow)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">Cash from financing activities</p>
+            <p className="text-xs text-muted-foreground">{t('cash_flow.financing_hint')}</p>
           </div>
 
           {/* Net Cash Flow */}
           <div className="px-4 py-4 bg-muted/30">
             <div className="flex justify-between items-center">
-              <h3 className="font-bold">Net Cash Flow</h3>
+              <h3 className="font-bold">{t('cash_flow.net_cash_flow')}</h3>
               <span className={`font-bold text-base ${data.netCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
                 {formatCurrency(data.netCashFlow)}
               </span>
@@ -108,11 +110,11 @@ export default function CashFlowPage() {
 
           <div className="px-4 py-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Beginning Cash</span>
+              <span className="text-sm text-muted-foreground">{t('cash_flow.beginning_cash')}</span>
               <span className="text-sm font-medium">{formatCurrency(data.beginningCash)}</span>
             </div>
             <div className="flex justify-between items-center mt-2">
-              <span className="text-sm text-muted-foreground">Ending Cash</span>
+              <span className="text-sm text-muted-foreground">{t('cash_flow.ending_cash')}</span>
               <span className="text-sm font-bold">{formatCurrency(data.endingCash)}</span>
             </div>
           </div>

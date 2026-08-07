@@ -1,10 +1,12 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
 
 export default function EditProjectPage() {
+  const t = useTranslations('hr')
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
@@ -66,67 +68,67 @@ export default function EditProjectPage() {
 
   return (
     <div>
-      <PageHeader title="Edit Project" description="Update project details" />
+      <PageHeader title={t('projects_edit.title')} description={t('projects_edit.description')} />
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Project Name *</label>
+            <label className="block text-sm font-medium mb-1">{t('fields.project_name')} *</label>
             <input type="text" required value={form.name} onChange={e => update('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1">{t('common.description')}</label>
             <textarea rows={3} value={form.description} onChange={e => update('description', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Client Name</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.client_name')}</label>
               <input type="text" value={form.client_name} onChange={e => update('client_name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Color</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.color')}</label>
               <input type="color" value={form.color} onChange={e => update('color', e.target.value)} className="w-full h-9 rounded-md border bg-background px-1" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
+              <label className="block text-sm font-medium mb-1">{t('common.status')}</label>
               <select value={form.status} onChange={e => update('status', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                <option value="planning">Planning</option>
-                <option value="active">Active</option>
-                <option value="on_hold">On Hold</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="planning">{t('status.planning')}</option>
+                <option value="active">{t('status.active')}</option>
+                <option value="on_hold">{t('status.on_hold')}</option>
+                <option value="completed">{t('status.completed')}</option>
+                <option value="cancelled">{t('status.cancelled')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Priority</label>
+              <label className="block text-sm font-medium mb-1">{t('common.priority')}</label>
               <select value={form.priority} onChange={e => update('priority', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
+                <option value="low">{t('priority.low')}</option>
+                <option value="medium">{t('priority.medium')}</option>
+                <option value="high">{t('priority.high')}</option>
+                <option value="urgent">{t('priority.urgent')}</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Start Date</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.start_date')}</label>
               <input type="date" value={form.start_date} onChange={e => update('start_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">End Date</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.end_date')}</label>
               <input type="date" value={form.end_date} onChange={e => update('end_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Budget ($)</label>
+            <label className="block text-sm font-medium mb-1">{t('fields.budget')}</label>
             <input type="number" min="0" step="0.01" value={form.budget} onChange={e => update('budget', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-              {submitting ? 'Saving...' : 'Save Changes'}
+              {submitting ? t('common.saving') : t('projects_edit.save_changes')}
             </button>
-            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('common.cancel')}</button>
           </div>
         </form>
       </div>

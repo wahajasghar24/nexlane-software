@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -16,6 +18,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function LeadDetailPage() {
+  const t = useTranslations('crm')
   const params = useParams()
   const id = params.id as string
   const [lead, setLead] = useState<any>(null)
@@ -74,25 +77,25 @@ export default function LeadDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!(await confirm('Delete this lead?'))) return
+    if (!(await confirm(t('lead_detail_delete_confirm')))) return
     await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' })
     window.location.href = '/crm/leads'
   }
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
-  if (!lead) return <EmptyState title="Lead not found" />
+  if (!lead) return <EmptyState title={t('lead_detail_not_found')} />
 
   const assignedName = typeof lead.assigned_to === 'object' ? lead.assigned_to?.name : lead.assigned_to || '-'
 
   return (
     <div>
       <PageHeader
-        title={lead.title || 'Untitled Lead'}
-        description={`Contact: ${lead.name}`}
+        title={lead.title || t('lead_detail_untitled')}
+        description={t('lead_detail_contact', { name: lead.name })}
         actions={
           <div className="flex gap-2">
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[lead.status] || ''}`}>{lead.status}</span>
-            <Link href={`/crm/leads/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Edit</Link>
+            <Link href={`/crm/leads/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('common_edit')}</Link>
             <button onClick={() => {}} className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Convert to Deal</button>
             <button onClick={handleDelete} className="inline-flex items-center justify-center rounded-md border border-red-200 bg-background px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Delete</button>
           </div>
@@ -102,23 +105,23 @@ export default function LeadDetailPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 space-y-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Lead Info</h3>
+            <h3 className="font-semibold mb-3">{t('lead_detail_info')}</h3>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Name</dt><dd>{lead.name}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Email</dt><dd>{lead.email || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Phone</dt><dd>{lead.phone || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Company</dt><dd>{lead.company || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Website</dt><dd>{lead.website || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Industry</dt><dd>{lead.industry || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Source</dt><dd className="capitalize">{lead.source || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Priority</dt><dd className="capitalize">{lead.priority}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Estimated Value</dt><dd>{lead.estimated_value ? `$${lead.estimated_value}` : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Assigned To</dt><dd>{assignedName}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Created</dt><dd>{new Date(lead.created_at).toLocaleDateString()}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_name')}</dt><dd>{lead.name}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_email')}</dt><dd>{lead.email || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_phone')}</dt><dd>{lead.phone || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_company')}</dt><dd>{lead.company || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_website')}</dt><dd>{lead.website || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_industry')}</dt><dd>{lead.industry || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_source')}</dt><dd className="capitalize">{lead.source || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_priority')}</dt><dd className="capitalize">{lead.priority}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_estimated')}</dt><dd>{lead.estimated_value ? `$${lead.estimated_value}` : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_assigned')}</dt><dd>{assignedName}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('lead_detail_created')}</dt><dd>{new Date(lead.created_at).toLocaleDateString()}</dd></div>
             </dl>
             {lead.notes && (
               <div className="mt-3 pt-3 border-t">
-                <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('lead_detail_notes')}</p>
                 <p className="text-sm">{lead.notes}</p>
               </div>
             )}
@@ -127,15 +130,15 @@ export default function LeadDetailPage() {
 
         <div className="md:col-span-2 space-y-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Notes</h3>
+            <h3 className="font-semibold mb-3">{t('lead_detail_notes_section')}</h3>
             <div className="flex gap-2 mb-3">
-              <textarea rows={2} value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="Add a note..." className="flex-1 rounded-md border bg-background px-3 py-2 text-sm" />
+              <textarea rows={2} value={newNote} onChange={e => setNewNote(e.target.value)} placeholder={t('lead_detail_add_note')} className="flex-1 rounded-md border bg-background px-3 py-2 text-sm" />
               <button onClick={addNote} disabled={addingNote || !newNote.trim()} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 self-end">
-                {addingNote ? 'Adding...' : 'Add'}
+                {addingNote ? t('lead_detail_adding') : t('lead_detail_add')}
               </button>
             </div>
             {notes.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No notes yet</p>
+              <p className="text-sm text-muted-foreground">{t('lead_detail_no_notes')}</p>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {notes.map((n: any, i: number) => (
@@ -149,9 +152,9 @@ export default function LeadDetailPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Activity Timeline</h3>
+            <h3 className="font-semibold mb-3">{t('lead_detail_timeline')}</h3>
             {activities.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No activities recorded</p>
+              <p className="text-sm text-muted-foreground">{t('lead_detail_no_activities')}</p>
             ) : (
               <div className="space-y-3">
                 {activities.map((act: any) => (

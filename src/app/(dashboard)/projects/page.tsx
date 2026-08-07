@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -34,6 +35,7 @@ const priorityColors: Record<string, string> = {
 }
 
 export default function ProjectsPage() {
+  const t = useTranslations('hr')
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -73,11 +75,11 @@ export default function ProjectsPage() {
   return (
     <div>
       <PageHeader
-        title="Projects"
-        description="Manage your projects"
+        title={t('projects.title')}
+        description={t('projects.description')}
         actions={
           <Link href="/projects/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Project
+            {t('projects.new')}
           </Link>
         }
       />
@@ -85,25 +87,25 @@ export default function ProjectsPage() {
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search projects..."
+          placeholder={t('projects.search')}
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
         />
         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Statuses</option>
-          <option value="planning">Planning</option>
-          <option value="active">Active</option>
-          <option value="on_hold">On Hold</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
+          <option value="">{t('common.all_statuses')}</option>
+          <option value="planning">{t('status.planning')}</option>
+          <option value="active">{t('status.active')}</option>
+          <option value="on_hold">{t('status.on_hold')}</option>
+          <option value="completed">{t('status.completed')}</option>
+          <option value="cancelled">{t('status.cancelled')}</option>
         </select>
         <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Priorities</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="urgent">Urgent</option>
+          <option value="">{t('common.all_priorities')}</option>
+          <option value="low">{t('priority.low')}</option>
+          <option value="medium">{t('priority.medium')}</option>
+          <option value="high">{t('priority.high')}</option>
+          <option value="urgent">{t('priority.urgent')}</option>
         </select>
       </div>
 
@@ -124,9 +126,9 @@ export default function ProjectsPage() {
         </div>
       ) : projects.length === 0 ? (
         <EmptyState
-          title="No projects found"
-          description="Create your first project to get started"
-          action={<Link href="/projects/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Project</Link>}
+          title={t('projects.no_projects')}
+          description={t('projects.no_projects_desc')}
+          action={<Link href="/projects/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('projects.new')}</Link>}
         />
       ) : (
         <>
@@ -139,8 +141,8 @@ export default function ProjectsPage() {
                   <Link href={`/projects/${p.id}`} className="font-medium hover:text-primary">{p.name}</Link>
                 </div>
                 <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
-                  <span>Client: {p.client_name || '-'}</span>
-                  <span className="text-right">{getMemberCount(p)} members</span>
+                  <span>{t('projects.client_value', { name: p.client_name || '-' })}{p.client_name || '-'}</span>
+                  <span className="text-right">{getMemberCount(p)} {t('common.members')}</span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t text-sm">
                   <div className="flex gap-2">
@@ -152,8 +154,8 @@ export default function ProjectsPage() {
                     </span>
                   </div>
                   <div className="flex gap-2">
-                    <Link href={`/projects/${p.id}`} className="text-muted-foreground hover:text-primary">View</Link>
-                    <Link href={`/projects/${p.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                    <Link href={`/projects/${p.id}`} className="text-muted-foreground hover:text-primary">{t('common.view')}</Link>
+                    <Link href={`/projects/${p.id}/edit`} className="text-muted-foreground hover:text-primary">{t('common.edit')}</Link>
                   </div>
                 </div>
               </div>
@@ -164,13 +166,13 @@ export default function ProjectsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Client</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Priority</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Progress</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Members</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.client')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.status')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.priority')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('projects.progress')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.members')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -198,7 +200,7 @@ export default function ProjectsPage() {
                         <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden max-w-[100px]">
                           <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, getTaskCount(p) > 0 ? 60 : 0)}%` }} />
                         </div>
-                        <span className="text-xs text-muted-foreground">{getTaskCount(p)} tasks</span>
+                        <span className="text-xs text-muted-foreground">{getTaskCount(p)} {t('common.tasks')}</span>
                       </div>
                     </td>
                     <td className="p-3 text-sm text-muted-foreground">{getMemberCount(p)}</td>
@@ -213,10 +215,10 @@ export default function ProjectsPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('common.page_of', { page, totalPages })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.next')}</button>
             </div>
           </div>
         </>

@@ -1,16 +1,19 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { LoginForm } from '@/features/auth/components/login-form'
 import { FadeIn } from '@/shared/components/motion'
 import Link from 'next/link'
 
-const brandPoints = [
-  'Accounting, CRM, projects & teams in one platform',
-  'Real-time dashboards with actionable insights',
-  'Built for growing companies — secure & scalable',
-]
-
 export default function LoginPage() {
+  const t = useTranslations('auth')
+
+  const brandPoints = [
+    t('login.point_1'),
+    t('login.point_2'),
+    t('login.point_3'),
+  ]
+
   return (
     <div className="flex min-h-screen">
       {/* Brand panel */}
@@ -23,7 +26,7 @@ export default function LoginPage() {
         </div>
         <div className="max-w-md">
           <h2 className="text-4xl font-bold leading-tight tracking-tight">
-            Run your entire company from one command center
+            {t('login.brand_heading')}
           </h2>
           <ul className="mt-8 space-y-4">
             {brandPoints.map((point) => (
@@ -50,14 +53,14 @@ export default function LoginPage() {
             <span className="text-xl font-bold">Nexlane</span>
           </div>
           <div className="text-center lg:text-left">
-            <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-            <p className="text-sm text-muted-foreground mt-1">Sign in to your account to continue</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t('login.welcome_back')}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{t('login.sign_in_hint')}</p>
           </div>
           <LoginForm />
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            {t('login.no_account')}{' '}
             <Link href="/signup" className="font-medium text-primary hover:underline">
-              Sign up
+              {t('login.sign_up')}
             </Link>
           </p>
         </FadeIn>

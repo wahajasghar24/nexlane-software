@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -8,6 +9,7 @@ import { useConfirm } from '@/shared/hooks/use-confirm-dialog'
 import Link from 'next/link'
 
 export default function TeamDetailPage() {
+  const t = useTranslations('hr')
   const params = useParams()
   const id = params.id as string
   const [team, setTeam] = useState<any>(null)
@@ -28,18 +30,18 @@ export default function TeamDetailPage() {
   }, [id])
 
   const handleRemoveMember = async (memberId: string) => {
-    if (!(await confirm('Remove this member from the team?'))) return
+    if (!(await confirm(t('teams_detail.remove_confirm')))) return
     const res = await fetch(`/api/teams/${id}/members/${memberId}`, { method: 'DELETE' })
     if (res.ok) {
       setMembers(prev => prev.filter(m => m.id !== memberId))
     }
   }
 
-  const getDisplayName = (m: any) => m.profile?.full_name || `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.name || 'Unnamed'
+  const getDisplayName = (m: any) => m.profile?.full_name || `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.name || t('common.unnamed')
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
 
-  if (!team) return <EmptyState title="Team not found" />
+  if (!team) return <EmptyState title={t('teams_detail.not_found')} />
 
   return (
     <div>
@@ -51,11 +53,11 @@ export default function TeamDetailPage() {
       <div className="grid gap-6 md:grid-cols-4 mb-6">
         <div className="rounded-lg border bg-card p-4 text-center">
           <p className="text-2xl font-bold">{members.length}</p>
-          <p className="text-xs text-muted-foreground">Members</p>
+          <p className="text-xs text-muted-foreground">{t('common.members')}</p>
         </div>
         {team.lead && (
           <div className="rounded-lg border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Team Lead</p>
+            <p className="text-xs text-muted-foreground">{t('teams_detail.team_lead')}</p>
             <p className="font-medium mt-1">{getDisplayName(team.lead)}</p>
           </div>
         )}
@@ -63,10 +65,10 @@ export default function TeamDetailPage() {
 
       <div className="rounded-lg border bg-card">
         <div className="p-4 border-b">
-          <h3 className="font-semibold">Team Members</h3>
+          <h3 className="font-semibold">{t('common.team_members')}</h3>
         </div>
         {members.length === 0 ? (
-          <EmptyState title="No members" />
+          <EmptyState title={t('teams_detail.no_members')} />
         ) : (
           <div className="divide-y">
             {members.map((member: any) => (
@@ -86,7 +88,7 @@ export default function TeamDetailPage() {
                   onClick={() => handleRemoveMember(member.id)}
                   className="text-xs text-destructive hover:text-destructive/80"
                 >
-                  Remove
+                  {t('teams_detail.remove')}
                 </button>
               </div>
             ))}

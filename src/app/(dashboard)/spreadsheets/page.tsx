@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -16,6 +18,7 @@ interface Spreadsheet {
 }
 
 export default function SpreadsheetsPage() {
+  const t = useTranslations('misc')
   const [spreadsheets, setSpreadsheets] = useState<Spreadsheet[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -64,21 +67,21 @@ export default function SpreadsheetsPage() {
         window.location.href = `/spreadsheets/${data.data.id}`
       }
     } catch {
-      alert('Failed to create spreadsheet')
+      alert(t('spreadsheets_create_failed'))
     }
   }
 
   return (
     <div>
       <PageHeader
-        title="Spreadsheets"
-        description="Create and manage spreadsheets"
+        title={t('spreadsheets_title')}
+        description={t('spreadsheets_description')}
         actions={
           <button
             onClick={handleNewSpreadsheet}
             className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            New Spreadsheet
+            {t('spreadsheets_new')}
           </button>
         }
       />
@@ -109,8 +112,8 @@ export default function SpreadsheetsPage() {
         </div>
       ) : spreadsheets.length === 0 ? (
         <EmptyState
-          title="No spreadsheets found"
-          description="Create your first spreadsheet to get started"
+          title={t('spreadsheets_empty_title')}
+          description={t('spreadsheets_empty_desc')}
           action={
             <button onClick={handleNewSpreadsheet} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
               New Spreadsheet
@@ -142,11 +145,11 @@ export default function SpreadsheetsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Columns</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Rows</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('spreadsheets_col_name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('spreadsheets_col_description')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('spreadsheets_col_columns')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('spreadsheets_col_rows')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('spreadsheets_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>

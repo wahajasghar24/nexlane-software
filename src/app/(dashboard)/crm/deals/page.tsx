@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -8,8 +10,8 @@ import Link from 'next/link'
 const stages = ['new', 'contacted', 'demo_scheduled', 'proposal_sent', 'negotiation', 'won', 'lost']
 
 const stageLabels: Record<string, string> = {
-  new: 'New', contacted: 'Contacted', demo_scheduled: 'Demo Scheduled',
-  proposal_sent: 'Proposal Sent', negotiation: 'Negotiation', won: 'Won', lost: 'Lost',
+  new: "stage_new", contacted: "stage_contacted", demo_scheduled: "stage_demo_scheduled",
+  proposal_sent: "stage_proposal_sent", negotiation: "stage_negotiation", won: "stage_won", lost: "stage_lost",
 }
 
 interface Deal {
@@ -23,6 +25,7 @@ interface Deal {
 }
 
 export default function DealsPipelinePage() {
+  const t = useTranslations('crm')
   const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -58,23 +61,23 @@ export default function DealsPipelinePage() {
   return (
     <div>
       <PageHeader
-        title="Deal Pipeline"
-        description="Track deals through each stage"
+        title={t('deals_title')}
+        description={t('deals_description')}
         actions={
           <Link href="/crm/deals/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Deal
+            {t('deals_new')}
           </Link>
         }
       />
 
       {deals.length === 0 ? (
-        <EmptyState title="No deals found" description="Create your first deal to build your pipeline" action={<Link href="/crm/deals/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Deal</Link>} />
+        <EmptyState title={t('deals_empty_title')} description={t('deals_empty_desc')} action={<Link href="/crm/deals/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Deal</Link>} />
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: '60vh' }}>
           {stages.map(stage => (
             <div key={stage} className="flex-shrink-0 w-64">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold capitalize">{stageLabels[stage]}</h3>
+                <h3 className="text-sm font-semibold capitalize">{t(stageLabels[stage])}</h3>
                 <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">{grouped[stage]?.length || 0}</span>
               </div>
               <div className="space-y-2 min-h-[200px]">

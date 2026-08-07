@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 import { cleanFormPayload } from '@/core/utils/payload'
@@ -22,6 +23,7 @@ interface Account {
 }
 
 export default function NewJournalEntryPage() {
+  const t = useTranslations('acc')
   const router = useRouter()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -91,11 +93,11 @@ export default function NewJournalEntryPage() {
         body: JSON.stringify(cleanFormPayload(body)),
       })
       if (res.ok) {
-        toast.success('Journal entry created')
+        toast.success(t('new_journal_entry.created_success'))
         router.push('/accounting/journal-entries')
       } else {
         const err = await res.json().catch(() => ({}))
-        toast.error(err.error || 'Failed')
+        toast.error(err.error || t('new_journal_entry.failed'))
       }
     } finally {
       setSubmitting(false)
@@ -107,13 +109,13 @@ export default function NewJournalEntryPage() {
 
   return (
     <div>
-      <PageHeader title="New Journal Entry" description="Create a new journal entry" />
+      <PageHeader title={t('new_journal_entry.title')} description={t('new_journal_entry.description')} />
 
       <div className="max-w-4xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Date *</label>
+              <label className="block text-sm font-medium mb-1">{t('new_journal_entry.date')}</label>
               <input
                 type="date" required value={date}
                 onChange={e => setDate(e.target.value)}
@@ -121,28 +123,28 @@ export default function NewJournalEntryPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Description *</label>
+              <label className="block text-sm font-medium mb-1">{t('new_journal_entry.description_label')}</label>
               <input
                 type="text" required value={description}
                 onChange={e => setDescription(e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="Transaction description"
+                placeholder={t('new_journal_entry.description_placeholder')}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Reference</label>
+              <label className="block text-sm font-medium mb-1">{t('new_journal_entry.reference')}</label>
               <input
                 type="text" value={reference}
                 onChange={e => setReference(e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="Optional reference"
+                placeholder={t('new_journal_entry.reference_placeholder')}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Currency</label>
+              <label className="block text-sm font-medium mb-1">{t('new_journal_entry.currency')}</label>
               <select
                 value={currency}
                 onChange={e => setCurrency(e.target.value)}
@@ -152,25 +154,25 @@ export default function NewJournalEntryPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">FX Rate (to base)</label>
+              <label className="block text-sm font-medium mb-1">{t('new_journal_entry.fx_rate')}</label>
               <input
                 type="number" min="0" step="any" value={fxRate}
                 onChange={e => setFxRate(e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="1.0 (USD entries: 1 = no conversion)"
+                placeholder={t('new_journal_entry.fx_rate_placeholder')}
               />
             </div>
           </div>
 
           <div className="pt-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold">Journal Lines</h3>
+              <h3 className="text-sm font-semibold">{t('new_journal_entry.journal_lines')}</h3>
               <button
                 type="button"
                 onClick={addLine}
                 className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent"
               >
-                + Add Line
+                {t('new_journal_entry.add_line')}
               </button>
             </div>
 
@@ -178,10 +180,10 @@ export default function NewJournalEntryPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">Account</th>
-                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">Description</th>
-                    <th className="text-right p-2 text-xs font-medium text-muted-foreground">Debit</th>
-                    <th className="text-right p-2 text-xs font-medium text-muted-foreground">Credit</th>
+                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">{t('new_journal_entry.account')}</th>
+                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">{t('new_journal_entry.description_label')}</th>
+                    <th className="text-right p-2 text-xs font-medium text-muted-foreground">{t('new_journal_entry.debit')}</th>
+                    <th className="text-right p-2 text-xs font-medium text-muted-foreground">{t('new_journal_entry.credit')}</th>
                     <th className="w-10 p-2" />
                   </tr>
                 </thead>
@@ -194,7 +196,7 @@ export default function NewJournalEntryPage() {
                           onChange={e => updateLine(line.id, 'account_id', e.target.value)}
                           className="w-full rounded-md border bg-background px-2 py-1.5 text-sm min-w-[160px]"
                         >
-                          <option value="">Select account</option>
+                          <option value="">{t('new_journal_entry.select_account')}</option>
                           {accounts.map(a => (
                             <option key={a.id} value={a.id}>{a.account_code} - {a.name}</option>
                           ))}
@@ -206,7 +208,7 @@ export default function NewJournalEntryPage() {
                           value={line.description}
                           onChange={e => updateLine(line.id, 'description', e.target.value)}
                           className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-                          placeholder={`Line ${idx + 1}`}
+                          placeholder={t('new_journal_entry.line_placeholder', { n: idx + 1 })}
                         />
                       </td>
                       <td className="p-2">
@@ -247,7 +249,7 @@ export default function NewJournalEntryPage() {
                 </tbody>
                 <tfoot>
                   <tr className="border-t bg-muted/30">
-                    <td colSpan={2} className="p-2 text-sm font-semibold text-right">Totals</td>
+                    <td colSpan={2} className="p-2 text-sm font-semibold text-right">{t('new_journal_entry.totals')}</td>
                     <td className={`p-2 text-sm font-semibold text-right ${totalDebits !== totalCredits ? 'text-red-500' : ''}`}>
                       {formatCurrency(totalDebits)}
                     </td>
@@ -262,7 +264,7 @@ export default function NewJournalEntryPage() {
 
             {!isBalanced && totalDebits > 0 && (
               <p className="text-xs text-red-500 mt-2">
-                Debits ({formatCurrency(totalDebits)}) must equal Credits ({formatCurrency(totalCredits)})
+                {t('new_journal_entry.unbalanced', { debits: formatCurrency(totalDebits), credits: formatCurrency(totalCredits) })}
               </p>
             )}
           </div>
@@ -273,10 +275,10 @@ export default function NewJournalEntryPage() {
               disabled={!canSubmit || submitting}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
-              {submitting ? 'Creating...' : 'Create Entry'}
+              {submitting ? t('new_journal_entry.creating') : t('new_journal_entry.create_entry')}
             </button>
             <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">
-              Cancel
+              {t('new_journal_entry.cancel')}
             </button>
           </div>
         </form>

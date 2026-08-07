@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -9,11 +11,12 @@ import Link from 'next/link'
 
 const stages = ['new', 'contacted', 'demo_scheduled', 'proposal_sent', 'negotiation', 'won', 'lost']
 const stageLabels: Record<string, string> = {
-  new: 'New', contacted: 'Contacted', demo_scheduled: 'Demo Scheduled',
-  proposal_sent: 'Proposal Sent', negotiation: 'Negotiation', won: 'Won', lost: 'Lost',
+  new: "stage_new", contacted: "stage_contacted", demo_scheduled: "stage_demo_scheduled",
+  proposal_sent: "stage_proposal_sent", negotiation: "stage_negotiation", won: "stage_won", lost: "stage_lost",
 }
 
 export default function DealDetailPage() {
+  const t = useTranslations('crm')
   const params = useParams()
   const id = params.id as string
   const [deal, setDeal] = useState<any>(null)
@@ -65,7 +68,7 @@ export default function DealDetailPage() {
 
 
   const changeStage = async (newStage: string) => {
-    if (!(await confirm(`Mark deal as ${stageLabels[newStage]}?`))) return
+    if (!(await confirm(`Mark deal as ${t(stageLabels[newStage])}?`))) return
     setActionLoading(true)
     try {
       const res = await fetch(`/api/crm/deals/${id}`, {
@@ -91,7 +94,7 @@ export default function DealDetailPage() {
   }
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
-  if (!deal) return <EmptyState title="Deal not found" />
+  if (!deal) return <EmptyState title={t('deal_detail_not_found')} />
 
   const currentIndex = stages.indexOf(deal.stage)
   const ownerName = typeof deal.owner === 'object' ? deal.owner?.name : deal.owner || '-'
@@ -100,7 +103,7 @@ export default function DealDetailPage() {
     <div>
       <PageHeader
         title={deal.name}
-        description={`Stage: ${stageLabels[deal.stage]}`}
+        description={t('deal_detail_stage_desc', { stage: stageLabels[deal.stage] })}
         actions={
           <div className="flex flex-wrap gap-2">
             {deal.stage !== 'won' && (
@@ -127,7 +130,7 @@ export default function DealDetailPage() {
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${
                 i <= currentIndex ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
               }`}>
-                <span>{stageLabels[stage]}</span>
+                <span>{t(stageLabels[stage])}</span>
               </div>
               {i < stages.length - 1 && (
                 <div className={`h-0.5 w-6 ${i < currentIndex ? 'bg-primary' : 'bg-muted'}`} />
@@ -140,18 +143,18 @@ export default function DealDetailPage() {
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 space-y-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Deal Info</h3>
+            <h3 className="font-semibold mb-3">{t('deal_detail_info')}</h3>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Value</dt><dd>{deal.value ? `$${deal.value.toLocaleString()}` : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Probability</dt><dd>{deal.probability ? `${deal.probability}%` : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Stage</dt><dd className="capitalize">{stageLabels[deal.stage]}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Expected Close</dt><dd>{deal.expected_close_date ? new Date(deal.expected_close_date).toLocaleDateString() : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Owner</dt><dd>{ownerName}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Created</dt><dd>{deal.created_at ? new Date(deal.created_at).toLocaleDateString() : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_value')}</dt><dd>{deal.value ? `$${deal.value.toLocaleString()}` : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_probability')}</dt><dd>{deal.probability ? `${deal.probability}%` : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_stage')}</dt><dd className="capitalize">{t(stageLabels[deal.stage])}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_expected')}</dt><dd>{deal.expected_close_date ? new Date(deal.expected_close_date).toLocaleDateString() : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_owner')}</dt><dd>{ownerName}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('deal_detail_created')}</dt><dd>{deal.created_at ? new Date(deal.created_at).toLocaleDateString() : '-'}</dd></div>
             </dl>
             {deal.notes && (
               <div className="mt-3 pt-3 border-t">
-                <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('deal_detail_notes')}</p>
                 <p className="text-sm">{deal.notes}</p>
               </div>
             )}
@@ -159,7 +162,7 @@ export default function DealDetailPage() {
 
           {customer && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-3">Customer (from Won Deal)</h3>
+              <h3 className="font-semibold mb-3">{t('deal_detail_customer')}</h3>
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between"><dt className="text-muted-foreground">Name</dt><dd>{customer.name}</dd></div>
                 <div className="flex justify-between"><dt className="text-muted-foreground">Email</dt><dd>{customer.email || '-'}</dd></div>
@@ -172,7 +175,7 @@ export default function DealDetailPage() {
         <div className="md:col-span-2 rounded-lg border bg-card p-4">
           <h3 className="font-semibold mb-3">Activities</h3>
           {activities.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No activities recorded</p>
+            <p className="text-sm text-muted-foreground">{t('deal_detail_no_activities')}</p>
           ) : (
             <div className="space-y-3">
               {activities.map((act: any) => (

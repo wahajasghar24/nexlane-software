@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -23,6 +25,7 @@ const fmt = (n: number) =>
   Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export default function ProductsPage() {
+  const t = useTranslations('inv')
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -55,11 +58,11 @@ export default function ProductsPage() {
   return (
     <div>
       <PageHeader
-        title="Products"
-        description="Inventory catalog with stock levels"
+        title={t('products_title')}
+        description={t('products_description')}
         actions={
           <Link href="/inventory/products/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Product
+            {t('products_new')}
           </Link>
         }
       />
@@ -69,30 +72,30 @@ export default function ProductsPage() {
           type="search"
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
-          placeholder="Search products..."
+          placeholder={t('products_search')}
           className="max-w-xs rounded-md border bg-background px-3 py-2 text-sm"
         />
       </div>
 
       <div className="rounded-lg border bg-card">
         {loading ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">Loading...</div>
+          <div className="p-8 text-center text-sm text-muted-foreground">{t('products_loading')}</div>
         ) : products.length === 0 ? (
-          <EmptyState title="No products" description="Create your first product to start tracking inventory." />
+          <EmptyState title={t('products_empty_title')} description={t('products_empty_desc')} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                  <th className="px-4 py-3">SKU</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Category</th>
-                  <th className="px-4 py-3 text-right">Stock</th>
-                  <th className="px-4 py-3 text-right">Min</th>
-                  <th className="px-4 py-3 text-right">Purchase</th>
-                  <th className="px-4 py-3 text-right">Sale</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <th className="px-4 py-3">{t('products_col_sku')}</th>
+                  <th className="px-4 py-3">{t('products_col_name')}</th>
+                  <th className="px-4 py-3">{t('products_col_category')}</th>
+                  <th className="px-4 py-3 text-right">{t('products_col_stock')}</th>
+                  <th className="px-4 py-3 text-right">{t('products_col_min')}</th>
+                  <th className="px-4 py-3 text-right">{t('products_col_purchase')}</th>
+                  <th className="px-4 py-3 text-right">{t('products_col_sale')}</th>
+                  <th className="px-4 py-3">{t('products_col_status')}</th>
+                  <th className="px-4 py-3 text-right">{t('products_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -113,7 +116,7 @@ export default function ProductsPage() {
                       <td className="px-4 py-3 text-right">{fmt(p.sale_price)}</td>
                       <td className="px-4 py-3">
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-900/30 dark:text-gray-400'}`}>
-                          {p.is_active ? 'Active' : 'Inactive'}
+                          {p.is_active ? t('products_active') : t('products_inactive')}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">

@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -8,6 +10,7 @@ export default function EditDealPage() {
   const params = useParams()
   const id = params.id as string
   const router = useRouter()
+  const t = useTranslations('crm')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({ name: '', value: '', probability: '', stage: 'new', expected_close_date: '', owner_id: '', notes: '' })
@@ -51,17 +54,17 @@ export default function EditDealPage() {
 
   return (
     <div>
-      <PageHeader title="Edit Deal" description="Update deal information" />
+      <PageHeader title={t('deal_edit_title')} description={t('deal_edit_description')} />
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div><label className="block text-sm font-medium mb-1">Deal Name *</label><input type="text" required value={form.name} onChange={e => u('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('deal_name')} *</label><input type="text" required value={form.name} onChange={e => u('name', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium mb-1">Value ($)</label><input type="number" min="0" step="0.01" value={form.value} onChange={e => u('value', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-            <div><label className="block text-sm font-medium mb-1">Probability (%)</label><input type="number" min="0" max="100" value={form.probability} onChange={e => u('probability', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+            <div><label className="block text-sm font-medium mb-1">{t('deal_value')}</label><input type="number" min="0" step="0.01" value={form.value} onChange={e => u('value', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+            <div><label className="block text-sm font-medium mb-1">{t('deal_probability')}</label><input type="number" min="0" max="100" value={form.probability} onChange={e => u('probability', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Stage</label>
+              <label className="block text-sm font-medium mb-1">{t('deal_stage')}</label>
               <select value={form.stage} onChange={e => u('stage', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
                 <option value="new">New</option>
                 <option value="contacted">Contacted</option>
@@ -72,13 +75,13 @@ export default function EditDealPage() {
                 <option value="lost">Lost</option>
               </select>
             </div>
-            <div><label className="block text-sm font-medium mb-1">Expected Close Date</label><input type="date" value={form.expected_close_date} onChange={e => u('expected_close_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+            <div><label className="block text-sm font-medium mb-1">{t('deal_expected_close')}</label><input type="date" value={form.expected_close_date} onChange={e => u('expected_close_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           </div>
-          <div><label className="block text-sm font-medium mb-1">Owner ID</label><input type="text" value={form.owner_id} onChange={e => u('owner_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
-          <div><label className="block text-sm font-medium mb-1">Notes</label><textarea rows={3} value={form.notes} onChange={e => u('notes', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('deal_owner_id')}</label><input type="text" value={form.owner_id} onChange={e => u('owner_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('deal_notes')}</label><textarea rows={3} value={form.notes} onChange={e => u('notes', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" /></div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">{submitting ? 'Saving...' : 'Save Changes'}</button>
-            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+            <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">{submitting ? t('common_saving') : t('deal_edit_save')}</button>
+            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('common_cancel')}</button>
           </div>
         </form>
       </div>

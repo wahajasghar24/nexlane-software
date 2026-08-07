@@ -1,10 +1,12 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 
 export default function WorkLogsPage() {
+  const t = useTranslations('hr')
   const [logs, setLogs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0])
@@ -76,7 +78,7 @@ export default function WorkLogsPage() {
     setCurrentDate(d.toISOString().split('T')[0])
   }
 
-  const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || 'Unnamed'
+  const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || t('common.unnamed')
 
   const handleReview = async (id: string, action: 'approve' | 'reject') => {
     const res = await fetch(`/api/work-logs/${id}/${action}`, { method: 'POST' })
@@ -88,11 +90,11 @@ export default function WorkLogsPage() {
   return (
     <div>
       <PageHeader
-        title="Work Logs"
-        description="Track time and work entries"
+        title={t('work_logs.title')}
+        description={t('work_logs.description')}
         actions={
           <button onClick={() => { setForm(prev => ({ ...prev, log_date: currentDate })); setShowModal(true) }} className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            Log Work
+            {t('work_logs.log_work')}
           </button>
         }
       />
@@ -106,19 +108,19 @@ export default function WorkLogsPage() {
           <button onClick={nextDay} className="rounded-md px-2 py-1 text-sm hover:bg-accent">&rarr;</button>
         </div>
         <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Employees</option>
+          <option value="">{t('common.all_employees')}</option>
           {employees.map((emp: any) => (
             <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
           ))}
         </select>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Statuses</option>
-          <option value="draft">Draft</option>
-          <option value="submitted">Submitted</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
+          <option value="">{t('common.all_statuses')}</option>
+          <option value="draft">{t('status.draft')}</option>
+          <option value="submitted">{t('status.submitted')}</option>
+          <option value="approved">{t('status.approved')}</option>
+          <option value="rejected">{t('status.rejected')}</option>
         </select>
-        <span className="text-sm text-muted-foreground sm:ml-auto">Total: {totalHours}h</span>
+        <span className="text-sm text-muted-foreground sm:ml-auto">{t('work_logs.total', { hours: totalHours })}</span>
       </div>
 
       {loading ? (
@@ -132,9 +134,9 @@ export default function WorkLogsPage() {
         </div>
       ) : logs.length === 0 ? (
         <EmptyState
-          title="No work logs"
-          description="No work entries found for this date"
-          action={<button onClick={() => { setForm(prev => ({ ...prev, log_date: currentDate })); setShowModal(true) }} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Log Work</button>}
+          title={t('work_logs.no_logs')}
+          description={t('work_logs.no_logs_desc')}
+          action={<button onClick={() => { setForm(prev => ({ ...prev, log_date: currentDate })); setShowModal(true) }} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('work_logs.log_work')}</button>}
         />
       ) : (
         <>
@@ -160,8 +162,8 @@ export default function WorkLogsPage() {
                 </div>
                 {log.status === 'submitted' && (
                   <div className="flex gap-2 pt-2">
-                    <button onClick={() => handleReview(log.id, 'approve')} className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">Approve</button>
-                    <button onClick={() => handleReview(log.id, 'reject')} className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700">Reject</button>
+                    <button onClick={() => handleReview(log.id, 'approve')} className="rounded-md bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">{t('common.approve')}</button>
+                    <button onClick={() => handleReview(log.id, 'reject')} className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700">{t('common.reject')}</button>
                   </div>
                 )}
               </div>
@@ -172,12 +174,12 @@ export default function WorkLogsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Employee</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Task</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Hours</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.employee')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.task')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.hours')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.description')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.status')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -218,37 +220,37 @@ export default function WorkLogsPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">Log Work</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('work_logs.log_work')}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Employee *</label>
+                <label className="block text-sm font-medium mb-1">{t('fields.employee')} *</label>
                 <select required value={form.employee_id} onChange={e => setForm(prev => ({ ...prev, employee_id: e.target.value }))} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                  <option value="">Select employee</option>
+                  <option value="">{t('common.select_employee')}</option>
                   {employees.map((emp: any) => (
                     <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Hours *</label>
+                <label className="block text-sm font-medium mb-1">{t('common.hours')} *</label>
                 <input type="number" required min="0" step="0.5" value={form.hours} onChange={e => setForm(prev => ({ ...prev, hours: e.target.value }))} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <label className="block text-sm font-medium mb-1">{t('common.description')}</label>
                 <textarea rows={2} value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Status</label>
+                <label className="block text-sm font-medium mb-1">{t('common.status')}</label>
                 <select value={form.status} onChange={e => setForm(prev => ({ ...prev, status: e.target.value }))} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                  <option value="draft">Draft</option>
-                  <option value="submitted">Submitted</option>
+                  <option value="draft">{t('status.draft')}</option>
+                  <option value="submitted">{t('status.submitted')}</option>
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                  {submitting ? 'Saving...' : 'Log Work'}
+                  {submitting ? t('common.saving') : t('work_logs.log_work')}
                 </button>
-                <button type="button" onClick={() => setShowModal(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+                <button type="button" onClick={() => setShowModal(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('common.cancel')}</button>
               </div>
             </form>
           </div>

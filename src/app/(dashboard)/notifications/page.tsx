@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -23,6 +24,7 @@ const typeIcons: Record<string, string> = {
 }
 
 export default function NotificationsPage() {
+  const t = useTranslations('hr')
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -92,14 +94,14 @@ export default function NotificationsPage() {
   return (
     <div>
       <PageHeader
-        title="Notifications"
-        description="Stay updated with system activity"
+        title={t('notifications.title')}
+        description={t('notifications.description')}
         actions={
           <button
             onClick={handleMarkAllRead}
             className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
           >
-            Mark All Read
+            {t('notifications.mark_all_read')}
           </button>
         }
       />
@@ -107,7 +109,7 @@ export default function NotificationsPage() {
       <div className="flex items-center gap-3 mb-4">
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={unreadOnly} onChange={e => { setUnreadOnly(e.target.checked); setPage(1) }} className="rounded" />
-          Unread only
+          {t('notifications.unread_only')}
         </label>
       </div>
 
@@ -121,7 +123,7 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : notifications.length === 0 ? (
-        <EmptyState title="No notifications" description={unreadOnly ? 'No unread notifications' : 'No notifications yet'} />
+        <EmptyState title={t('notifications.no_notifications')} description={unreadOnly ? t('notifications.no_unread') : t('notifications.no_notifications_yet')} />
       ) : (
         <>
           <div className="rounded-lg border divide-y">
@@ -145,7 +147,7 @@ export default function NotificationsPage() {
                   </div>
                   {!n.is_read && (
                     <button onClick={e => { e.stopPropagation(); handleMarkRead(n.id) }} className="text-xs text-primary hover:underline shrink-0">
-                      Mark read
+                      {t('notifications.mark_read')}
                     </button>
                   )}
                 </div>
@@ -154,10 +156,10 @@ export default function NotificationsPage() {
           </div>
 
           <div className="flex items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('common.page_of', { page, totalPages })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.next')}</button>
             </div>
           </div>
         </>

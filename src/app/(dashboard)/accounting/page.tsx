@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import { StaggerGroup, StaggerItem } from '@/shared/components/motion'
@@ -29,6 +30,7 @@ const statIcons = {
 }
 
 export default function AccountingDashboardPage() {
+  const t = useTranslations('acc')
   const [stats, setStats] = useState<DashboardStats>({
     totalAccountsReceivable: 0,
     totalRevenueThisMonth: 0,
@@ -57,17 +59,17 @@ export default function AccountingDashboardPage() {
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 
   const statCards = [
-    { label: 'Total AR', value: stats.totalAccountsReceivable, href: '/accounting/accounts', chip: 'bg-blue-500/10 text-blue-600 dark:text-blue-400', icon: statIcons.ar },
-    { label: 'Revenue (MTD)', value: stats.totalRevenueThisMonth, href: '/accounting/journal-entries', chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400', icon: statIcons.revenue },
-    { label: 'Expenses (MTD)', value: stats.totalExpensesThisMonth, href: '/accounting/journal-entries', chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400', icon: statIcons.expenses },
-    { label: 'Invoices', value: '-', href: '/accounting/invoices', chip: 'bg-purple-500/10 text-purple-600 dark:text-purple-400', icon: statIcons.invoices, isCount: true },
+    { label: t('dashboard.total_ar'), value: stats.totalAccountsReceivable, href: '/accounting/accounts', chip: 'bg-blue-500/10 text-blue-600 dark:text-blue-400', icon: statIcons.ar },
+    { label: t('dashboard.revenue_mtd'), value: stats.totalRevenueThisMonth, href: '/accounting/journal-entries', chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400', icon: statIcons.revenue },
+    { label: t('dashboard.expenses_mtd'), value: stats.totalExpensesThisMonth, href: '/accounting/journal-entries', chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400', icon: statIcons.expenses },
+    { label: t('dashboard.invoices'), value: '-', href: '/accounting/invoices', chip: 'bg-purple-500/10 text-purple-600 dark:text-purple-400', icon: statIcons.invoices, isCount: true },
   ]
 
   const quickLinks = [
-    { label: 'Accounts', href: '/accounting/accounts', desc: 'Manage chart of accounts' },
-    { label: 'Journal Entries', href: '/accounting/journal-entries', desc: 'Record transactions' },
-    { label: 'Invoices', href: '/accounting/invoices', desc: 'Manage customer invoices' },
-    { label: 'Payments', href: '/accounting/payments', desc: 'Record incoming payments' },
+    { label: t('dashboard.accounts'), href: '/accounting/accounts', desc: t('dashboard.accounts_desc') },
+    { label: t('dashboard.journal_entries'), href: '/accounting/journal-entries', desc: t('dashboard.journal_entries_desc') },
+    { label: t('dashboard.invoices'), href: '/accounting/invoices', desc: t('dashboard.invoices_desc') },
+    { label: t('dashboard.payments'), href: '/accounting/payments', desc: t('dashboard.payments_desc') },
   ]
 
   const statusBadge = (status: string) => {
@@ -81,7 +83,7 @@ export default function AccountingDashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Accounting" description="Financial overview and management" />
+      <PageHeader title={t('dashboard.title')} description={t('dashboard.description')} />
 
       {loading ? (
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 mb-8">
@@ -114,7 +116,7 @@ export default function AccountingDashboardPage() {
 
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 mb-8">
         <div>
-          <h2 className="text-lg font-semibold mb-3">Quick Links</h2>
+          <h2 className="text-lg font-semibold mb-3">{t('dashboard.quick_links')}</h2>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
             {quickLinks.map(link => (
               <Link key={link.label} href={link.href} className="group rounded-xl border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
@@ -129,18 +131,18 @@ export default function AccountingDashboardPage() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold mb-3">Recent Transactions</h2>
+          <h2 className="text-lg font-semibold mb-3">{t('dashboard.recent_transactions')}</h2>
           {recentEntries.length === 0 ? (
-            <EmptyState title="No transactions yet" description="Journal entries will appear here" />
+            <EmptyState title={t('dashboard.no_transactions')} description={t('dashboard.no_transactions_hint')} />
           ) : (
             <div className="rounded-xl border bg-card shadow-sm overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Description</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                    <th className="text-right p-3 text-sm font-medium text-muted-foreground">Entry #</th>
+                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('dashboard.date')}</th>
+                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('dashboard.description')}</th>
+                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('dashboard.status')}</th>
+                    <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('dashboard.entry_no')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,7 +152,7 @@ export default function AccountingDashboardPage() {
                       <td className="p-3 text-sm font-medium">{entry.description}</td>
                       <td className="p-3">
                         <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge(entry.status)}`}>
-                          {entry.status}
+                          {t(`status.${entry.status}`)}
                         </span>
                       </td>
                       <td className="p-3 text-sm text-right font-mono">{entry.entry_number}</td>

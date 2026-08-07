@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -26,6 +28,7 @@ const fmt = (n: number) =>
   Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export default function SalesOrdersPage() {
+  const t = useTranslations('trx')
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -50,7 +53,7 @@ export default function SalesOrdersPage() {
   }, [page, search, statusFilter])
 
   const handleDelete = async (id: string) => {
-    if (!(await confirm('Delete this quotation? Only draft orders can be deleted.'))) return
+    if (!(await confirm(t('sales_delete_confirm')))) return
     try {
       const res = await fetch(`/api/sales/orders/${id}`, { method: 'DELETE' })
       if (res.ok) setOrders(prev => prev.filter(o => o.id !== id))
@@ -60,11 +63,11 @@ export default function SalesOrdersPage() {
   return (
     <div>
       <PageHeader
-        title="Sales Orders"
-        description="Quotations and confirmed orders"
+        title={t('sales_title')}
+        description={t('sales_description')}
         actions={
           <Link href="/sales/orders/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Quotation
+            {t('sales_new_quotation')}
           </Link>
         }
       />
@@ -74,7 +77,7 @@ export default function SalesOrdersPage() {
           type="search"
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
-          placeholder="Search orders..."
+          placeholder={t('sales_search')}
           className="max-w-xs rounded-md border bg-background px-3 py-2 text-sm"
         />
         <select
@@ -82,7 +85,7 @@ export default function SalesOrdersPage() {
           onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm"
         >
-          <option value="">All statuses</option>
+          <option value="">{t('sales_all_statuses')}</option>
           <option value="draft">Draft (Quotation)</option>
           <option value="confirmed">Confirmed</option>
           <option value="delivered">Delivered</option>
@@ -92,20 +95,20 @@ export default function SalesOrdersPage() {
 
       <div className="rounded-lg border bg-card">
         {loading ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">Loading...</div>
+          <div className="p-8 text-center text-sm text-muted-foreground">{t('sales_loading')}</div>
         ) : orders.length === 0 ? (
-          <EmptyState title="No sales orders" description="Create a quotation to get started." />
+          <EmptyState title={t('sales_empty_title')} description={t('sales_empty_desc')} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                  <th className="px-4 py-3">Order</th>
-                  <th className="px-4 py-3">Customer</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Total</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+                  <th className="px-4 py-3">{t('sales_col_order')}</th>
+                  <th className="px-4 py-3">{t('sales_col_customer')}</th>
+                  <th className="px-4 py-3">{t('sales_col_status')}</th>
+                  <th className="px-4 py-3 text-right">{t('sales_col_total')}</th>
+                  <th className="px-4 py-3">{t('sales_col_date')}</th>
+                  <th className="px-4 py-3 text-right">{t('sales_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,9 +142,9 @@ export default function SalesOrdersPage() {
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between text-sm">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-md border px-3 py-1.5 disabled:opacity-50">Previous</button>
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-md border px-3 py-1.5 disabled:opacity-50">{t('sales_previous')}</button>
           <span className="text-muted-foreground">Page {page} of {totalPages}</span>
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-md border px-3 py-1.5 disabled:opacity-50">Next</button>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-md border px-3 py-1.5 disabled:opacity-50">{t('sales_next')}</button>
         </div>
       )}
     </div>

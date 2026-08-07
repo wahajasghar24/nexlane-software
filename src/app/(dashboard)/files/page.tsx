@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -22,6 +24,7 @@ function formatSize(bytes: number): string {
 }
 
 export default function FilesPage() {
+  const t = useTranslations('misc')
   const [files, setFiles] = useState<FileItem[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -62,7 +65,7 @@ export default function FilesPage() {
   }, [page])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this file?')) return
+    if (!confirm(t('files_delete_confirm'))) return
     await fetch(`/api/files/${id}`, { method: 'DELETE' })
     refreshFiles()
   }
@@ -78,25 +81,25 @@ export default function FilesPage() {
 
   return (
     <div>
-      <PageHeader title="Files" description="Manage uploaded files" />
+      <PageHeader title={t('files_title')} description={t('files_description')} />
 
       {loading ? (
         <div className="rounded-lg border animate-pulse space-y-3 p-4">
           {[...Array(5)].map((_, i) => <div key={i} className="h-12 bg-muted rounded" />)}
         </div>
       ) : files.length === 0 ? (
-        <EmptyState title="No files" description="Upload files to get started" />
+        <EmptyState title={t('files_empty_title')} description={t('files_empty_desc')} />
       ) : (
         <>
           <div className="rounded-lg border overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Size</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Type</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('files_col_name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('files_col_size')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('files_col_type')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('files_col_date')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('files_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,8 +127,8 @@ export default function FilesPage() {
           <div className="flex items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('files_previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('files_next')}</button>
             </div>
           </div>
         </>

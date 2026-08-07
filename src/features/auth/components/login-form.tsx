@@ -5,24 +5,26 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import { useLogin } from '@/features/auth/hooks/useAuth'
 import { createClient } from '@/core/supabase/client'
 import { useRouter } from 'next/navigation'
 
-const loginSchema = z.object({
+type LoginForm = z.infer<ReturnType<typeof makeSchema>>
+
+const makeSchema = (passwordRequired: string) => z.object({
   email: z.string().email(),
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, passwordRequired),
 })
 
-type LoginForm = z.infer<typeof loginSchema>
-
 export function LoginForm() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const login = useLogin()
   const [error, setError] = useState<string | null>(null)
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(makeSchema(t('login.password_required'))),
   })
 
   async function onSubmit(data: LoginForm) {
@@ -34,7 +36,7 @@ export function LoginForm() {
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
       router.push(aal?.nextLevel === 'aal2' ? '/mfa' : '/')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(err instanceof Error ? err.message : t('login.login_failed'))
     }
   }
 
@@ -46,7 +48,7 @@ export function LoginForm() {
         </div>
       )}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+        <label htmlFor="email" className="block text-sm font-medium mb-1">{t('login.email')}</label>
         <input
           id="email"
           type="email"
@@ -56,7 +58,7 @@ export function LoginForm() {
         {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+        <label htmlFor="password" className="block text-sm font-medium mb-1">{t('login.password')}</label>
         <input
           id="password"
           type="password"
@@ -67,7 +69,7 @@ export function LoginForm() {
       </div>
       <div className="flex justify-end -mt-2">
         <Link href="/forgot-password" className="text-xs font-medium text-primary hover:underline">
-          Forgot password?
+          {t('login.forgot_password')}
         </Link>
       </div>
       <button
@@ -75,7 +77,7 @@ export function LoginForm() {
         disabled={isSubmitting}
         className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
       >
-        {isSubmitting ? 'Signing in...' : 'Sign In'}
+        {isSubmitting ? t('login.signing_in') : t('login.sign_in')}
       </button>
     </form>
   )

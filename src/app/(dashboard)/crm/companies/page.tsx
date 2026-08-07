@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -14,6 +16,7 @@ interface Company {
 }
 
 export default function CompaniesPage() {
+  const t = useTranslations('crm')
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -45,18 +48,18 @@ export default function CompaniesPage() {
   return (
     <div>
       <PageHeader
-        title="Companies"
-        description="Manage your CRM companies"
+        title={t('companies_title')}
+        description={t('companies_description')}
         actions={
           <Link href="/crm/companies/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Company
+            {t('companies_new')}
           </Link>
         }
       />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search companies..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
-        <input type="text" placeholder="Filter by industry..." value={industryFilter} onChange={e => { setIndustryFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto" />
+        <input type="text" placeholder={t('companies_search')} value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <input type="text" placeholder={t('companies_filter_industry')} value={industryFilter} onChange={e => { setIndustryFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto" />
       </div>
 
       {loading ? (
@@ -69,7 +72,7 @@ export default function CompaniesPage() {
           ))}
         </div>
       ) : companies.length === 0 ? (
-        <EmptyState title="No companies found" description="Add your first company" action={<Link href="/crm/companies/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Company</Link>} />
+        <EmptyState title={t('companies_empty_title')} description={t('companies_empty_desc')} action={<Link href="/crm/companies/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Company</Link>} />
       ) : (
         <>
           {/* Mobile card view */}
@@ -78,7 +81,7 @@ export default function CompaniesPage() {
               <div key={c.id} className="rounded-lg border bg-card p-4">
                 <Link href={`/crm/companies/${c.id}`} className="font-medium hover:text-primary block mb-1">{c.name}</Link>
                 <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground mb-2">
-                  <span>{c.industry || 'No industry'}</span>
+                  <span>{c.industry || t('companies_no_industry')}</span>
                   <span className="text-right">{getContactCount(c)} contacts</span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t text-sm">
@@ -98,11 +101,11 @@ export default function CompaniesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Industry</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Website</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Contacts</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('companies_col_name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('companies_col_industry')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('companies_col_website')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('companies_col_contacts')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('companies_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,8 +127,8 @@ export default function CompaniesPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_next')}</button>
             </div>
           </div>
         </>

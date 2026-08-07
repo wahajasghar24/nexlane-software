@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -38,6 +39,7 @@ interface Dependency {
 }
 
 export default function TaskDetailPage() {
+  const t = useTranslations('hr')
   const params = useParams()
   const id = params.id as string
   const [task, setTask] = useState<any>(null)
@@ -148,11 +150,11 @@ export default function TaskDetailPage() {
 
   const getAssigneeName = (a: any) => {
     const emp = a.employee || a
-    return emp?.profile?.full_name || `${emp?.first_name || ''} ${emp?.last_name || ''}`.trim() || 'Unnamed'
+    return emp?.profile?.full_name || `${emp?.first_name || ''} ${emp?.last_name || ''}`.trim() || t('common.unnamed')
   }
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-96 bg-muted rounded" /></div>
-  if (!task) return <EmptyState title="Task not found" />
+  if (!task) return <EmptyState title={t('tasks_detail.not_found')} />
 
   return (
     <div>
@@ -169,13 +171,13 @@ export default function TaskDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           {task.description && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-2">Description</h3>
+              <h3 className="font-semibold mb-2">{t('common.description')}</h3>
               <p className="text-sm whitespace-pre-wrap">{task.description}</p>
             </div>
           )}
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Checklist ({checklists.filter(c => c.is_completed).length}/{checklists.length})</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.checklist', { done: checklists.filter(c => c.is_completed).length, total: checklists.length })}</h3>
             <div className="space-y-2 mb-3">
               {checklists.map(item => (
                 <label key={item.id} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -188,35 +190,35 @@ export default function TaskDetailPage() {
                   <span className={item.is_completed ? 'line-through text-muted-foreground' : ''}>{item.content}</span>
                 </label>
               ))}
-              {checklists.length === 0 && <p className="text-sm text-muted-foreground">No checklist items</p>}
+              {checklists.length === 0 && <p className="text-sm text-muted-foreground">{t('tasks_detail.no_checklist_items')}</p>}
             </div>
             <div className="flex gap-2">
-              <input type="text" placeholder="Add checklist item..." value={newChecklist} onChange={e => setNewChecklist(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" />
-              <button onClick={addChecklist} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">Add</button>
+              <input type="text" placeholder={t('tasks_detail.add_checklist_placeholder')} value={newChecklist} onChange={e => setNewChecklist(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" />
+              <button onClick={addChecklist} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('common.add')}</button>
             </div>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Comments</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.comments')}</h3>
             <div className="space-y-3 mb-3 max-h-64 overflow-y-auto">
               {comments.map(c => (
                 <div key={c.id} className="border-b pb-2 last:border-b-0">
                   <p className="text-sm">{c.content}</p>
-                  <p className="text-xs text-muted-foreground">{c.author_name || 'User'} &middot; {new Date(c.created_at).toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">{c.author_name || t('common.user')} &middot; {new Date(c.created_at).toLocaleString()}</p>
                 </div>
               ))}
-              {comments.length === 0 && <p className="text-sm text-muted-foreground">No comments yet</p>}
+              {comments.length === 0 && <p className="text-sm text-muted-foreground">{t('tasks_detail.no_comments')}</p>}
             </div>
             <div className="flex gap-2">
-              <textarea rows={2} placeholder="Write a comment..." value={newComment} onChange={e => setNewComment(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" />
-              <button onClick={addComment} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-end">Post</button>
+              <textarea rows={2} placeholder={t('tasks_detail.comment_placeholder')} value={newComment} onChange={e => setNewComment(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" />
+              <button onClick={addComment} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 self-end">{t('tasks_detail.post')}</button>
             </div>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Attachments</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.attachments')}</h3>
             {attachments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No attachments</p>
+              <p className="text-sm text-muted-foreground">{t('tasks_detail.no_attachments')}</p>
             ) : (
               <div className="space-y-2">
                 {attachments.map(a => (
@@ -232,19 +234,19 @@ export default function TaskDetailPage() {
 
         <div className="space-y-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Details</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.details')}</h3>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Status</dt><dd className="capitalize">{task.status?.replace(/_/g, ' ')}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Priority</dt><dd className={`capitalize font-medium ${priorityColors[task.priority] || ''}`}>{task.priority}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Due Date</dt><dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Est. Hours</dt><dd>{task.estimated_hours || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('common.status')}</dt><dd className="capitalize">{task.status?.replace(/_/g, ' ')}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('common.priority')}</dt><dd className={`capitalize font-medium ${priorityColors[task.priority] || ''}`}>{task.priority}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('common.due_date')}</dt><dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('fields.est_hours')}</dt><dd>{task.estimated_hours || '-'}</dd></div>
             </dl>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Assignees</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.assignees')}</h3>
             {assignees.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No assignees</p>
+              <p className="text-sm text-muted-foreground">{t('tasks_detail.no_assignees')}</p>
             ) : (
               <div className="space-y-2">
                 {assignees.map((a: any) => (
@@ -261,7 +263,7 @@ export default function TaskDetailPage() {
 
           {labels.length > 0 && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-3">Labels</h3>
+              <h3 className="font-semibold mb-3">{t('tasks_detail.labels')}</h3>
               <div className="flex flex-wrap gap-1.5">
                 {labels.map((l: any) => (
                   <span key={l.id} className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -273,18 +275,18 @@ export default function TaskDetailPage() {
           )}
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Time Tracking</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.time_tracking')}</h3>
             <div className="flex gap-2 mb-2">
-              <input type="number" placeholder="Hours" value={timeHours} onChange={e => setTimeHours(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" min="0" step="0.5" />
-              <button onClick={logTime} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">Log</button>
+              <input type="number" placeholder={t('common.hours')} value={timeHours} onChange={e => setTimeHours(e.target.value)} className="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm" min="0" step="0.5" />
+              <button onClick={logTime} className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('tasks_detail.log')}</button>
             </div>
             <input type="text" placeholder="Description" value={timeDesc} onChange={e => setTimeDesc(e.target.value)} className="w-full rounded-md border bg-background px-3 py-1.5 text-sm" />
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Watchers</h3>
+            <h3 className="font-semibold mb-3">{t('tasks_detail.watchers')}</h3>
             {watchers.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No watchers</p>
+              <p className="text-sm text-muted-foreground">{t('tasks_detail.no_watchers')}</p>
             ) : (
               <div className="space-y-2">
                 {watchers.map((w: any) => (
@@ -296,12 +298,12 @@ export default function TaskDetailPage() {
 
           {dependencies.length > 0 && (
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-3">Dependencies</h3>
+              <h3 className="font-semibold mb-3">{t('tasks_detail.dependencies')}</h3>
               <div className="space-y-1 text-sm">
                 {dependencies.map((d: any) => (
                   <div key={d.id}>
                     <Link href={`/tasks/${d.depends_on_task_id}`} className="text-primary hover:underline">
-                      Task {d.depends_on_task_id?.slice(0, 8)}
+                      {t('tasks_detail.task_ref', { id: d.depends_on_task_id?.slice(0, 8) })}
                     </Link>
                     <span className="text-muted-foreground ml-1">({d.type})</span>
                   </div>

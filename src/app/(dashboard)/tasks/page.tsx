@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -32,6 +33,7 @@ const priorityColors: Record<string, string> = {
 }
 
 export default function TasksPage() {
+  const t = useTranslations('hr')
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -71,39 +73,39 @@ export default function TasksPage() {
     if (!task.task_assignees?.length) return []
     return task.task_assignees.map((a: any) => {
       const emp = a.employee || a
-      return emp?.profile?.full_name || `${emp?.first_name || ''} ${emp?.last_name || ''}`.trim() || 'Unnamed'
+      return emp?.profile?.full_name || `${emp?.first_name || ''} ${emp?.last_name || ''}`.trim() || t('common.unnamed')
     })
   }
 
   return (
     <div>
       <PageHeader
-        title="Tasks"
-        description="Manage and track tasks"
+        title={t('tasks.title')}
+        description={t('tasks.description')}
         actions={
           <div className="flex gap-2">
-            <Link href="/tasks/board" className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Board View</Link>
-            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>
+            <Link href="/tasks/board" className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('tasks.board_view')}</Link>
+            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('tasks.new')}</Link>
           </div>
         }
       />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search tasks..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <input type="text" placeholder={t('tasks.search')} value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Statuses</option>
-          <option value="todo">Todo</option>
-          <option value="in_progress">In Progress</option>
-          <option value="review">Review</option>
-          <option value="done">Done</option>
-          <option value="blocked">Blocked</option>
+          <option value="">{t('common.all_statuses')}</option>
+          <option value="todo">{t('status.todo')}</option>
+          <option value="in_progress">{t('status.in_progress')}</option>
+          <option value="review">{t('status.review')}</option>
+          <option value="done">{t('status.done')}</option>
+          <option value="blocked">{t('status.blocked')}</option>
         </select>
         <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Priorities</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="urgent">Urgent</option>
+          <option value="">{t('common.all_priorities')}</option>
+          <option value="low">{t('priority.low')}</option>
+          <option value="medium">{t('priority.medium')}</option>
+          <option value="high">{t('priority.high')}</option>
+          <option value="urgent">{t('priority.urgent')}</option>
         </select>
       </div>
 
@@ -121,9 +123,9 @@ export default function TasksPage() {
         </div>
       ) : tasks.length === 0 ? (
         <EmptyState
-          title="No tasks found"
-          description="Create your first task"
-          action={<Link href="/tasks/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>}
+          title={t('tasks.no_tasks')}
+          description={t('tasks.no_tasks_desc')}
+          action={<Link href="/tasks/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('tasks.new')}</Link>}
         />
       ) : (
         <>
@@ -146,7 +148,7 @@ export default function TasksPage() {
                         {task.project.name}
                       </span>
                     ) : '-'}</span>
-                    <span className="text-right">{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date'}</span>
+                    <span className="text-right">{task.due_date ? new Date(task.due_date).toLocaleDateString() : t('tasks.no_due_date')}</span>
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t text-sm">
                     <div className="flex items-center gap-2">
@@ -182,12 +184,12 @@ export default function TasksPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Title</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Project</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Assignees</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Priority</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Due Date</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.title')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.project')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.assignees')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.status')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.priority')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.due_date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -242,10 +244,10 @@ export default function TasksPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('common.page_of', { page, totalPages })}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common.next')}</button>
             </div>
           </div>
         </>

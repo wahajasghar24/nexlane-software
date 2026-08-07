@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
@@ -27,6 +28,7 @@ const statusBadge = (status: string) => {
 }
 
 export default function InvoicesPage() {
+  const t = useTranslations('acc')
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -53,14 +55,14 @@ export default function InvoicesPage() {
   return (
     <div>
       <PageHeader
-        title="Invoices"
-        description="Manage customer invoices"
+        title={t('invoices.title')}
+        description={t('invoices.description')}
         actions={
           <Link
             href="/accounting/invoices/new"
             className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            New Invoice
+            {t('invoices.new_invoice')}
           </Link>
         }
       />
@@ -68,7 +70,7 @@ export default function InvoicesPage() {
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search invoices..."
+          placeholder={t('invoices.search_placeholder')}
           value={search}
           onChange={e => { setLoading(true); setSearch(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
@@ -86,11 +88,11 @@ export default function InvoicesPage() {
         </div>
       ) : invoices.length === 0 ? (
         <EmptyState
-          title="No invoices found"
-          description="Create your first invoice"
+          title={t('invoices.no_invoices')}
+          description={t('invoices.no_invoices_hint')}
           action={
             <Link href="/accounting/invoices/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-              New Invoice
+              {t('invoices.new_invoice')}
             </Link>
           }
         />
@@ -100,13 +102,13 @@ export default function InvoicesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Invoice #</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Customer</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Due Date</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Total</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('invoices.invoice_no')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('invoices.customer')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('invoices.date')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('invoices.due_date')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('invoices.total')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('invoices.status')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('invoices.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,12 +121,12 @@ export default function InvoicesPage() {
                     <td className="p-3 text-sm text-right font-medium">{formatCurrency(inv.total)}</td>
                     <td className="p-3">
                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge(inv.status)}`}>
-                        {inv.status}
+                        {t(`status.${inv.status}`)}
                       </span>
                     </td>
                     <td className="p-3 text-right">
                       <Link href={`/accounting/invoices/${inv.id}`} className="text-sm text-muted-foreground hover:text-primary">
-                        View
+                        {t('invoices.view')}
                       </Link>
                     </td>
                   </tr>
@@ -134,21 +136,21 @@ export default function InvoicesPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('invoices.page_of', { page, total: totalPages })}</p>
             <div className="flex gap-2">
               <button
                 onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Previous
+                {t('invoices.previous')}
               </button>
               <button
                 onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Next
+                {t('invoices.next')}
               </button>
             </div>
           </div>

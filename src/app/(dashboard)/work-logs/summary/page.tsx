@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -13,6 +14,7 @@ interface EmployeeSummary {
 }
 
 export default function WorkLogsSummaryPage() {
+  const t = useTranslations('hr')
   const [view, setView] = useState<'weekly' | 'monthly'>('weekly')
   const [summary, setSummary] = useState<EmployeeSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,8 +38,8 @@ export default function WorkLogsSummaryPage() {
   return (
     <div>
       <PageHeader
-        title="Work Logs Summary"
-        description="Productivity metrics overview"
+        title={t('work_logs_summary.title')}
+        description={t('work_logs_summary.description')}
       />
 
       <div className="flex items-center gap-2 mb-6">
@@ -45,27 +47,27 @@ export default function WorkLogsSummaryPage() {
           onClick={() => setView('weekly')}
           className={`rounded-md px-3 py-2 text-sm font-medium ${view === 'weekly' ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-accent'}`}
         >
-          Weekly
+          {t('work_logs_summary.weekly')}
         </button>
         <button
           onClick={() => setView('monthly')}
           className={`rounded-md px-3 py-2 text-sm font-medium ${view === 'monthly' ? 'bg-primary text-primary-foreground' : 'border bg-background hover:bg-accent'}`}
         >
-          Monthly
+          {t('work_logs_summary.monthly')}
         </button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3 mb-6">
         <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Total Hours</p>
+          <p className="text-sm text-muted-foreground">{t('work_logs_summary.total_hours')}</p>
           <p className="text-2xl font-bold">{totalHoursAll}h</p>
         </div>
         <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Active Employees</p>
+          <p className="text-sm text-muted-foreground">{t('work_logs_summary.active_employees')}</p>
           <p className="text-2xl font-bold">{summary.length}</p>
         </div>
         <div className="rounded-lg border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Avg Hours/Person</p>
+          <p className="text-sm text-muted-foreground">{t('work_logs_summary.avg_hours')}</p>
           <p className="text-2xl font-bold">{avgHoursPerPerson.toFixed(1)}h</p>
         </div>
       </div>
@@ -81,11 +83,11 @@ export default function WorkLogsSummaryPage() {
           ))}
         </div>
       ) : summary.length === 0 ? (
-        <EmptyState title="No data" description={`No work log data for this ${view} period`} />
+        <EmptyState title={t('work_logs_summary.no_data')} description={t('work_logs_summary.no_data_desc', { view })} />
       ) : (
         <div className="rounded-lg border bg-card">
           <div className="p-4 border-b">
-            <h3 className="font-semibold">Hours per Employee</h3>
+            <h3 className="font-semibold">{t('work_logs_summary.hours_per_employee')}</h3>
           </div>
           <div className="p-4 space-y-4">
             {summary.map(s => {
@@ -93,7 +95,7 @@ export default function WorkLogsSummaryPage() {
               return (
                 <div key={s.employee_id} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{s.employee_name || 'Unknown'}</span>
+                    <span className="font-medium">{s.employee_name || t('common.unknown')}</span>
                     <span className="text-muted-foreground">{s.total_hours}h ({s.log_count} logs, {s.approved_hours}h approved)</span>
                   </div>
                   <div className="h-3 rounded-full bg-muted overflow-hidden">

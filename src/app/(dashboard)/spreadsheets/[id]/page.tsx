@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect, useCallback } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { useRouter, useParams } from 'next/navigation'
@@ -31,6 +33,7 @@ export default function SpreadsheetViewPage() {
   const router = useRouter()
   const params = useParams()
   const id = params.id as string
+  const t = useTranslations('misc')
   const [sheet, setSheet] = useState<SheetData | null>(null)
   const [loading, setLoading] = useState(true)
   const [editingCell, setEditingCell] = useState<{ rowId: string; colId: string } | null>(null)
@@ -78,39 +81,39 @@ export default function SpreadsheetViewPage() {
       })
       await refreshSheet()
     } catch {
-      alert('Failed to add row')
+      alert(t('sheet_add_row_failed'))
     } finally {
       setSaving(false)
     }
   }
 
   const handleDeleteRow = async (rowId: string) => {
-    if (!confirm('Delete this row?')) return
+    if (!confirm(t('sheet_delete_row_confirm'))) return
     try {
       await fetch(`/api/spreadsheets/${id}/rows/${rowId}`, {
         method: 'DELETE',
       })
       await refreshSheet()
     } catch {
-      alert('Failed to delete row')
+      alert(t('sheet_delete_row_failed'))
     }
   }
 
   const handleDeleteColumn = async (columnId: string) => {
-    if (!confirm('Delete this column and all its data?')) return
+    if (!confirm(t('sheet_delete_column_confirm'))) return
     try {
       await fetch(`/api/spreadsheets/${id}/columns/${columnId}`, {
         method: 'DELETE',
       })
       await refreshSheet()
     } catch {
-      alert('Failed to delete column')
+      alert(t('sheet_delete_column_failed'))
     }
   }
 
   const handleAddColumn = async () => {
     if (!newColumn.name.trim() || !newColumn.key.trim()) {
-      alert('Name and key are required')
+      alert(t('sheet_name_key_required'))
       return
     }
     setSaving(true)
@@ -133,7 +136,7 @@ export default function SpreadsheetViewPage() {
       setNewColumn({ name: '', key: '', type: 'text' })
       await refreshSheet()
     } catch {
-      alert('Failed to add column')
+      alert(t('sheet_add_column_failed'))
     } finally {
       setSaving(false)
     }
@@ -185,7 +188,7 @@ export default function SpreadsheetViewPage() {
     return (
       <div className="p-6">
         <PageHeader
-          title="Spreadsheet not found"
+          title={t('sheet_not_found')}
           actions={
             <button
               onClick={() => router.push('/spreadsheets')}
@@ -233,42 +236,42 @@ export default function SpreadsheetViewPage() {
       {showAddColumn && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="rounded-lg border bg-card p-6 w-full max-w-md shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">Add Column</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('sheet_add_column_title')}</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1">{t('sheet_name')}</label>
                 <input
                   type="text"
                   value={newColumn.name}
                   onChange={e => setNewColumn(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. Full Name"
+                  placeholder={t('sheet_name_placeholder')}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Key</label>
+                <label className="block text-sm font-medium mb-1">{t('sheet_key')}</label>
                 <input
                   type="text"
                   value={newColumn.key}
                   onChange={e => setNewColumn(prev => ({ ...prev, key: e.target.value }))}
-                  placeholder="e.g. full_name"
+                  placeholder={t('sheet_key_placeholder')}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                 />
-                <p className="text-xs text-muted-foreground mt-0.5">Unique identifier used in the API</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t('sheet_key_hint')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Type</label>
+                <label className="block text-sm font-medium mb-1">{t('sheet_type')}</label>
                 <select
                   value={newColumn.type}
                   onChange={e => setNewColumn(prev => ({ ...prev, type: e.target.value }))}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                 >
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="date">Date</option>
-                  <option value="boolean">Yes/No</option>
-                  <option value="select">Select</option>
+                  <option value="text">{t('sheet_type_text')}</option>
+                  <option value="number">{t('sheet_type_number')}</option>
+                  <option value="date">{t('sheet_type_date')}</option>
+                  <option value="boolean">{t('sheet_type_boolean')}</option>
+                  <option value="select">{t('sheet_type_select')}</option>
                 </select>
               </div>
             </div>
@@ -284,7 +287,7 @@ export default function SpreadsheetViewPage() {
                 disabled={saving}
                 className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
-                {saving ? 'Adding...' : 'Add Column'}
+                {saving ? t('sheet_adding') : t('sheet_add_column_btn')}
               </button>
             </div>
           </div>
@@ -308,7 +311,7 @@ export default function SpreadsheetViewPage() {
                     <button
                       onClick={() => handleDeleteColumn(col.id)}
                       className="shrink-0 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
-                      title="Delete column"
+                      title={t('sheet_col_delete_title')}
                     >
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -317,7 +320,7 @@ export default function SpreadsheetViewPage() {
                   </div>
                 </th>
               ))}
-              <th className="text-left p-2 text-sm font-medium text-muted-foreground w-16">Actions</th>
+              <th className="text-left p-2 text-sm font-medium text-muted-foreground w-16">{t('sheet_col_actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -368,7 +371,7 @@ export default function SpreadsheetViewPage() {
                     <button
                       onClick={() => handleDeleteRow(row.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors"
-                      title="Delete row"
+                      title={t('sheet_row_delete_title')}
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

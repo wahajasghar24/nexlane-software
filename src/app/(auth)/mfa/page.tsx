@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/core/supabase/client'
 
 export default function MfaChallengePage() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const supabaseRef = useRef(createClient())
   const [code, setCode] = useState('')
@@ -36,18 +38,18 @@ export default function MfaChallengePage() {
     try {
       const { data: factors } = await supabase.auth.mfa.listFactors()
       const totpFactor = (factors?.totp || []).find(f => f.status === 'verified')
-      if (!totpFactor) throw new Error('No active authenticator found. Contact your admin.')
+      if (!totpFactor) throw new Error(t('mfa.no_authenticator'))
 
       const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: totpFactor.id })
       if (challengeError) throw challengeError
 
       const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: totpFactor.id, challengeId: challenge.id, code })
-      if (verifyError) throw new Error('Invalid code. Try again.')
+      if (verifyError) throw new Error(t('mfa.invalid_code'))
 
       router.push('/')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Verification failed')
+      setError(err instanceof Error ? err.message : t('mfa.verification_failed'))
       setLoading(false)
     }
   }
@@ -60,11 +62,11 @@ export default function MfaChallengePage() {
           <span className="text-xl font-bold">Nexlane</span>
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Two-factor authentication</h1>
-          <p className="text-sm text-muted-foreground mt-1">Enter the 6-digit code from your authenticator app</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('mfa.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('mfa.hint')}</p>
         </div>
         {checking ? (
-          <p className="text-center text-sm text-muted-foreground">Checking security level...</p>
+          <p className="text-center text-sm text-muted-foreground">{t('mfa.checking')}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -87,10 +89,10 @@ export default function MfaChallengePage() {
               disabled={loading || code.length !== 6}
               className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
-              {loading ? 'Verifying...' : 'Verify'}
+              {loading ? t('mfa.verifying') : t('mfa.verify')}
             </button>
             <p className="text-center text-sm text-muted-foreground">
-              <Link href="/login" className="font-medium text-primary hover:underline">Back to login</Link>
+              <Link href="/login" className="font-medium text-primary hover:underline">{t('mfa.back_to_login')}</Link>
             </p>
           </form>
         )}

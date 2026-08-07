@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -24,6 +25,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function EmployeesPage() {
+  const t = useTranslations('hr')
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -52,16 +54,16 @@ export default function EmployeesPage() {
     fetch('/api/designations?limit=100').then(r => r.json()).then(d => setDesignations((d?.data) || (Array.isArray(d) ? d : []))).catch(() => {})
   }, [])
 
-  const getDisplayName = (e: Employee) => e.profile?.full_name || 'Unnamed'
+  const getDisplayName = (e: Employee) => e.profile?.full_name || t('common.unnamed')
 
   return (
     <div>
       <PageHeader
-        title="Employees"
-        description="Manage your workforce"
+        title={t('employees.title')}
+        description={t('employees.description')}
         actions={
           <Link href="/employees/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            Add Employee
+            {t('employees.add')}
           </Link>
         }
       />
@@ -69,7 +71,7 @@ export default function EmployeesPage() {
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <input
           type="text"
-          placeholder="Search employees..."
+          placeholder={t('employees.search')}
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
@@ -79,18 +81,18 @@ export default function EmployeesPage() {
           onChange={e => { setStatusFilter(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
-          <option value="">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="on_leave">On Leave</option>
-          <option value="terminated">Terminated</option>
+          <option value="">{t('common.all_statuses')}</option>
+          <option value="active">{t('status.active')}</option>
+          <option value="inactive">{t('status.inactive')}</option>
+          <option value="on_leave">{t('status.on_leave')}</option>
+          <option value="terminated">{t('status.terminated')}</option>
         </select>
         <select
           value={departmentFilter}
           onChange={e => { setDepartmentFilter(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
-          <option value="">All Departments</option>
+          <option value="">{t('common.all_departments')}</option>
           {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
         <select
@@ -98,7 +100,7 @@ export default function EmployeesPage() {
           onChange={e => { setDesignationFilter(e.target.value); setPage(1) }}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto"
         >
-          <option value="">All Designations</option>
+          <option value="">{t('common.all_designations')}</option>
           {designations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
       </div>
@@ -118,9 +120,9 @@ export default function EmployeesPage() {
         </div>
       ) : employees.length === 0 ? (
         <EmptyState
-          title="No employees found"
-          description="Add your first employee to get started"
-          action={<Link href="/employees/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Add Employee</Link>}
+          title={t('employees.no_employees')}
+          description={t('employees.no_employees_desc')}
+          action={<Link href="/employees/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('employees.add')}</Link>}
         />
       ) : (
         <>
@@ -137,14 +139,14 @@ export default function EmployeesPage() {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-1 text-sm text-muted-foreground">
-                  <span>{emp.department?.name || 'No dept'}</span>
+                  <span>{emp.department?.name || t('common.no_dept')}</span>
                   <span className="text-right">{emp.designation?.name || '-'}</span>
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t text-sm">
                   <span className="text-muted-foreground">{emp.position || '-'}</span>
                   <div className="flex gap-2">
-                    <Link href={`/employees/${emp.id}`} className="text-muted-foreground hover:text-primary">View</Link>
-                    <Link href={`/employees/${emp.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
+                    <Link href={`/employees/${emp.id}`} className="text-muted-foreground hover:text-primary">{t('common.view')}</Link>
+                    <Link href={`/employees/${emp.id}/edit`} className="text-muted-foreground hover:text-primary">{t('common.edit')}</Link>
                   </div>
                 </div>
               </div>
@@ -155,12 +157,12 @@ export default function EmployeesPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Department</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Designation</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Position</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.department')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.designation')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.position')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('common.status')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -190,21 +192,21 @@ export default function EmployeesPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('common.page_of', { page, totalPages })}</p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Previous
+                {t('common.previous')}
               </button>
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Next
+                {t('common.next')}
               </button>
             </div>
           </div>

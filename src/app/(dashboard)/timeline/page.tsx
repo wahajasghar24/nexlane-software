@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -17,6 +18,7 @@ interface ActivityItem {
 }
 
 export default function TimelinePage() {
+  const t = useTranslations('hr')
   const [activities, setActivities] = useState<ActivityItem[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -98,34 +100,34 @@ export default function TimelinePage() {
   return (
     <div>
       <PageHeader
-        title="Timeline"
-        description="Activity feed across the organization"
+        title={t('timeline.title')}
+        description={t('timeline.description')}
       />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
         <select value={employeeFilter} onChange={e => { setPage(1); setEmployeeFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Actors</option>
+          <option value="">{t('timeline.all_actors')}</option>
           {employees.map((emp: any) => (
             <option key={emp.id} value={emp.id}>{getDisplayName(emp)}</option>
           ))}
         </select>
         <select value={entityFilter} onChange={e => { setPage(1); setEntityFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Entity Types</option>
-          <option value="employee">Employee</option>
-          <option value="project">Project</option>
-          <option value="task">Task</option>
-          <option value="work_log">Work Log</option>
-          <option value="comment">Comment</option>
-          <option value="department">Department</option>
+          <option value="">{t('timeline.all_entity_types')}</option>
+          <option value="employee">{t('timeline.entity_employee')}</option>
+          <option value="project">{t('timeline.entity_project')}</option>
+          <option value="task">{t('timeline.entity_task')}</option>
+          <option value="work_log">{t('timeline.entity_work_log')}</option>
+          <option value="comment">{t('timeline.entity_comment')}</option>
+          <option value="department">{t('timeline.entity_department')}</option>
         </select>
         <select value={actionFilter} onChange={e => { setPage(1); setActionFilter(e.target.value) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Actions</option>
-          <option value="created">Created</option>
-          <option value="updated">Updated</option>
-          <option value="deleted">Deleted</option>
-          <option value="assigned">Assigned</option>
-          <option value="commented">Commented</option>
-          <option value="status_changed">Status Changed</option>
+          <option value="">{t('timeline.all_actions')}</option>
+          <option value="created">{t('timeline.action_created')}</option>
+          <option value="updated">{t('timeline.action_updated')}</option>
+          <option value="deleted">{t('timeline.action_deleted')}</option>
+          <option value="assigned">{t('timeline.action_assigned')}</option>
+          <option value="commented">{t('timeline.action_commented')}</option>
+          <option value="status_changed">{t('timeline.action_status_changed')}</option>
         </select>
       </div>
 
@@ -142,7 +144,7 @@ export default function TimelinePage() {
           ))}
         </div>
       ) : activities.length === 0 ? (
-        <EmptyState title="No activity found" description="Try adjusting your filters" />
+        <EmptyState title={t('timeline.no_activity')} description={t('timeline.no_activity_desc')} />
       ) : (
         <div className="relative">
           <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-border" />
@@ -158,8 +160,8 @@ export default function TimelinePage() {
                   <div className="flex-1 min-w-0">
                     <div className="rounded-lg border bg-card p-3">
                       <p className="text-sm">
-                        <span className="font-medium">{item.actor_name || 'System'}</span>
-                        {' '}{item.action || 'performed an action'}
+                        <span className="font-medium">{item.actor_name || t('common.system')}</span>
+                        {' '}{item.action || t('timeline.performed_action')}
                         {link ? (
                           <Link href={link} className="text-primary hover:underline ml-1">
                             {item.entity_type} #{item.entity_id?.slice(0, 8)}
@@ -189,7 +191,7 @@ export default function TimelinePage() {
                 disabled={loadingMore}
                 className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
               >
-                {loadingMore ? 'Loading...' : 'Load More'}
+                {loadingMore ? t('common.loading') : t('timeline.load_more')}
               </button>
             </div>
           )}

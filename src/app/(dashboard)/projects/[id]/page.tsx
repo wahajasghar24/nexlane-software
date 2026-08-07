@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -21,6 +22,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function ProjectDetailPage() {
+  const t = useTranslations('hr')
   const params = useParams()
   const id = params.id as string
   const [project, setProject] = useState<any>(null)
@@ -62,28 +64,28 @@ export default function ProjectDetailPage() {
 
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'modules', label: 'Modules' },
-    { key: 'milestones', label: 'Milestones' },
-    { key: 'tasks', label: 'Tasks' },
+    { key: 'overview', label: t('projects_detail.tab_overview') },
+    { key: 'modules', label: t('projects_detail.tab_modules') },
+    { key: 'milestones', label: t('projects_detail.tab_milestones') },
+    { key: 'tasks', label: t('projects_detail.tab_tasks') },
   ]
 
   if (loading) return <div className="animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 bg-muted rounded" /></div>
-  if (!project) return <EmptyState title="Project not found" />
+  if (!project) return <EmptyState title={t('projects_detail.not_found')} />
 
-  const getMemberName = (m: any) => m.profile?.full_name || `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.name || 'Unnamed'
+  const getMemberName = (m: any) => m.profile?.full_name || `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.name || t('common.unnamed')
 
   return (
     <div>
       <PageHeader
         title={project.name}
-        description={project.client_name ? `Client: ${project.client_name}` : ''}
+        description={project.client_name ? t('projects_detail.client_value', { name: project.client_name }) : ''}
         actions={
           <div className="flex gap-2">
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[project.status] || ''}`}>
               {project.status?.replace(/_/g, ' ')}
             </span>
-            <Link href={`/projects/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Edit</Link>
+            <Link href={`/projects/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('common.edit')}</Link>
           </div>
         }
       />
@@ -107,18 +109,18 @@ export default function ProjectDetailPage() {
       {activeTab === 'overview' && (
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-1 rounded-lg border bg-card p-4">
-            <h3 className="font-semibold mb-3">Project Info</h3>
+            <h3 className="font-semibold mb-3">{t('projects_detail.project_info')}</h3>
             <dl className="space-y-2 text-sm">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Status</dt><dd className="capitalize">{project.status?.replace(/_/g, ' ')}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Priority</dt><dd className="capitalize">{project.priority}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Client</dt><dd>{project.client_name || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Start</dt><dd>{project.start_date ? new Date(project.start_date).toLocaleDateString() : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">End</dt><dd>{project.end_date ? new Date(project.end_date).toLocaleDateString() : '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Budget</dt><dd>{project.budget ? `$${project.budget}` : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('common.status')}</dt><dd className="capitalize">{project.status?.replace(/_/g, ' ')}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('common.priority')}</dt><dd className="capitalize">{project.priority}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('fields.client')}</dt><dd>{project.client_name || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('fields.start')}</dt><dd>{project.start_date ? new Date(project.start_date).toLocaleDateString() : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('fields.end')}</dt><dd>{project.end_date ? new Date(project.end_date).toLocaleDateString() : '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t('fields.budget')}</dt><dd>{project.budget ? `$${project.budget}` : '-'}</dd></div>
             </dl>
             {project.description && (
               <div className="mt-3 pt-3 border-t">
-                <p className="text-xs text-muted-foreground mb-1">Description</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('common.description')}</p>
                 <p className="text-sm">{project.description}</p>
               </div>
             )}
@@ -127,21 +129,21 @@ export default function ProjectDetailPage() {
             <div className="grid gap-4 grid-cols-3">
               <div className="rounded-lg border bg-card p-4 text-center">
                 <p className="text-2xl font-bold">{members.length}</p>
-                <p className="text-xs text-muted-foreground">Members</p>
+                <p className="text-xs text-muted-foreground">{t('common.members')}</p>
               </div>
               <div className="rounded-lg border bg-card p-4 text-center">
                 <p className="text-2xl font-bold">{modules.length}</p>
-                <p className="text-xs text-muted-foreground">Modules</p>
+                <p className="text-xs text-muted-foreground">{t('common.modules')}</p>
               </div>
               <div className="rounded-lg border bg-card p-4 text-center">
                 <p className="text-2xl font-bold">{tasks.length}</p>
-                <p className="text-xs text-muted-foreground">Tasks</p>
+                <p className="text-xs text-muted-foreground">{t('common.tasks')}</p>
               </div>
             </div>
             <div className="rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-3">Team Members</h3>
+              <h3 className="font-semibold mb-3">{t('common.team_members')}</h3>
               {members.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No members assigned</p>
+                <p className="text-sm text-muted-foreground">{t('projects_detail.no_members_assigned')}</p>
               ) : (
                 <div className="space-y-2">
                   {members.map((m: any) => (
@@ -150,7 +152,7 @@ export default function ProjectDetailPage() {
                         {getMemberName(m).charAt(0).toUpperCase()}
                       </div>
                       <Link href={`/employees/${m.employee_id || m.id}`} className="hover:text-primary">{getMemberName(m)}</Link>
-                      <span className="text-xs text-muted-foreground ml-auto">{m.role || 'Member'}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">{m.role || t('common.member')}</span>
                     </div>
                   ))}
                 </div>
@@ -163,14 +165,14 @@ export default function ProjectDetailPage() {
       {activeTab === 'modules' && (
         <div className="rounded-lg border bg-card">
           {modules.length === 0 ? (
-            <EmptyState title="No modules" description="Add modules to break down the project" />
+            <EmptyState title={t('projects_detail.no_modules')} description={t('projects_detail.no_modules_desc')} />
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium">Module</th>
-                  <th className="text-left p-3 text-sm font-medium">Status</th>
-                  <th className="text-left p-3 text-sm font-medium">Timeline</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('fields.module')}</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('common.status')}</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('projects_detail.timeline')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -197,14 +199,14 @@ export default function ProjectDetailPage() {
       {activeTab === 'milestones' && (
         <div className="rounded-lg border bg-card">
           {milestones.length === 0 ? (
-            <EmptyState title="No milestones" description="Add milestones to track progress" />
+            <EmptyState title={t('projects_detail.no_milestones')} description={t('projects_detail.no_milestones_desc')} />
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium">Milestone</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('projects_detail.milestone')}</th>
                   <th className="text-left p-3 text-sm font-medium">Status</th>
-                  <th className="text-left p-3 text-sm font-medium">Due Date</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('common.due_date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -228,14 +230,14 @@ export default function ProjectDetailPage() {
       {activeTab === 'tasks' && (
         <div className="rounded-lg border bg-card">
           {tasks.length === 0 ? (
-            <EmptyState title="No tasks" description="No tasks created for this project yet" />
+            <EmptyState title={t('projects_detail.no_tasks')} description={t('projects_detail.no_tasks_desc')} />
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium">Task</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('common.tasks')}</th>
                   <th className="text-left p-3 text-sm font-medium">Status</th>
-                  <th className="text-left p-3 text-sm font-medium">Priority</th>
+                  <th className="text-left p-3 text-sm font-medium">{t('common.priority')}</th>
                   <th className="text-left p-3 text-sm font-medium">Due Date</th>
                 </tr>
               </thead>

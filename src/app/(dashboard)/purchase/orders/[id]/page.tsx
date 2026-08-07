@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -17,6 +19,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function PurchaseOrderDetailPage() {
+  const t = useTranslations('trx')
   const { id } = useParams()
   const router = useRouter()
   const confirm = useConfirm()
@@ -29,20 +32,20 @@ export default function PurchaseOrderDetailPage() {
     fetch(`/api/purchase/orders/${id}`)
       .then(r => r.json())
       .then(d => setOrder(d.data))
-      .catch(() => setError('Failed to load order'))
+      .catch(() => setError(t('purchase_detail_failed_load')))
       .finally(() => setLoading(false))
   }
 
   useEffect(load, [id])
 
   const handleReceive = async () => {
-    if (!(await confirm('Receive this order? Stock will be added to inventory for each item.'))) return
+    if (!(await confirm(t('purchase_detail_receive_confirm')))) return
     setBusy(true)
     setError('')
     try {
       const res = await fetch(`/api/purchase/orders/${id}/receive`, { method: 'POST' })
       const d = await res.json()
-      if (!res.ok) throw new Error(d.error || 'Receive failed')
+      if (!res.ok) throw new Error(d.error || t('purchase_detail_receive_failed'))
       load()
     } catch (err: any) {
       setError(err.message)
@@ -51,14 +54,14 @@ export default function PurchaseOrderDetailPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-sm text-muted-foreground">Loading...</div>
-  if (!order) return <div className="p-8 text-sm text-red-600">{error || 'Order not found'}</div>
+  if (loading) return <div className="p-8 text-sm text-muted-foreground">{t('purchase_detail_loading')}</div>
+  if (!order) return <div className="p-8 text-sm text-red-600">{error || t('purchase_detail_not_found')}</div>
 
   return (
     <div className="max-w-4xl">
       <PageHeader
         title={order.order_number}
-        description={`${order.vendor?.name || 'No vendor'} · ${new Date(order.created_at).toLocaleDateString()}`}
+        description={`${order.vendor?.name || t('purchase_detail_no_vendor')} · ${new Date(order.created_at).toLocaleDateString()}`}
         actions={
           <button onClick={() => router.push('/purchase/orders')} className="text-sm text-muted-foreground hover:underline">
             Back to Purchase Orders
@@ -79,7 +82,7 @@ export default function PurchaseOrderDetailPage() {
             disabled={busy}
             className="ml-auto rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
           >
-            {busy ? 'Receiving...' : 'Receive Stock'}
+            {busy ? t('purchase_detail_receiving') : t('purchase_detail_receive_stock')}
           </button>
         )}
       </div>
@@ -91,11 +94,11 @@ export default function PurchaseOrderDetailPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                <th className="px-4 py-3">Product</th>
-                <th className="px-4 py-3">Description</th>
-                <th className="px-4 py-3 text-right">Qty</th>
-                <th className="px-4 py-3 text-right">Unit Price</th>
-                <th className="px-4 py-3 text-right">Total</th>
+                <th className="px-4 py-3">{t('purchase_detail_col_product')}</th>
+                <th className="px-4 py-3">{t('purchase_detail_col_description')}</th>
+                <th className="px-4 py-3 text-right">{t('purchase_detail_col_qty')}</th>
+                <th className="px-4 py-3 text-right">{t('purchase_detail_col_unit_price')}</th>
+                <th className="px-4 py-3 text-right">{t('purchase_detail_col_total')}</th>
               </tr>
             </thead>
             <tbody>
@@ -120,7 +123,7 @@ export default function PurchaseOrderDetailPage() {
 
       {order.notes && (
         <p className="mt-4 rounded-lg border bg-card p-4 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">Notes:</span> {order.notes}
+          <span className="font-medium text-foreground">{t('purchase_detail_notes_label')}</span> {order.notes}
         </p>
       )}
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 
@@ -16,7 +17,7 @@ interface Payment {
   invoice?: { invoice_number: string }
 }
 
-const paymentMethods: Record<string, string> = {
+const paymentMethodColors: Record<string, string> = {
   cash: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
   bank: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
   check: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
@@ -25,6 +26,7 @@ const paymentMethods: Record<string, string> = {
 }
 
 export default function PaymentsPage() {
+  const t = useTranslations('acc')
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -88,25 +90,25 @@ export default function PaymentsPage() {
   return (
     <div>
       <PageHeader
-        title="Payments"
-        description="Record and manage incoming payments"
+        title={t('payments.title')}
+        description={t('payments.description')}
         actions={
           <button
             onClick={() => setShowForm(!showForm)}
             className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
-            {showForm ? 'Cancel' : 'New Payment'}
+            {showForm ? t('payments.cancel') : t('payments.new_payment')}
           </button>
         }
       />
 
       {showForm && (
         <div className="max-w-2xl rounded-lg border bg-card p-6 mb-6">
-          <h3 className="text-base font-semibold mb-4">Record Payment</h3>
+          <h3 className="text-base font-semibold mb-4">{t('payments.record_payment')}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Amount *</label>
+                <label className="block text-sm font-medium mb-1">{t('payments.amount')}</label>
                 <input
                   type="number" required min="0.01" step="0.01" value={form.amount}
                   onChange={e => update('amount', e.target.value)}
@@ -115,7 +117,7 @@ export default function PaymentsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Payment Date *</label>
+                <label className="block text-sm font-medium mb-1">{t('payments.payment_date')}</label>
                 <input
                   type="date" required value={form.payment_date}
                   onChange={e => update('payment_date', e.target.value)}
@@ -125,49 +127,49 @@ export default function PaymentsPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Payment Method</label>
+                <label className="block text-sm font-medium mb-1">{t('payments.payment_method')}</label>
                 <select value={form.method} onChange={e => update('method', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                  <option value="cash">Cash</option>
-                  <option value="bank">Bank Transfer</option>
-                  <option value="check">Check</option>
-                  <option value="credit_card">Credit Card</option>
-                  <option value="other">Other</option>
+                  <option value="cash">{t('payment_methods.cash')}</option>
+                  <option value="bank">{t('payment_methods.bank')}</option>
+                  <option value="check">{t('payment_methods.check')}</option>
+                  <option value="credit_card">{t('payment_methods.credit_card')}</option>
+                  <option value="other">{t('payment_methods.other')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Reference</label>
+                <label className="block text-sm font-medium mb-1">{t('payments.reference')}</label>
                 <input
                   type="text" value={form.reference}
                   onChange={e => update('reference', e.target.value)}
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                  placeholder="Optional reference"
+                  placeholder={t('payments.reference_placeholder')}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Invoice ID (optional)</label>
+              <label className="block text-sm font-medium mb-1">{t('payments.invoice_id')}</label>
               <input
                 type="text" value={form.invoice_id}
                 onChange={e => update('invoice_id', e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="UUID of invoice being paid"
+                placeholder={t('payments.invoice_id_placeholder')}
               />
-              <p className="text-xs text-muted-foreground mt-1">Links payment to an invoice (auto-marks as paid)</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('payments.invoice_id_hint')}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Notes</label>
+              <label className="block text-sm font-medium mb-1">{t('payments.notes')}</label>
               <textarea
                 rows={2} value={form.notes}
                 onChange={e => update('notes', e.target.value)}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                placeholder="Optional notes"
+                placeholder={t('payments.optional_notes')}
               />
             </div>
             <div className="flex gap-3 pt-2">
               <button type="submit" disabled={submitting || !form.amount} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                {submitting ? 'Recording...' : 'Record Payment'}
+                {submitting ? t('payments.recording') : t('payments.record_payment')}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+              <button type="button" onClick={() => setShowForm(false)} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('payments.cancel')}</button>
             </div>
           </form>
         </div>
@@ -184,11 +186,11 @@ export default function PaymentsPage() {
         </div>
       ) : payments.length === 0 ? (
         <EmptyState
-          title="No payments recorded"
-          description="Record your first incoming payment"
+          title={t('payments.no_payments')}
+          description={t('payments.no_payments_hint')}
           action={
             <button onClick={() => setShowForm(true)} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-              New Payment
+              {t('payments.new_payment')}
             </button>
           }
         />
@@ -198,12 +200,12 @@ export default function PaymentsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Method</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Invoice</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Reference</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Notes</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('payments.date')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('payments.amount_col')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('payments.method')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('payments.invoice')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('payments.reference')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('payments.notes_col')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -212,8 +214,8 @@ export default function PaymentsPage() {
                     <td className="p-3 text-sm">{new Date(pmt.payment_date).toLocaleDateString()}</td>
                     <td className="p-3 text-sm text-right font-medium">{formatCurrency(pmt.amount)}</td>
                     <td className="p-3">
-                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${paymentMethods[pmt.method] || paymentMethods.other}`}>
-                        {pmt.method.replace(/_/g, ' ')}
+                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${paymentMethodColors[pmt.method] || paymentMethodColors.other}`}>
+                        {t(`payment_methods.${pmt.method}`)}
                       </span>
                     </td>
                     <td className="p-3 text-sm">{pmt.invoice?.invoice_number || pmt.invoice_id || '-'}</td>
@@ -226,21 +228,21 @@ export default function PaymentsPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
-            <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
+            <p className="text-sm text-muted-foreground">{t('payments.page_of', { page, total: totalPages })}</p>
             <div className="flex gap-2">
               <button
                 onClick={() => { setLoading(true); setPage(p => Math.max(1, p - 1)) }}
                 disabled={page <= 1}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Previous
+                {t('payments.previous')}
               </button>
               <button
                 onClick={() => { setLoading(true); setPage(p => p + 1) }}
                 disabled={page >= totalPages}
                 className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50"
               >
-                Next
+                {t('payments.next')}
               </button>
             </div>
           </div>

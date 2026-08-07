@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -23,6 +24,7 @@ const statusColor: Record<string, string> = {
 }
 
 export default function TimeOffPage() {
+  const t = useTranslations('hr')
   const [rows, setRows] = useState<TimeOffRow[]>([])
   const [type, setType] = useState('annual')
   const [start, setStart] = useState('')
@@ -60,9 +62,9 @@ export default function TimeOffPage() {
         body: JSON.stringify({ type, start_date: start, end_date: end, reason: reason || null }),
       })
       const data = await res.json()
-      if (!res.ok) setError(data.error || 'Failed')
+      if (!res.ok) setError(data.error || t('common.failed'))
       else { setStart(''); setEnd(''); setReason(''); await load() }
-    } catch { setError('Network error') }
+    } catch { setError(t('common.network_error')) }
     setBusy(false)
   }
 
@@ -77,36 +79,36 @@ export default function TimeOffPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Time Off" description="Request and manage leave" />
+      <PageHeader title={t('time_off.title')} description={t('time_off.description')} />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="rounded-lg border bg-card p-4">
         <div className="grid gap-3 sm:grid-cols-4">
           <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg border bg-background px-3 py-2 text-sm">
-            <option value="annual">Annual</option>
-            <option value="sick">Sick</option>
-            <option value="unpaid">Unpaid</option>
+            <option value="annual">{t('time_off.annual')}</option>
+            <option value="sick">{t('time_off.sick')}</option>
+            <option value="unpaid">{t('time_off.unpaid')}</option>
           </select>
           <input type="date" value={start} onChange={(e) => setStart(e.target.value)} className="rounded-lg border bg-background px-3 py-2 text-sm" />
           <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} className="rounded-lg border bg-background px-3 py-2 text-sm" />
           <button onClick={submit} disabled={busy || !start || !end} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-40">
-            Request
+            {t('time_off.request')}
           </button>
         </div>
-        <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (optional)" className="mt-3 w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+        <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t('time_off.reason_placeholder')} className="mt-3 w-full rounded-lg border bg-background px-3 py-2 text-sm" />
       </div>
       {rows.length === 0 ? (
-        <EmptyState title="No time-off requests" description="Request leave using the form above." />
+        <EmptyState title={t('time_off.no_requests')} description={t('time_off.no_requests_desc')} />
       ) : (
         <div className="rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-muted-foreground">
-                <th className="px-4 py-3">Employee</th>
-                <th className="px-4 py-3">Type</th>
-                <th className="px-4 py-3">Dates</th>
-                <th className="px-4 py-3">Days</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Actions</th>
+                <th className="px-4 py-3">{t('fields.employee')}</th>
+                <th className="px-4 py-3">{t('time_off.type')}</th>
+                <th className="px-4 py-3">{t('time_off.dates')}</th>
+                <th className="px-4 py-3">{t('time_off.days')}</th>
+                <th className="px-4 py-3">{t('common.status')}</th>
+                <th className="px-4 py-3">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -120,8 +122,8 @@ export default function TimeOffPage() {
                   <td className="px-4 py-3">
                     {r.status === 'pending' && (
                       <div className="flex gap-2">
-                        <button onClick={() => decide(r.id, 'approved')} className="rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-700">Approve</button>
-                        <button onClick={() => decide(r.id, 'rejected')} className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700">Reject</button>
+                        <button onClick={() => decide(r.id, 'approved')} className="rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-700">{t('common.approve')}</button>
+                        <button onClick={() => decide(r.id, 'rejected')} className="rounded bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700">{t('common.reject')}</button>
                       </div>
                     )}
                   </td>

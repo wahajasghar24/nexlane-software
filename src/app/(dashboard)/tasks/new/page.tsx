@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -7,6 +8,7 @@ import { PageHeader } from '@/shared/components/page-header'
 import { cleanFormPayload } from '@/core/utils/payload'
 
 export default function NewTaskPage() {
+  const t = useTranslations('hr')
   const router = useRouter()
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([])
   const [employees, setEmployees] = useState<any[]>([])
@@ -52,11 +54,11 @@ export default function NewTaskPage() {
       })
       if (res.ok) {
         const data = await res.json()
-        toast.success('Task created')
+        toast.success(t('tasks_new.created'))
         router.push(`/tasks/${data.data?.id || data.id}`)
       } else {
         const err = await res.json().catch(() => ({}))
-        toast.error(err.error || 'Failed')
+        toast.error(err.error || t('common.failed'))
       }
     } finally {
       setSubmitting(false)
@@ -83,74 +85,74 @@ export default function NewTaskPage() {
       }).catch(() => {})
   }, [form.project_id])
 
-  const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || e.name || 'Unnamed'
+  const getDisplayName = (e: any) => e.profile?.full_name || `${e.first_name || ''} ${e.last_name || ''}`.trim() || e.name || t('common.unnamed')
 
   return (
     <div>
-      <PageHeader title="New Task" description="Create a new task" />
+      <PageHeader title={t('tasks_new.title')} description={t('tasks_new.description')} />
       <div className="max-w-2xl rounded-lg border bg-card p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">{t('common.title')} *</label>
             <input type="text" required value={form.title} onChange={e => update('title', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1">{t('common.description')}</label>
             <textarea rows={3} value={form.description} onChange={e => update('description', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Project</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.project')}</label>
               <select value={form.project_id} onChange={e => { update('project_id', e.target.value); setModules([]) }} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                <option value="">No project</option>
+                <option value="">{t('fields.no_project')}</option>
                 {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Module</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.module')}</label>
               <select value={form.module_id} onChange={e => update('module_id', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" disabled={!form.project_id}>
-                <option value="">No module</option>
+                <option value="">{t('fields.no_module')}</option>
                 {modules.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Priority</label>
+              <label className="block text-sm font-medium mb-1">{t('common.priority')}</label>
               <select value={form.priority} onChange={e => update('priority', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
+                <option value="low">{t('priority.low')}</option>
+                <option value="medium">{t('priority.medium')}</option>
+                <option value="high">{t('priority.high')}</option>
+                <option value="urgent">{t('priority.urgent')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
+              <label className="block text-sm font-medium mb-1">{t('common.status')}</label>
               <select value={form.status} onChange={e => update('status', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
-                <option value="todo">Todo</option>
-                <option value="in_progress">In Progress</option>
-                <option value="review">Review</option>
-                <option value="done">Done</option>
-                <option value="blocked">Blocked</option>
+                <option value="todo">{t('status.todo')}</option>
+                <option value="in_progress">{t('status.in_progress')}</option>
+                <option value="review">{t('status.review')}</option>
+                <option value="done">{t('status.done')}</option>
+                <option value="blocked">{t('status.blocked')}</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Due Date</label>
+              <label className="block text-sm font-medium mb-1">{t('common.due_date')}</label>
               <input type="date" value={form.due_date} onChange={e => update('due_date', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Est. Hours</label>
+              <label className="block text-sm font-medium mb-1">{t('fields.est_hours')}</label>
               <input type="number" min="0" step="0.5" value={form.estimated_hours} onChange={e => update('estimated_hours', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Labels (comma separated)</label>
-            <input type="text" placeholder="bug, feature, urgent" value={form.labels} onChange={e => update('labels', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
+            <label className="block text-sm font-medium mb-1">{t('fields.labels')}</label>
+            <input type="text" placeholder={t('fields.labels_placeholder')} value={form.labels} onChange={e => update('labels', e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Assignees</label>
+            <label className="block text-sm font-medium mb-1">{t('fields.assignees')}</label>
             <div className="max-h-40 overflow-y-auto rounded-md border p-2 space-y-1">
               {employees.map((emp: any) => (
                 <label key={emp.id} className="flex items-center gap-2 text-sm p-1 hover:bg-accent rounded cursor-pointer">
@@ -162,9 +164,9 @@ export default function NewTaskPage() {
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={submitting} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-              {submitting ? 'Creating...' : 'Create Task'}
+              {submitting ? t('common.creating') : t('tasks_new.create')}
             </button>
-            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">Cancel</button>
+            <button type="button" onClick={() => router.back()} className="rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent">{t('common.cancel')}</button>
           </div>
         </form>
       </div>

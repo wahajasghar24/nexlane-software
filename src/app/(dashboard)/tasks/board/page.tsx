@@ -1,19 +1,10 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 import Link from 'next/link'
-
-const columns = [
-  { key: 'todo', label: 'Todo', color: 'bg-gray-200 dark:bg-gray-700' },
-  { key: 'in_progress', label: 'In Progress', color: 'bg-blue-200 dark:bg-blue-800' },
-  { key: 'blocked', label: 'Blocked', color: 'bg-red-200 dark:bg-red-800' },
-  { key: 'review', label: 'Review', color: 'bg-yellow-200 dark:bg-yellow-800' },
-  { key: 'testing', label: 'Testing', color: 'bg-purple-200 dark:bg-purple-800' },
-  { key: 'completed', label: 'Completed', color: 'bg-green-200 dark:bg-green-800' },
-  { key: 'cancelled', label: 'Cancelled', color: 'bg-gray-300 dark:bg-gray-600' },
-]
 
 const priorityColors: Record<string, string> = {
   low: 'border-l-gray-400',
@@ -32,6 +23,16 @@ interface TaskCard {
 }
 
 export default function TaskBoardPage() {
+  const t = useTranslations('hr')
+  const columns = [
+    { key: 'todo', label: t('status.todo'), color: 'bg-gray-200 dark:bg-gray-700' },
+    { key: 'in_progress', label: t('status.in_progress'), color: 'bg-blue-200 dark:bg-blue-800' },
+    { key: 'blocked', label: t('status.blocked'), color: 'bg-red-200 dark:bg-red-800' },
+    { key: 'review', label: t('status.review'), color: 'bg-yellow-200 dark:bg-yellow-800' },
+    { key: 'testing', label: t('status.testing'), color: 'bg-purple-200 dark:bg-purple-800' },
+    { key: 'completed', label: t('status.completed'), color: 'bg-green-200 dark:bg-green-800' },
+    { key: 'cancelled', label: t('status.cancelled'), color: 'bg-gray-300 dark:bg-gray-600' },
+  ]
   const [tasks, setTasks] = useState<TaskCard[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -85,12 +86,12 @@ export default function TaskBoardPage() {
   return (
     <div>
       <PageHeader
-        title="Task Board"
-        description="Kanban-style task management"
+        title={t('tasks.board_title')}
+        description={t('tasks.board_desc')}
         actions={
           <div className="flex gap-2">
-            <Link href="/tasks" className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">List View</Link>
-            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>
+            <Link href="/tasks" className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('tasks.list_view')}</Link>
+            <Link href="/tasks/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('tasks.new')}</Link>
           </div>
         }
       />
@@ -98,7 +99,7 @@ export default function TaskBoardPage() {
       <div className="mb-4">
         <input
           type="text"
-          placeholder="Search tasks..."
+          placeholder={t('tasks.search')}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]"
@@ -120,9 +121,9 @@ export default function TaskBoardPage() {
         </div>
       ) : tasks.length === 0 ? (
         <EmptyState
-          title="No tasks"
-          description="Create your first task to see it on the board"
-          action={<Link href="/tasks/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Task</Link>}
+          title={t('tasks.board_no_tasks')}
+          description={t('tasks.board_no_tasks_desc')}
+          action={<Link href="/tasks/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t('tasks.new')}</Link>}
         />
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: '60vh' }}>

@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
@@ -10,12 +11,13 @@ interface AdminStat {
 }
 
 export default function AdminPage() {
+  const t = useTranslations('hr')
   const [activeTab, setActiveTab] = useState<'overview' | 'audit' | 'jobs' | 'observability'>('overview')
   const [stats, setStats] = useState<AdminStat[]>([
-    { label: 'Total Companies', value: '—', color: 'bg-blue-500' },
-    { label: 'Total Users', value: '—', color: 'bg-green-500' },
-    { label: 'Active Projects', value: '—', color: 'bg-purple-500' },
-    { label: 'Companies Today', value: '—', color: 'bg-orange-500' },
+    { label: t('admin.total_companies'), value: '—', color: 'bg-blue-500' },
+    { label: t('admin.total_users'), value: '—', color: 'bg-green-500' },
+    { label: t('admin.active_projects'), value: '—', color: 'bg-purple-500' },
+    { label: t('admin.companies_today'), value: '—', color: 'bg-orange-500' },
   ])
   const [auditLogs, setAuditLogs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -42,15 +44,15 @@ export default function AdminPage() {
 
   return (
     <div>
-      <PageHeader title="Admin Panel" description="System administration and settings" />
+      <PageHeader title={t('admin.title')} description={t('admin.description')} />
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border-b overflow-x-auto">
         {[
-          { key: 'overview', label: 'Overview' },
-          { key: 'audit', label: 'Audit Log' },
-          { key: 'jobs', label: 'Jobs' },
-          { key: 'observability', label: 'Observability' },
+          { key: 'overview', label: t('admin.tab_overview') },
+          { key: 'audit', label: t('admin.tab_audit') },
+          { key: 'jobs', label: t('admin.tab_jobs') },
+          { key: 'observability', label: t('admin.tab_observability') },
         ].map(tab => (
           <button
             key={tab.key}
@@ -85,21 +87,21 @@ export default function AdminPage() {
       {activeTab === 'audit' && (
         <div className="rounded-lg border bg-card">
           <div className="p-4 border-b">
-            <h3 className="font-semibold">Audit Log</h3>
+            <h3 className="font-semibold">{t('admin.audit_log')}</h3>
           </div>
           {auditLogs.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
-              No audit log entries yet.
+              {t('admin.no_audit')}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left p-3 font-medium">Action</th>
-                    <th className="text-left p-3 font-medium">Entity</th>
-                    <th className="text-left p-3 font-medium">User</th>
-                    <th className="text-left p-3 font-medium">Date</th>
+                    <th className="text-left p-3 font-medium">{t('admin.action')}</th>
+                    <th className="text-left p-3 font-medium">{t('admin.entity')}</th>
+                    <th className="text-left p-3 font-medium">{t('common.user')}</th>
+                    <th className="text-left p-3 font-medium">{t('common.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -121,15 +123,15 @@ export default function AdminPage() {
       {/* Jobs Tab */}
       {activeTab === 'jobs' && (
         <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-4">System Jobs</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('admin.system_jobs')}</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Background jobs and scheduled tasks.
+            {t('admin.jobs_desc')}
           </p>
           <div className="space-y-3">
             {[
-              { name: 'Profile Sync', status: 'No recent runs', icon: '🔄' },
-              { name: 'Email Notifications', status: 'No recent runs', icon: '📧' },
-              { name: 'Data Cleanup', status: 'No recent runs', icon: '🧹' },
+              { name: t('admin.profile_sync'), status: t('admin.no_recent_runs'), icon: '🔄' },
+              { name: t('admin.email_notifications'), status: t('admin.no_recent_runs'), icon: '📧' },
+              { name: t('admin.data_cleanup'), status: t('admin.no_recent_runs'), icon: '🧹' },
             ].map(job => (
               <div key={job.name} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
@@ -139,7 +141,7 @@ export default function AdminPage() {
                     <p className="text-xs text-muted-foreground">{job.status}</p>
                   </div>
                 </div>
-                <span className="text-xs bg-muted px-2 py-1 rounded">Coming Soon</span>
+                <span className="text-xs bg-muted px-2 py-1 rounded">{t('admin.coming_soon')}</span>
               </div>
             ))}
           </div>
@@ -149,15 +151,15 @@ export default function AdminPage() {
       {/* Observability Tab */}
       {activeTab === 'observability' && (
         <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-4">Observability</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('admin.observability')}</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            System health, metrics, and monitoring.
+            {t('admin.observability_desc')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: 'API Latency', value: 'Not available', color: 'text-muted-foreground' },
-              { label: 'Error Rate', value: 'Not available', color: 'text-muted-foreground' },
-              { label: 'Active Users', value: 'Not available', color: 'text-muted-foreground' },
+              { label: t('admin.api_latency'), value: t('admin.not_available'), color: 'text-muted-foreground' },
+              { label: t('admin.error_rate'), value: t('admin.not_available'), color: 'text-muted-foreground' },
+              { label: t('admin.active_users'), value: t('admin.not_available'), color: 'text-muted-foreground' },
             ].map(m => (
               <div key={m.label} className="p-4 border rounded-lg text-center">
                 <p className="text-sm text-muted-foreground">{m.label}</p>

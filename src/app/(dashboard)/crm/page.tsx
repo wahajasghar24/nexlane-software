@@ -1,10 +1,13 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import Link from 'next/link'
 
 export default function CRMDashboardPage() {
+  const t = useTranslations('crm')
   const [stats, setStats] = useState({ leads: 0, activeDeals: 0, wonDeals: 0, companies: 0, contacts: 0 })
   const [loading, setLoading] = useState(true)
 
@@ -27,24 +30,24 @@ export default function CRMDashboardPage() {
   }, [])
 
   const cards = [
-    { label: 'Total Leads', value: stats.leads, href: '/crm/leads', color: 'bg-blue-500' },
-    { label: 'Active Deals', value: stats.activeDeals, href: '/crm/deals', color: 'bg-amber-500' },
-    { label: 'Won Deals (This Month)', value: stats.wonDeals, href: '/crm/deals', color: 'bg-green-500' },
-    { label: 'Companies', value: stats.companies, href: '/crm/companies', color: 'bg-purple-500' },
-    { label: 'Contacts', value: stats.contacts, href: '/crm/contacts', color: 'bg-cyan-500' },
+    { label: t('kpi_total_leads'), value: stats.leads, href: '/crm/leads', color: 'bg-blue-500' },
+    { label: t('kpi_active_deals'), value: stats.activeDeals, href: '/crm/deals', color: 'bg-amber-500' },
+    { label: t('kpi_won_deals'), value: stats.wonDeals, href: '/crm/deals', color: 'bg-green-500' },
+    { label: t('kpi_companies'), value: stats.companies, href: '/crm/companies', color: 'bg-purple-500' },
+    { label: t('kpi_contacts'), value: stats.contacts, href: '/crm/contacts', color: 'bg-cyan-500' },
   ]
 
   const quickLinks = [
-    { label: 'Leads', href: '/crm/leads', desc: 'Manage incoming leads' },
-    { label: 'Deals', href: '/crm/deals', desc: 'Track deal pipeline' },
-    { label: 'Companies', href: '/crm/companies', desc: 'View companies' },
-    { label: 'Contacts', href: '/crm/contacts', desc: 'Manage contacts' },
-    { label: 'Activities', href: '/crm/activities', desc: 'View activity log' },
+    { label: t('quick_leads'), href: '/crm/leads', desc: t('quick_leads_desc') },
+    { label: t('quick_deals'), href: '/crm/deals', desc: t('quick_deals_desc') },
+    { label: t('quick_companies'), href: '/crm/companies', desc: t('quick_companies_desc') },
+    { label: t('quick_contacts'), href: '/crm/contacts', desc: t('quick_contacts_desc') },
+    { label: t('quick_activities'), href: '/crm/activities', desc: t('quick_activities_desc') },
   ]
 
   return (
     <div>
-      <PageHeader title="CRM Dashboard" description="Overview of your sales pipeline" />
+      <PageHeader title={t('dashboard_title')} description={t('dashboard_description')} />
 
       {loading ? (
         <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mb-8">
@@ -69,7 +72,7 @@ export default function CRMDashboardPage() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold mb-3">Quick Links</h2>
+      <h2 className="text-lg font-semibold mb-3">{t('quick_links')}</h2>
       <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {quickLinks.map(link => (
           <Link key={link.label} href={link.href} className="rounded-lg border bg-card p-4 hover:bg-accent transition-colors">

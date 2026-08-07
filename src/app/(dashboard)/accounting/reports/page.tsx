@@ -1,23 +1,26 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/shared/components/page-header'
 import { StaggerGroup, StaggerItem } from '@/shared/components/motion'
 import Link from 'next/link'
 
-const reports = [
-  { label: 'Trial Balance', href: '/accounting/reports/trial-balance', desc: 'Summary of all account balances' },
-  { label: 'General Ledger', href: '/accounting/reports/general-ledger', desc: 'Detailed transaction history by account' },
-  { label: 'Profit & Loss', href: '/accounting/reports/profit-loss', desc: 'Revenue and expenses over a period' },
-  { label: 'Balance Sheet', href: '/accounting/reports/balance-sheet', desc: 'Assets, liabilities, and equity snapshot' },
-  { label: 'Cash Flow', href: '/accounting/reports/cash-flow', desc: 'Cash inflows and outflows' },
-]
-
 const arrow = <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 
 export default function ReportsPage() {
+  const t = useTranslations('acc')
+
+  const reports = [
+    { label: t('reports_index.trial_balance'), href: '/accounting/reports/trial-balance', desc: t('reports_index.trial_balance_desc') },
+    { label: t('reports_index.general_ledger'), href: '/accounting/reports/general-ledger', desc: t('reports_index.general_ledger_desc') },
+    { label: t('reports_index.profit_loss'), href: '/accounting/reports/profit-loss', desc: t('reports_index.profit_loss_desc') },
+    { label: t('reports_index.balance_sheet'), href: '/accounting/reports/balance-sheet', desc: t('reports_index.balance_sheet_desc') },
+    { label: t('reports_index.cash_flow'), href: '/accounting/reports/cash-flow', desc: t('reports_index.cash_flow_desc') },
+  ]
+
   return (
     <div>
-      <PageHeader title="Financial Reports" description="View accounting reports and summaries" />
+      <PageHeader title={t('reports_index.title')} description={t('reports_index.description')} />
 
       <StaggerGroup className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {reports.map(report => (

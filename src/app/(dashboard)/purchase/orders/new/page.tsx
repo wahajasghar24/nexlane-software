@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { PageHeader } from '@/shared/components/page-header'
@@ -9,6 +11,7 @@ interface Product { id: string; name: string; sku: string; purchase_price: numbe
 
 export default function NewPurchaseOrderPage() {
   const router = useRouter()
+  const t = useTranslations('trx')
   const [vendors, setVendors] = useState<any[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [form, setForm] = useState({ vendor_id: '', expected_date: '', notes: '', tax_rate: '0' })
@@ -76,56 +79,56 @@ export default function NewPurchaseOrderPage() {
 
   return (
     <div className="max-w-4xl">
-      <PageHeader title="New Purchase Order" description="Order stock from a vendor — receive it later to add stock to inventory" />
+      <PageHeader title={t('purchase_new_title')} description={t('purchase_new_desc')} />
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">{error}</p>}
         <div className="grid grid-cols-3 gap-4 rounded-lg border bg-card p-5">
           <div className="space-y-1.5">
-            <label className={label}>Vendor</label>
+            <label className={label}>{t('purchase_new_vendor')}</label>
             <select value={form.vendor_id} onChange={e => setForm({ ...form, vendor_id: e.target.value })} className={field}>
-              <option value="">No vendor</option>
+              <option value="">{t('purchase_new_no_vendor')}</option>
               {vendors.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className={label}>Expected Date</label>
+            <label className={label}>{t('purchase_new_expected')}</label>
             <input type="date" value={form.expected_date} onChange={e => setForm({ ...form, expected_date: e.target.value })} className={field} />
           </div>
           <div className="space-y-1.5">
-            <label className={label}>Tax Rate (%)</label>
+            <label className={label}>{t('purchase_new_tax_rate')}</label>
             <input type="number" step="0.01" min="0" value={form.tax_rate} onChange={e => setForm({ ...form, tax_rate: e.target.value })} className={field} />
           </div>
           <div className="col-span-3 space-y-1.5">
-            <label className={label}>Notes</label>
-            <input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className={field} placeholder="Optional" />
+            <label className={label}>{t('purchase_new_notes')}</label>
+            <input value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className={field} placeholder={t('purchase_new_optional')} />
           </div>
         </div>
 
         <div className="rounded-lg border bg-card p-5">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold">Order Items</h3>
+            <h3 className="text-sm font-semibold">{t('purchase_new_items')}</h3>
             <button type="button" onClick={addRow} className="text-sm text-primary hover:underline">+ Add Item</button>
           </div>
           <div className="space-y-2">
             {items.map((it, i) => (
               <div key={i} className="flex items-end gap-2">
                 <div className="w-48 space-y-1.5">
-                  <label className={label}>Product</label>
+                  <label className={label}>{t('purchase_new_product')}</label>
                   <select value={it.product_id} onChange={e => onProductChange(i, e.target.value)} className={field}>
                     <option value="">—</option>
                     {products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}
                   </select>
                 </div>
                 <div className="flex-1 space-y-1.5">
-                  <label className={label}>Description *</label>
+                  <label className={label}>{t('purchase_new_desc_label')} *</label>
                   <input required value={it.description} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, description: e.target.value } : x))} className={field} />
                 </div>
                 <div className="w-24 space-y-1.5">
-                  <label className={label}>Qty *</label>
+                  <label className={label}>{t('purchase_new_qty')} *</label>
                   <input required type="number" step="0.01" min="0.01" value={it.quantity} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, quantity: e.target.value } : x))} className={field} />
                 </div>
                 <div className="w-32 space-y-1.5">
-                  <label className={label}>Unit Price *</label>
+                  <label className={label}>{t('purchase_new_unit_price')}</label>
                   <input required type="number" step="0.01" min="0" value={it.unit_price} onChange={e => setItems(prev => prev.map((x, idx) => idx === i ? { ...x, unit_price: e.target.value } : x))} className={field} />
                 </div>
                 <button type="button" onClick={() => removeRow(i)} disabled={items.length === 1} className="mb-1 text-sm text-red-600 hover:underline disabled:opacity-40">
@@ -143,7 +146,7 @@ export default function NewPurchaseOrderPage() {
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={saving} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
-            {saving ? 'Saving...' : 'Create Purchase Order'}
+            {saving ? t('purchase_new_saving') : t('purchase_new_create')}
           </button>
           <button type="button" onClick={() => router.back()} className="text-sm text-muted-foreground hover:underline">Cancel</button>
         </div>

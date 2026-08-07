@@ -1,4 +1,5 @@
 'use client'
+import { useTranslations } from 'next-intl'
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -27,6 +28,7 @@ interface Skill {
 type Tab = 'overview' | 'projects' | 'tasks' | 'work-logs' | 'activity' | 'skills'
 
 export default function EmployeeDetailPage() {
+  const t = useTranslations('hr')
   const params = useParams()
   const id = params.id as string
   const [employee, setEmployee] = useState<Employee | null>(null)
@@ -93,16 +95,16 @@ export default function EmployeeDetailPage() {
   }
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'projects', label: 'Projects' },
-    { key: 'tasks', label: 'Tasks' },
-    { key: 'work-logs', label: 'Work Logs' },
-    { key: 'activity', label: 'Activity' },
-    { key: 'skills', label: 'Skills' },
+    { key: 'overview', label: t('employees.tab_overview') },
+    { key: 'projects', label: t('employees.tab_projects') },
+    { key: 'tasks', label: t('employees.tab_tasks') },
+    { key: 'work-logs', label: t('employees.tab_work_logs') },
+    { key: 'activity', label: t('employees.tab_activity') },
+    { key: 'skills', label: t('employees.tab_skills') },
   ]
 
   const displayName = employee
-    ? employee.profile?.full_name || 'Unnamed'
+    ? employee.profile?.full_name || t('common.unnamed')
     : ''
 
   const totalHours = workLogs.reduce((sum: number, wl: any) => sum + (wl.hours || 0), 0)
@@ -110,14 +112,14 @@ export default function EmployeeDetailPage() {
   return (
     <div>
       <PageHeader
-        title={displayName || 'Employee'}
+        title={displayName || t('employees.employee')}
         description={employee?.position || ''}
         actions={
           <div className="flex gap-2">
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[employee?.employment_status || ''] || ''}`}>
-              {employee?.employment_status?.replace(/_/g, ' ') || 'N/A'}
+              {employee?.employment_status?.replace(/_/g, ' ') || t('common.na')}
             </span>
-            <Link href={`/employees/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">Edit</Link>
+            <Link href={`/employees/${id}/edit`} className="inline-flex items-center justify-center rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-accent">{t('common.edit')}</Link>
           </div>
         }
       />
@@ -128,7 +130,7 @@ export default function EmployeeDetailPage() {
           <div className="h-32 bg-muted rounded" />
         </div>
       ) : !employee ? (
-        <EmptyState title="Employee not found" description="This employee may have been deleted" />
+        <EmptyState title={t('employees.not_found')} description={t('employees.not_found_desc')} />
       ) : (
         <>
           <div className="border-b mb-6">
@@ -152,44 +154,44 @@ export default function EmployeeDetailPage() {
           {activeTab === 'overview' && (
             <div className="grid gap-6 md:grid-cols-3">
               <div className="md:col-span-1 rounded-lg border bg-card p-4">
-                <h3 className="font-semibold mb-3">Basic Info</h3>
+                <h3 className="font-semibold mb-3">{t('employees.basic_info')}</h3>
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Name</dt>
+                    <dt className="text-muted-foreground">{t('common.name')}</dt>
                     <dd>{displayName}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Email</dt>
+                    <dt className="text-muted-foreground">{t('fields.email')}</dt>
                     <dd>{employee.profile?.email || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Phone</dt>
+                    <dt className="text-muted-foreground">{t('fields.phone')}</dt>
                     <dd>{employee.profile?.phone || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Department</dt>
+                    <dt className="text-muted-foreground">{t('fields.department')}</dt>
                     <dd>{employee.department?.name || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Designation</dt>
+                    <dt className="text-muted-foreground">{t('fields.designation')}</dt>
                     <dd>{employee.designation?.name || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Position</dt>
+                    <dt className="text-muted-foreground">{t('fields.position')}</dt>
                     <dd>{employee.position || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Employee Code</dt>
+                    <dt className="text-muted-foreground">{t('employees.employee_code')}</dt>
                     <dd>{employee.employee_code || '-'}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Hire Date</dt>
+                    <dt className="text-muted-foreground">{t('fields.hire_date')}</dt>
                     <dd>{employee.hire_date ? new Date(employee.hire_date).toLocaleDateString() : '-'}</dd>
                   </div>
                 </dl>
                 {employee.bio && (
                   <div className="mt-3 pt-3 border-t">
-                    <p className="text-xs text-muted-foreground mb-1">Bio</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('fields.bio')}</p>
                     <p className="text-sm">{employee.bio}</p>
                   </div>
                 )}
@@ -198,15 +200,15 @@ export default function EmployeeDetailPage() {
                 <div className="grid gap-4 grid-cols-3 sm:grid-cols-3">
                   <div className="rounded-lg border bg-card p-4 text-center">
                     <p className="text-2xl font-bold">{projects.length}</p>
-                    <p className="text-xs text-muted-foreground">Projects</p>
+                    <p className="text-xs text-muted-foreground">{t('common.projects')}</p>
                   </div>
                   <div className="rounded-lg border bg-card p-4 text-center">
                     <p className="text-2xl font-bold">{tasks.length}</p>
-                    <p className="text-xs text-muted-foreground">Tasks</p>
+                    <p className="text-xs text-muted-foreground">{t('common.tasks')}</p>
                   </div>
                   <div className="rounded-lg border bg-card p-4 text-center">
                     <p className="text-2xl font-bold">{totalHours}h</p>
-                    <p className="text-xs text-muted-foreground">Hours Logged</p>
+                    <p className="text-xs text-muted-foreground">{t('employees.hours_logged')}</p>
                   </div>
                 </div>
               </div>
@@ -216,12 +218,12 @@ export default function EmployeeDetailPage() {
           {activeTab === 'projects' && (
             <div className="rounded-lg border">
               {projects.length === 0 ? (
-                <EmptyState title="No projects assigned" />
+                <EmptyState title={t('employees.no_projects')} />
               ) : (
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left p-3 text-sm font-medium text-muted-foreground">Project</th>
+                      <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('fields.project')}</th>
                       <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
                       <th className="text-left p-3 text-sm font-medium text-muted-foreground">Role</th>
                     </tr>
@@ -231,7 +233,7 @@ export default function EmployeeDetailPage() {
                       <tr key={p.id} className="border-b last:border-b-0">
                         <td className="p-3"><Link href={`/projects/${p.id}`} className="font-medium hover:text-primary">{p.name}</Link></td>
                         <td className="p-3 text-sm text-muted-foreground capitalize">{p.status?.replace(/_/g, ' ')}</td>
-                        <td className="p-3 text-sm text-muted-foreground">{p.role || 'Member'}</td>
+                        <td className="p-3 text-sm text-muted-foreground">{p.role || t('common.member')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -243,7 +245,7 @@ export default function EmployeeDetailPage() {
           {activeTab === 'tasks' && (
             <div className="rounded-lg border">
               {tasks.length === 0 ? (
-                <EmptyState title="No tasks assigned" />
+                <EmptyState title={t('employees.no_tasks')} />
               ) : (
                 <table className="w-full">
                   <thead>
@@ -272,7 +274,7 @@ export default function EmployeeDetailPage() {
           {activeTab === 'work-logs' && (
             <div className="rounded-lg border">
               {workLogs.length === 0 ? (
-                <EmptyState title="No work logs found" />
+                <EmptyState title={t('employees.no_work_logs')} />
               ) : (
                 <table className="w-full">
                   <thead>
@@ -301,7 +303,7 @@ export default function EmployeeDetailPage() {
           {activeTab === 'activity' && (
             <div className="rounded-lg border bg-card">
               {activity.length === 0 ? (
-                <EmptyState title="No activity found" />
+                <EmptyState title={t('employees.no_activity')} />
               ) : (
                 <div className="p-4 space-y-3">
                   {activity.map((act: any) => (
@@ -321,9 +323,9 @@ export default function EmployeeDetailPage() {
           {activeTab === 'skills' && (
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-lg border bg-card p-4">
-                <h3 className="font-semibold mb-3">Current Skills</h3>
+                <h3 className="font-semibold mb-3">{t('employees.current_skills')}</h3>
                 {skills.length === 0 ? (
-                  <EmptyState title="No skills added" />
+                  <EmptyState title={t('employees.no_skills')} />
                 ) : (
                   <div className="space-y-2">
                     {skills.map((s) => (
@@ -336,11 +338,11 @@ export default function EmployeeDetailPage() {
                 )}
               </div>
               <div className="rounded-lg border bg-card p-4">
-                <h3 className="font-semibold mb-3">Add Skill</h3>
+                <h3 className="font-semibold mb-3">{t('employees.add_skill')}</h3>
                 <div className="space-y-3">
                   <input
                     type="text"
-                    placeholder="Skill name"
+                    placeholder={t('employees.skill_name')}
                     value={newSkillName}
                     onChange={e => setNewSkillName(e.target.value)}
                     className="w-full rounded-md border bg-background px-3 py-2 text-sm"
@@ -350,16 +352,16 @@ export default function EmployeeDetailPage() {
                     onChange={e => setNewSkillProficiency(e.target.value)}
                     className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                   >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                    <option value="expert">Expert</option>
+                    <option value="beginner">{t('proficiency.beginner')}</option>
+                    <option value="intermediate">{t('proficiency.intermediate')}</option>
+                    <option value="advanced">{t('proficiency.advanced')}</option>
+                    <option value="expert">{t('proficiency.expert')}</option>
                   </select>
                   <button
                     onClick={addSkill}
                     className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                   >
-                    Add Skill
+                    {t('employees.add_skill')}
                   </button>
                 </div>
               </div>

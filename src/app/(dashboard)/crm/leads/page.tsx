@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -33,6 +35,7 @@ const priorityColors: Record<string, string> = {
 }
 
 export default function LeadsPage() {
+  const t = useTranslations('crm')
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -59,7 +62,7 @@ export default function LeadsPage() {
   }, [page, search, statusFilter, priorityFilter])
 
   const handleDelete = async (id: string) => {
-    if (!(await confirm('Delete this lead?'))) return
+    if (!(await confirm(t('leads_delete_confirm')))) return
     try {
       await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' })
       setLeads(prev => prev.filter(l => l.id !== id))
@@ -69,19 +72,19 @@ export default function LeadsPage() {
   return (
     <div>
       <PageHeader
-        title="Leads"
-        description="Manage your sales leads"
+        title={t('leads_title')}
+        description={t('leads_description')}
         actions={
           <Link href="/crm/leads/new" className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            New Lead
+            {t('leads_new')}
           </Link>
         }
       />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
-        <input type="text" placeholder="Search leads..." value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
+        <input type="text" placeholder={t('leads_search')} value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]" />
         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Statuses</option>
+          <option value="">{t('leads_all_statuses')}</option>
           <option value="new">New</option>
           <option value="contacted">Contacted</option>
           <option value="qualified">Qualified</option>
@@ -89,7 +92,7 @@ export default function LeadsPage() {
           <option value="converted">Converted</option>
         </select>
         <select value={priorityFilter} onChange={e => { setPriorityFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm w-full sm:w-auto">
-          <option value="">All Priorities</option>
+          <option value="">{t('leads_all_priorities')}</option>
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
@@ -107,7 +110,7 @@ export default function LeadsPage() {
           ))}
         </div>
       ) : leads.length === 0 ? (
-        <EmptyState title="No leads found" description="Create your first lead to get started" action={<Link href="/crm/leads/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Lead</Link>} />
+        <EmptyState title={t('leads_empty_title')} description={t('leads_empty_desc')} action={<Link href="/crm/leads/new" className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">New Lead</Link>} />
       ) : (
         <>
           {/* Mobile card view */}
@@ -116,7 +119,7 @@ export default function LeadsPage() {
               <div key={lead.id} className="rounded-lg border bg-card p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <Link href={`/crm/leads/${lead.id}`} className="font-medium hover:text-primary">{lead.title || 'Untitled'}</Link>
+                    <Link href={`/crm/leads/${lead.id}`} className="font-medium hover:text-primary">{lead.title || t('leads_untitled')}</Link>
                     <p className="text-sm text-muted-foreground">{lead.name}</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
@@ -130,7 +133,7 @@ export default function LeadsPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t text-sm">
-                  <span className="text-muted-foreground">{typeof lead.assigned_to === 'object' ? lead.assigned_to?.name : lead.assigned_to || 'Unassigned'}</span>
+                  <span className="text-muted-foreground">{typeof lead.assigned_to === 'object' ? lead.assigned_to?.name : lead.assigned_to || t('leads_unassigned')}</span>
                   <div className="flex gap-2">
                     <Link href={`/crm/leads/${lead.id}`} className="text-muted-foreground hover:text-primary">View</Link>
                     <Link href={`/crm/leads/${lead.id}/edit`} className="text-muted-foreground hover:text-primary">Edit</Link>
@@ -145,14 +148,14 @@ export default function LeadsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Title</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Name</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Company</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Priority</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Assigned To</th>
-                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">Created</th>
-                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_title')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_name')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_company')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_status')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_priority')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_assigned')}</th>
+                  <th className="text-left p-3 text-sm font-medium text-muted-foreground">{t('leads_col_created')}</th>
+                  <th className="text-right p-3 text-sm font-medium text-muted-foreground">{t('leads_col_actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -182,8 +185,8 @@ export default function LeadsPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_next')}</button>
             </div>
           </div>
         </>

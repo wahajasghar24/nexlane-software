@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { useState, useEffect } from 'react'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
@@ -13,6 +15,7 @@ const typeIcons: Record<string, string> = {
 }
 
 export default function ActivitiesPage() {
+  const t = useTranslations('crm')
   const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState('')
@@ -49,25 +52,25 @@ export default function ActivitiesPage() {
 
   return (
     <div>
-      <PageHeader title="Activities" description="View all CRM activities" />
+      <PageHeader title={t('activities_title')} description={t('activities_description')} />
 
       <div className="flex flex-wrap gap-3 mb-4">
         <select value={typeFilter} onChange={e => { setTypeFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
-          <option value="">All Types</option>
-          <option value="call">Call</option>
-          <option value="meeting">Meeting</option>
-          <option value="email">Email</option>
-          <option value="follow_up">Follow Up</option>
-          <option value="task">Task</option>
+          <option value="">{t('activities_all_types')}</option>
+          <option value="call">{t('type_call')}</option>
+          <option value="meeting">{t('type_meeting')}</option>
+          <option value="email">{t('type_email')}</option>
+          <option value="follow_up">{t('type_follow_up')}</option>
+          <option value="task">{t('type_task')}</option>
         </select>
         <select value={entityTypeFilter} onChange={e => { setEntityTypeFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm">
-          <option value="">All Entities</option>
-          <option value="lead">Lead</option>
-          <option value="deal">Deal</option>
-          <option value="company">Company</option>
-          <option value="contact">Contact</option>
+          <option value="">{t('activities_all_entities')}</option>
+          <option value="lead">{t('entity_lead')}</option>
+          <option value="deal">{t('entity_deal')}</option>
+          <option value="company">{t('entity_company')}</option>
+          <option value="contact">{t('entity_contact')}</option>
         </select>
-        <input type="text" placeholder="Assigned to..." value={assignedFilter} onChange={e => { setAssignedFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
+        <input type="text" placeholder={t('activities_assigned_placeholder')} value={assignedFilter} onChange={e => { setAssignedFilter(e.target.value); setPage(1) }} className="rounded-md border bg-background px-3 py-2 text-sm" />
       </div>
 
       {loading ? (
@@ -85,7 +88,7 @@ export default function ActivitiesPage() {
           ))}
         </div>
       ) : activities.length === 0 ? (
-        <EmptyState title="No activities found" description="Activities from CRM actions will appear here" />
+        <EmptyState title={t('activities_empty_title')} description={t('activities_empty_desc')} />
       ) : (
         <>
           <div className="rounded-lg border bg-card">
@@ -119,8 +122,8 @@ export default function ActivitiesPage() {
           <div className="flex items-center justify-between mt-4">
             <p className="text-sm text-muted-foreground">Page {page} of {totalPages}</p>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_previous')}</button>
+              <button onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent disabled:opacity-50">{t('common_next')}</button>
             </div>
           </div>
         </>

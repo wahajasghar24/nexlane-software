@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/core/supabase/client'
 
 export default function ResetPasswordPage() {
+  const t = useTranslations('auth')
   const router = useRouter()
   const [ready, setReady] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -23,19 +25,19 @@ export default function ResetPasswordPage() {
     const boot = async () => {
       if (accessToken && refreshToken) {
         const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-        if (error) setError('Invalid or expired reset link. Request a new one.')
+        if (error) setError(t('reset_password.invalid_expired'))
         else setReady(true)
       } else {
-        setError('Invalid reset link. Request a new one.')
+        setError(t('reset_password.invalid_link'))
       }
     }
     boot()
-  }, [])
+  }, [t])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirm) {
-      setError('Passwords do not match')
+      setError(t('reset_password.passwords_mismatch'))
       return
     }
     setLoading(true)
@@ -58,25 +60,25 @@ export default function ResetPasswordPage() {
           <span className="text-xl font-bold">Nexlane</span>
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Set a new password</h1>
-          <p className="text-sm text-muted-foreground mt-1">Choose a new password for your account</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('reset_password.title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('reset_password.hint')}</p>
         </div>
         {done ? (
           <div className="space-y-4">
             <div className="rounded-md border border-green-200 bg-green-50 p-4 text-center text-sm text-green-800">
-              Password updated successfully!
+              {t('reset_password.success')}
             </div>
             <button
               onClick={() => router.push('/login')}
               className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
-              Go to Login
+              {t('reset_password.go_to_login')}
             </button>
           </div>
         ) : ready ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">New Password</label>
+              <label htmlFor="password" className="block text-sm font-medium mb-1">{t('reset_password.new_password')}</label>
               <input
                 id="password"
                 type="password"
@@ -88,7 +90,7 @@ export default function ResetPasswordPage() {
               />
             </div>
             <div>
-              <label htmlFor="confirm" className="block text-sm font-medium mb-1">Confirm Password</label>
+              <label htmlFor="confirm" className="block text-sm font-medium mb-1">{t('reset_password.confirm_password')}</label>
               <input
                 id="confirm"
                 type="password"
@@ -105,7 +107,7 @@ export default function ResetPasswordPage() {
               disabled={loading}
               className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
-              {loading ? 'Updating...' : 'Update Password'}
+              {loading ? t('reset_password.updating') : t('reset_password.update_password')}
             </button>
           </form>
         ) : (
@@ -115,7 +117,7 @@ export default function ResetPasswordPage() {
               href="/forgot-password"
               className="block w-full rounded-md border border-input px-4 py-2 text-center text-sm font-medium hover:bg-accent"
             >
-              Request a new link
+              {t('reset_password.request_new_link')}
             </Link>
           </div>
         )}
