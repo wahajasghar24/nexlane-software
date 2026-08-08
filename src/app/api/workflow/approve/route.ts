@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { authenticate } from '@/core/auth/authenticate'
 import { getStatusTransitions } from '@/core/workflow/statusMachine'
-import { approveRequest, rejectRequest } from '@/core/workflow/approvalService'
+import { approveRequest, rejectRequest, getAllApprovals } from '@/core/workflow/approvalService'
 import { createClient } from '@/core/supabase/server'
 import { DatabaseError } from '@/core/errors/database-error'
 import { AppError } from '@/core/errors/app-error'
@@ -42,6 +42,26 @@ function getStatusAfterRejection(entityType: string): string {
       return 'rejected'
     default:
       return 'rejected'
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const context = await authenticate(request)
+    const url = new URL(request.url)
+    const status = url.searchParams.get('status')
+
+    let approvals = await getAllApprovals(context.companyId)
+    if (status) {
+      approvals = approvals.filter((a: { status: string }) => a.status === status)
+    }
+
+    return NextResponse.json({ data: approvals, error: null })
+  } catch (err) {
+    return NextResponse.json(
+      { data: null, error: err instanceof Error ? err.message : 'Internal server error' },
+      { status: 500 },
+    )
   }
 }
 

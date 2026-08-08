@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { PageHeader } from '@/shared/components/page-header'
 import { EmptyState } from '@/shared/components/empty-state'
 
@@ -19,10 +21,17 @@ interface PayslipRow {
   employee_name: string
 }
 
+const statusColors: Record<string, string> = {
+  draft: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  approved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  paid: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+}
+
 export default function PayrollPage() {
+  const t = useTranslations('hr')
   const [rows, setRows] = useState<PayslipRow[]>([])
+  const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
   const [periodStart, setPeriodStart] = useState('')
   const [periodEnd, setPeriodEnd] = useState('')
 
@@ -34,15 +43,14 @@ export default function PayrollPage() {
     } catch {
       setRows([])
     }
+    setLoading(false)
   }, [])
 
-  useEffect(() => {
-    ;(async () => { await load() })()
-  }, [load])
+  useEffect(() => { setLoading(true); load() }, [load])
 
   const generate = async () => {
-    if (!periodStart || !periodEnd) { setError('Select period start and end'); return }
-    setBusy(true); setError('')
+    if (!periodStart || !periodEnd) { toast.error(t('payroll.select_period')); return }
+    setBusy(true)
     try {
       const res = await fetch('/api/payroll/payslips', {
         method: 'POST',
@@ -50,10 +58,12 @@ export default function PayrollPage() {
         body: JSON.stringify({ period_start: periodStart, period_end: periodEnd }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Failed'); return }
-      alert(`Generated ${data.data.generated} payslips, skipped ${data.data.skipped}`)
+      if (!res.ok) { toast.error(data.error || t('common.failed')); return }
+      toast.success(t('payroll.generated', { generated: data.data.generated, skipped: data.data.skipped }))
+      setPeriodStart('')
+      setPeriodEnd('')
       await load()
-    } catch { setError('Network error') }
+    } catch { toast.error(t('common.network_error')) }
     setBusy(false)
   }
 
@@ -64,41 +74,53 @@ export default function PayrollPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'approved' }),
       })
-      if (res.ok) await load()
+      if (res.ok) {
+        toast.success(t('payroll.approved_success'))
+        await load()
+      }
     } catch { /* noop */ }
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Payroll"
-        description="Manage payslips and payroll structures"
+        title={t('payroll.title')}
+        description={t('payroll.description')}
         actions={
           <div className="flex items-center gap-2">
             <input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} className="rounded-lg border bg-background px-3 py-2 text-sm" />
             <input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} className="rounded-lg border bg-background px-3 py-2 text-sm" />
             <button onClick={generate} disabled={busy} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-40">
-              {busy ? 'Generating…' : 'Generate Payslips'}
+              {busy ? t('payroll.generating') : t('payroll.generate_payslips')}
             </button>
           </div>
         }
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {rows.length === 0 ? (
-        <EmptyState title="No payslips" description="Generate payslips for a period to get started." />
+
+      {loading ? (
+        <div className="rounded-lg border">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="p-4 border-b last:border-b-0 animate-pulse">
+              <div className="h-5 w-48 bg-muted rounded mb-2" />
+              <div className="h-4 w-24 bg-muted rounded" />
+            </div>
+          ))}
+        </div>
+      ) : rows.length === 0 ? (
+        <EmptyState title={t('payroll.no_payslips')} description={t('payroll.no_payslips_hint')} />
       ) : (
         <div className="rounded-lg border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-muted-foreground">
-                <th className="px-4 py-3">Employee</th>
-                <th className="px-4 py-3">Period</th>
-                <th className="px-4 py-3">Base Salary</th>
-                <th className="px-4 py-3">Allowances</th>
-                <th className="px-4 py-3">Deductions</th>
-                <th className="px-4 py-3">Tax</th>
-                <th className="px-4 py-3">Net Pay</th>
-                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">{t('payroll.employee')}</th>
+                <th className="px-4 py-3">{t('payroll.period')}</th>
+                <th className="px-4 py-3">{t('payroll.base_salary')}</th>
+                <th className="px-4 py-3">{t('payroll.allowances')}</th>
+                <th className="px-4 py-3">{t('payroll.deductions')}</th>
+                <th className="px-4 py-3">{t('payroll.tax')}</th>
+                <th className="px-4 py-3">{t('payroll.net_pay')}</th>
+                <th className="px-4 py-3">{t('payroll.status_col')}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -112,10 +134,16 @@ export default function PayrollPage() {
                   <td className="px-4 py-3">{r.currency} {Number(r.deductions).toLocaleString()}</td>
                   <td className="px-4 py-3">{r.currency} {Number(r.tax).toLocaleString()}</td>
                   <td className="px-4 py-3 font-medium">{r.currency} {Number(r.net_pay).toLocaleString()}</td>
-                  <td className="px-4 py-3"><span className="rounded-full bg-muted px-2 py-0.5 text-xs capitalize">{r.status}</span></td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status] || 'bg-muted'}`}>
+                      {t(`hr.status.${r.status}`)}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     {r.status === 'draft' && (
-                      <button onClick={() => approve(r.id)} className="rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-700">Approve</button>
+                      <button onClick={() => approve(r.id)} className="rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-700">
+                        {t('common.approve')}
+                      </button>
                     )}
                   </td>
                 </tr>

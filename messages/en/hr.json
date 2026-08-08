@@ -388,6 +388,35 @@
       "error_rate": "Error Rate",
       "active_users": "Active Users",
       "not_available": "Not available"
+    },
+    "workflow": {
+      "title": "Workflow Approvals",
+      "description": "Review and manage pending approval requests",
+      "all": "All",
+      "entity_type": "Entity Type",
+      "entity_id": "Entity ID",
+      "requested_by": "Requested By",
+      "no_items": "No approval requests",
+      "no_items_hint": "No pending approvals at the moment"
+    },
+    "payroll": {
+      "title": "Payroll",
+      "description": "Manage payslips and payroll",
+      "generate_payslips": "Generate Payslips",
+      "generating": "Generating...",
+      "select_period": "Select period start and end",
+      "generated": "Generated {generated} payslips, skipped {skipped}",
+      "approved_success": "Payslip approved",
+      "no_payslips": "No payslips",
+      "no_payslips_hint": "Generate payslips for a period to get started",
+      "employee": "Employee",
+      "period": "Period",
+      "base_salary": "Base Salary",
+      "allowances": "Allowances",
+      "deductions": "Deductions",
+      "tax": "Tax",
+      "net_pay": "Net Pay",
+      "status_col": "Status"
     }
   }
 }

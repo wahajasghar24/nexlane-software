@@ -124,6 +124,20 @@
     "home_docs": "التوثيق",
     "home_next_logo": "شعار Next.js",
     "home_vercel_logo": "شعار Vercel",
-    "settings_base_currency": "العملة الأساسية"
+    "settings_base_currency": "العملة الأساسية",
+    "settings_tab_email": "البريد الإلكتروني",
+    "settings_email_config_title": "إعدادات البريد الإلكتروني",
+    "settings_email_api_key": "مفتاح API",
+    "settings_email_api_key_placeholder": "مفتاح API لخدمة البريد الإلكتروني",
+    "settings_email_from": "البريد المرسل",
+    "settings_save_email_config": "حفظ إعدادات البريد",
+    "settings_email_config_saved": "تم حفظ إعدادات البريد الإلكتروني!",
+    "settings_email_test_send": "بريد تجريبي",
+    "settings_email_test_to": "إرسال إلى",
+    "settings_email_send_test": "إرسال تجريبي",
+    "settings_email_sending": "جارٍ الإرسال...",
+    "settings_email_test_sent": "تم إرسال البريد التجريبي بنجاح!",
+    "settings_email_test_failed": "فشل إرسال البريد التجريبي",
+    "settings_email_test_to_required": "أدخل عنوان بريد إلكتروني للمستلم"
   }
 }

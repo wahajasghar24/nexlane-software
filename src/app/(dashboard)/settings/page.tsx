@@ -25,7 +25,7 @@ interface Company {
 
 export default function SettingsPage() {
   const t = useTranslations('misc')
-  const [activeSection, setActiveSection] = useState<'profile' | 'company' | 'security'>('profile')
+  const [activeSection, setActiveSection] = useState<'profile' | 'company' | 'security' | 'email'>('profile')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
@@ -41,6 +41,12 @@ export default function SettingsPage() {
   const [enrollData, setEnrollData] = useState<{ id: string; qr?: string; secret: string; uri: string } | null>(null)
   const [enrollCode, setEnrollCode] = useState('')
   const [busy, setBusy] = useState(false)
+
+  // --- Email config state ---
+  const [emailForm, setEmailForm] = useState({ api_key: '', from_email: '' })
+  const [testTo, setTestTo] = useState('')
+  const [emailMessage, setEmailMessage] = useState('')
+  const [sendingTest, setSendingTest] = useState(false)
 
   const loadMfa = useCallback(async () => {
     try {
@@ -123,6 +129,10 @@ export default function SettingsPage() {
       if (cData.data) {
         setCompany(cData.data)
         setCompanyForm({ name: cData.data.name || '', domain: cData.data.domain || '', phone: cData.data.phone || '', base_currency: cData.data.base_currency || 'AED' })
+        // Load email config from company_settings if present
+        if (cData.data.email_config) {
+          setEmailForm(cData.data.email_config)
+        }
       }
     }).finally(() => setLoading(false))
   }, [])
@@ -161,6 +171,38 @@ export default function SettingsPage() {
     finally { setSaving(false); setTimeout(() => setMessage(''), 3000) }
   }
 
+  const saveEmailConfig = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true); setEmailMessage('')
+    try {
+      const res = await fetch('/api/settings/company', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_config: emailForm }),
+      })
+      const data = await res.json()
+      if (data.error) setEmailMessage(`Error: ${data.error}`)
+      else setEmailMessage(t('settings_email_config_saved'))
+    } catch { setEmailMessage(t('settings_save_failed')) }
+    finally { setSaving(false); setTimeout(() => setEmailMessage(''), 3000) }
+  }
+
+  const sendTestEmail = async () => {
+    if (!testTo) { setEmailMessage(t('settings_email_test_to_required')); return }
+    setSendingTest(true); setEmailMessage('')
+    try {
+      const res = await fetch('/api/notifications/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: testTo, subject: 'Nexlane Test Email', body: 'This is a test email from Nexlane ERP.' }),
+      })
+      const data = await res.json()
+      if (data.sent) setEmailMessage(t('settings_email_test_sent'))
+      else setEmailMessage(t('settings_email_test_failed'))
+    } catch { setEmailMessage(t('settings_email_test_failed')) }
+    finally { setSendingTest(false); setTimeout(() => setEmailMessage(''), 5000) }
+  }
+
   if (loading) {
     return (
       <div>
@@ -175,10 +217,9 @@ export default function SettingsPage() {
   return (
     <div>
       <PageHeader title="Settings" description="Manage your account and company settings" />
-
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border-b">
-        {(['profile', 'company', 'security'] as const).map(tab => (
+        {(['profile', 'company', 'security', 'email'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => {
@@ -189,7 +230,7 @@ export default function SettingsPage() {
               activeSection === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            {tab === 'profile' ? t('settings_tab_profile') : tab === 'company' ? t('settings_tab_company') : t('settings_tab_security')}
+            {tab === 'profile' ? t('settings_tab_profile') : tab === 'company' ? t('settings_tab_company') : tab === 'security' ? t('settings_tab_security') : t('settings_tab_email')}
           </button>
         ))}
       </div>
@@ -233,7 +274,7 @@ export default function SettingsPage() {
                 value={profileForm.phone}
                 onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="+1234567890"
+                placeholder="+123****7890"
               />
             </div>
             <button
@@ -278,7 +319,7 @@ export default function SettingsPage() {
                 value={companyForm.phone}
                 onChange={e => setCompanyForm(c => ({ ...c, phone: e.target.value }))}
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="+1234567890"
+                placeholder="+123****7890"
               />
             </div>
             <div>
@@ -390,6 +431,70 @@ export default function SettingsPage() {
               {busy ? t('settings_2fa_starting') : t('settings_2fa_enable')}
             </button>
           )}
+        </div>
+      )}
+
+      {activeSection === 'email' && (
+        <div className="rounded-lg border bg-card p-6">
+          <h3 className="text-lg font-semibold mb-4">{t('settings_email_config_title')}</h3>
+
+          {emailMessage && (
+            <div className={`p-3 rounded-lg mb-4 text-sm ${
+              emailMessage.startsWith('Error') || emailMessage.includes('failed') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'
+            }`}>
+              {emailMessage}
+            </div>
+          )}
+
+          <form onSubmit={saveEmailConfig} className="space-y-4 max-w-lg mb-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">{t('settings_email_api_key')}</label>
+              <input
+                type="password"
+                value={emailForm.api_key}
+                onChange={e => setEmailForm(f => ({ ...f, api_key: e.target.value }))}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                placeholder={t('settings_email_api_key_placeholder')}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{t('settings_email_from')}</label>
+              <input
+                type="email"
+                value={emailForm.from_email}
+                onChange={e => setEmailForm(f => ({ ...f, from_email: e.target.value }))}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                placeholder="noreply@example.com"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
+            >
+              {saving ? t('settings_saving') : t('settings_save_email_config')}
+            </button>
+          </form>
+
+          <div className="border-t pt-4">
+            <h4 className="font-medium mb-3">{t('settings_email_test_send')}</h4>
+            <div className="flex items-end gap-3 max-w-lg">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1">{t('settings_email_test_to')}</label>
+                <input
+                  type="email"
+                  value={testTo}
+                  onChange={e => setTestTo(e.target.value)}
+                  className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  placeholder="test@example.com"
+                />
+              </div>
+              <button onClick={sendTestEmail} disabled={sendingTest}
+                className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 whitespace-nowrap">
+                {sendingTest ? t('settings_email_sending') : t('settings_email_send_test')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

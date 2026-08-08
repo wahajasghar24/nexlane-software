@@ -388,6 +388,35 @@
       "error_rate": "معدل الأخطاء",
       "active_users": "المستخدمون النشطون",
       "not_available": "غير متاح"
+    },
+    "workflow": {
+      "title": "موافقات سير العمل",
+      "description": "مراجعة وإدارة طلبات الاعتماد المعلقة",
+      "all": "الكل",
+      "entity_type": "نوع الكيان",
+      "entity_id": "معرّف الكيان",
+      "requested_by": "الطالب",
+      "no_items": "لا توجد طلبات اعتماد",
+      "no_items_hint": "لا توجد موافقات معلقة في الوقت الحالي"
+    },
+    "payroll": {
+      "title": "الرواتب",
+      "description": "إدارة كشوف الرواتب والرواتب",
+      "generate_payslips": "إنشاء كشوف رواتب",
+      "generating": "جارٍ الإنشاء...",
+      "select_period": "اختر بداية ونهاية الفترة",
+      "generated": "تم إنشاء {generated} كشوف رواتب، تم تخطي {skipped}",
+      "approved_success": "تم اعتماد كشوف الراتب",
+      "no_payslips": "لا توجد كشوف رواتب",
+      "no_payslips_hint": "أنشئ كشوف رواتب لفترة للبدء",
+      "employee": "الموظف",
+      "period": "الفترة",
+      "base_salary": "الراتب الأساسي",
+      "allowances": "البدلات",
+      "deductions": "الخصومات",
+      "tax": "الضريبة",
+      "net_pay": "صافي الراتب",
+      "status_col": "الحالة"
     }
   }
 }

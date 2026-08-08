@@ -112,3 +112,9 @@ export async function getPendingApprovals(
   }
   return pending
 }
+
+export async function getAllApprovals(
+  companyId: string
+): Promise<ApprovalRecord[]> {
+  return loadApprovals(companyId)
+}

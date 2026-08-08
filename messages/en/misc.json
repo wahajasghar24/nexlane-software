@@ -124,6 +124,20 @@
     "home_docs": "Documentation",
     "home_next_logo": "Next.js logo",
     "home_vercel_logo": "Vercel logomark",
-    "settings_base_currency": "Base Currency"
+    "settings_base_currency": "Base Currency",
+    "settings_tab_email": "Email",
+    "settings_email_config_title": "Email Configuration",
+    "settings_email_api_key": "API Key",
+    "settings_email_api_key_placeholder": "Your email service API key",
+    "settings_email_from": "From Email",
+    "settings_save_email_config": "Save Email Config",
+    "settings_email_config_saved": "Email configuration saved!",
+    "settings_email_test_send": "Test Email",
+    "settings_email_test_to": "Send to",
+    "settings_email_send_test": "Send Test",
+    "settings_email_sending": "Sending...",
+    "settings_email_test_sent": "Test email sent successfully!",
+    "settings_email_test_failed": "Failed to send test email",
+    "settings_email_test_to_required": "Enter a recipient email address"
   }
 }
