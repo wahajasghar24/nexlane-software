@@ -19,7 +19,6 @@
     "spreadsheets_previous": "السابق",
     "spreadsheets_next": "التالي",
     "spreadsheets_page_of": "الصفحة {page} من {totalPages}",
-
     "sheet_not_found": "الجدول غير موجود",
     "sheet_back": "العودة إلى الجداول",
     "sheet_export_csv": "تصدير CSV",
@@ -52,7 +51,6 @@
     "sheet_no_rows": "لا توجد صفوف بعد. انقر على \"إضافة صف\" للبدء.",
     "sheet_col_actions": "إجراءات",
     "sheet_row_number": "#",
-
     "files_title": "الملفات",
     "files_description": "إدارة الملفات المرفوعة",
     "files_empty_title": "لا توجد ملفات",
@@ -68,7 +66,6 @@
     "files_previous": "السابق",
     "files_next": "التالي",
     "files_page_of": "الصفحة {page} من {totalPages}",
-
     "settings_title": "الإعدادات",
     "settings_description": "إدارة إعدادات حسابك وشركتك",
     "settings_tab_profile": "إعدادات الملف الشخصي",
@@ -117,7 +114,6 @@
     "settings_2fa_verify_failed": "فشل التحقق",
     "settings_2fa_disable_failed": "فشل تعطيل التحقق بخطوتين",
     "settings_2fa_no_pending": "لا يوجد تسجيل قيد الانتظار",
-
     "home_get_started": "للبدء، عدّل ملف page.tsx.",
     "home_instructions": "تبحث عن نقطة بداية أو مزيد من الإرشادات؟ توجه إلى",
     "home_templates": "القوالب",
@@ -127,6 +123,7 @@
     "home_deploy": "النشر الآن",
     "home_docs": "التوثيق",
     "home_next_logo": "شعار Next.js",
-    "home_vercel_logo": "شعار Vercel"
+    "home_vercel_logo": "شعار Vercel",
+    "settings_base_currency": "العملة الأساسية"
   }
 }

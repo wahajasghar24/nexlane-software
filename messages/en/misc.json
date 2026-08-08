@@ -19,7 +19,6 @@
     "spreadsheets_previous": "Previous",
     "spreadsheets_next": "Next",
     "spreadsheets_page_of": "Page {page} of {totalPages}",
-
     "sheet_not_found": "Spreadsheet not found",
     "sheet_back": "Back to Spreadsheets",
     "sheet_export_csv": "Export CSV",
@@ -52,7 +51,6 @@
     "sheet_no_rows": "No rows yet. Click \"Add Row\" to get started.",
     "sheet_col_actions": "Actions",
     "sheet_row_number": "#",
-
     "files_title": "Files",
     "files_description": "Manage uploaded files",
     "files_empty_title": "No files",
@@ -68,7 +66,6 @@
     "files_previous": "Previous",
     "files_next": "Next",
     "files_page_of": "Page {page} of {totalPages}",
-
     "settings_title": "Settings",
     "settings_description": "Manage your account and company settings",
     "settings_tab_profile": "Profile Settings",
@@ -117,7 +114,6 @@
     "settings_2fa_verify_failed": "Verification failed",
     "settings_2fa_disable_failed": "Failed to disable 2FA",
     "settings_2fa_no_pending": "No pending enrollment",
-
     "home_get_started": "To get started, edit the page.tsx file.",
     "home_instructions": "Looking for a starting point or more instructions? Head over to",
     "home_templates": "Templates",
@@ -127,6 +123,7 @@
     "home_deploy": "Deploy Now",
     "home_docs": "Documentation",
     "home_next_logo": "Next.js logo",
-    "home_vercel_logo": "Vercel logomark"
+    "home_vercel_logo": "Vercel logomark",
+    "settings_base_currency": "Base Currency"
   }
 }
