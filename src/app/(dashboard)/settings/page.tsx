@@ -32,7 +32,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [profileForm, setProfileForm] = useState({ name: '', phone: '' })
-  const [companyForm, setCompanyForm] = useState({ name: '', domain: '', phone: '' })
+  const [companyForm, setCompanyForm] = useState({ name: '', domain: '', phone: '', base_currency: 'AED' })
 
   // --- MFA state ---
   const [mfaFactors, setMfaFactors] = useState<{ id: string; friendly_name?: string }[]>([])
@@ -122,7 +122,7 @@ export default function SettingsPage() {
       }
       if (cData.data) {
         setCompany(cData.data)
-        setCompanyForm({ name: cData.data.name || '', domain: cData.data.domain || '', phone: cData.data.phone || '' })
+        setCompanyForm({ name: cData.data.name || '', domain: cData.data.domain || '', phone: cData.data.phone || '', base_currency: cData.data.base_currency || 'AED' })
       }
     }).finally(() => setLoading(false))
   }, [])
@@ -280,6 +280,22 @@ export default function SettingsPage() {
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder="+1234567890"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{t('settings_base_currency') || 'Base Currency'}</label>
+              <select
+                value={companyForm.base_currency}
+                onChange={e => setCompanyForm(c => ({ ...c, base_currency: e.target.value }))}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="AED">AED — UAE Dirham</option>
+                <option value="USD">USD — US Dollar</option>
+                <option value="QAR">QAR — Qatari Riyal</option>
+                <option value="PKR">PKR — Pakistani Rupee</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="SAR">SAR — Saudi Riyal</option>
+              </select>
             </div>
             <button
               type="submit"

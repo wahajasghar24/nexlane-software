@@ -24,7 +24,19 @@ export async function GET() {
     .eq('id', companyMember.company_id)
     .single()
 
-  return NextResponse.json({ data: company, error: null })
+  // Fetch base_currency from company_settings
+  const { data: currSetting } = await supabase
+    .from('company_settings')
+    .select('value')
+    .eq('company_id', companyMember.company_id)
+    .eq('key', 'base_currency')
+    .single()
+
+  const base_currency = currSetting?.value
+    ? (typeof currSetting.value === 'string' ? JSON.parse(currSetting.value) : currSetting.value)
+    : 'AED'
+
+  return NextResponse.json({ data: { ...company, base_currency }, error: null })
 }
 
 export async function PATCH(req: NextRequest) {
@@ -49,6 +61,17 @@ export async function PATCH(req: NextRequest) {
   const updates: Record<string, any> = {}
   for (const key of allowed) {
     if (body[key] !== undefined) updates[key] = body[key]
+  }
+
+  // Handle base_currency via company_settings (key/value table)
+  if (body.base_currency !== undefined) {
+    await supabase
+      .from('company_settings')
+      .upsert({
+        company_id: companyMember.company_id,
+        key: 'base_currency',
+        value: JSON.stringify(body.base_currency),
+      }, { onConflict: 'company_id,key' })
   }
 
   const { data, error } = await supabase
