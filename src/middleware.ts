@@ -11,6 +11,8 @@ const publicPaths = [
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
   '/api/webhooks/n8n',
+  '/portal',
+  '/api/portal',
 ]
 
 function isPublicPath(path: string): boolean {
