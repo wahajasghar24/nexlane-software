@@ -32,9 +32,13 @@ export async function GET() {
     .eq('key', 'base_currency')
     .single()
 
-  const base_currency = currSetting?.value
-    ? (typeof currSetting.value === 'string' ? JSON.parse(currSetting.value) : currSetting.value)
-    : 'AED'
+  const base_currency = (() => {
+    if (!currSetting?.value) return 'AED'
+    try {
+      const v = typeof currSetting.value === 'string' ? JSON.parse(currSetting.value) : currSetting.value
+      return typeof v === 'string' ? v : 'AED'
+    } catch { return 'AED' }
+  })()
 
   return NextResponse.json({ data: { ...company, base_currency }, error: null })
 }
