@@ -82,6 +82,10 @@
     "enterprise_suite": "حزمة المؤسسات",
     "sales_inventory": "المبيعات والمخزون",
     "tools": "الأدوات",
-    "hr": " الموارد البشرية"
+    "hr": " الموارد البشرية",
+    "bank_reconciliation": "تسوية البنك",
+    "tax_reporting": "التقارير الضريبية",
+    "payroll": "كشوف الرواتب",
+    "approvals": "الموافقات"
   }
 }

@@ -47,6 +47,8 @@ const accountingItems = [
   { labelKey: 'invoices', href: '/accounting/invoices', icon: svg.projects },
   { labelKey: 'payments', href: '/accounting/payments', icon: svg.spreadsheet },
   { labelKey: 'reports', href: '/accounting/reports', icon: svg.timeline },
+  { labelKey: 'bank_reconciliation', href: '/accounting/bank-reconciliation', icon: svg.accounting },
+  { labelKey: 'tax_reporting', href: '/accounting/tax', icon: svg.accounting },
 ]
 
 const crmItems = [
@@ -67,6 +69,8 @@ const salesItems = [
 const hrItems = [
   { labelKey: 'attendance', href: '/hr/attendance', icon: svg.workLogs },
   { labelKey: 'time_off', href: '/hr/time-off', icon: svg.tasks },
+  { labelKey: 'payroll', href: '/payroll', icon: svg.accounting },
+  { labelKey: 'approvals', href: '/workflow', icon: svg.tasks },
 ]
 
 function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {

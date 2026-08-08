@@ -83,6 +83,10 @@
     "enterprise_suite": "Enterprise Suite",
     "sales_inventory": "Sales & Inventory",
     "tools": "Tools",
-    "hr": "HR"
+    "hr": "HR",
+    "bank_reconciliation": "Bank Reconciliation",
+    "tax_reporting": "Tax Reporting",
+    "payroll": "Payroll",
+    "approvals": "Approvals"
   }
 }
