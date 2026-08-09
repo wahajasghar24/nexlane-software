@@ -87,6 +87,7 @@
     "bank_reconciliation": "Bank Reconciliation",
     "tax_reporting": "Tax Reporting",
     "payroll": "Payroll",
-    "approvals": "Approvals"
+    "approvals": "Approvals",
+    "rbac": "Roles & Permissions"
   }
 }

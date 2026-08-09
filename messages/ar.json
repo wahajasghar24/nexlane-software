@@ -86,6 +86,7 @@
     "bank_reconciliation": "تسوية البنك",
     "tax_reporting": "التقارير الضريبية",
     "payroll": "كشوف الرواتب",
-    "approvals": "الموافقات"
+    "approvals": "الموافقات",
+    "rbac": "الأدوار والصلاحيات"
   }
 }
