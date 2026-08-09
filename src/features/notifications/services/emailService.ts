@@ -1,7 +1,7 @@
 import { Resend } from 'resend'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Nexlane <noreply@nexlane.software>'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Nexlane <no-reply@nexlane.online>'
 
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
 
