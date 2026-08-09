@@ -3,11 +3,23 @@ import { createClient } from '@/core/supabase/server'
 import { loginSchema } from '@/features/auth/schemas/auth.schema'
 import { syncProfile, syncEmployeeForUser } from '@/core/auth/profile-sync'
 import { logAudit } from '@/core/auth/audit'
+import { rateLimit, rateLimitKey } from '@/core/security/rate-limit'
 import { ZodError } from 'zod'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 10 attempts / 15 min per IP+email
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const body = await request.json()
+    const email = (body?.email || '').toString().toLowerCase()
+    const rl = rateLimit(rateLimitKey('login', ip, email), 10, 15 * 60 * 1000)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { data: null, error: { code: 'RATE_LIMITED', message: 'Too many login attempts. Please wait a few minutes.' } },
+        { status: 429 }
+      )
+    }
+
     const parsed = loginSchema.parse(body)
     const supabase = await createClient()
 
