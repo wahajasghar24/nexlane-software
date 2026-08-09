@@ -36,17 +36,14 @@ export default function PayrollPage() {
   const [periodEnd, setPeriodEnd] = useState('')
 
   const load = useCallback(async () => {
-    try {
-      const res = await fetch('/api/payroll/payslips?limit=100')
-      const data = await res.json()
-      setRows(data.data?.data ?? [])
-    } catch {
-      setRows([])
-    }
-    setLoading(false)
+    fetch('/api/payroll/payslips?limit=100')
+      .then(r => r.json())
+      .then(d => { setRows(d.data?.data ?? []) })
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false))
   }, [])
 
-  useEffect(() => { setLoading(true); load() }, [load])
+  useEffect(() => { load() }, [load])
 
   const generate = async () => {
     if (!periodStart || !periodEnd) { toast.error(t('payroll.select_period')); return }

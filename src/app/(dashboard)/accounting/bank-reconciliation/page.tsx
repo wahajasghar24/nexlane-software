@@ -71,7 +71,7 @@ export default function BankReconciliationPage() {
   useEffect(() => { fetchAccounts() }, [])
 
   const fetchTransactions = (accountId: string) => {
-    if (!accountId) { setTransactions([]); return }
+    if (!accountId) return
     fetch(`/api/accounting/bank-accounts/${accountId}/transactions`)
       .then(r => r.json())
       .then(d => {
@@ -83,7 +83,7 @@ export default function BankReconciliationPage() {
   }
 
   const fetchSessions = (accountId: string) => {
-    if (!accountId) { setSessions([]); return }
+    if (!accountId) return
     fetch(`/api/accounting/reconciliation?bank_account_id=${accountId}`)
       .then(r => r.json())
       .then(d => {
@@ -95,7 +95,6 @@ export default function BankReconciliationPage() {
 
   useEffect(() => {
     if (activeTab === 'reconciliation' && selectedAccountId) {
-      setTxLoading(true)
       fetchTransactions(selectedAccountId)
       fetchSessions(selectedAccountId)
     }
