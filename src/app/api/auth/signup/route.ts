@@ -3,11 +3,23 @@ import { createClient } from '@/core/supabase/server'
 import { createAdminClient } from '@/core/supabase/admin'
 import { signupSchema } from '@/features/auth/schemas/auth.schema'
 import { syncProfile, ensureEmployee, syncEmployeeForUser } from '@/core/auth/profile-sync'
+import { rateLimit, rateLimitKey } from '@/core/security/rate-limit'
 import { ZodError } from 'zod'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 5 attempts / 15 min per IP+email
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null
     const body = await request.json()
+    const email = (body?.email || '').toString().toLowerCase()
+    const rl = rateLimit(rateLimitKey('signup', ip, email), 5, 15 * 60 * 1000)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { data: null, error: { code: 'RATE_LIMITED', message: 'Too many attempts. Please wait a few minutes.' } },
+        { status: 429 }
+      )
+    }
+
     const parsed = signupSchema.parse(body)
 
     const supabase = await createClient()
@@ -76,15 +88,10 @@ export async function POST(request: Request) {
 
       // 4. Safety net: ensure employee records exist for ALL user's companies
       //    (handles rare edge cases where the above flows partially fail)
-      const employeeCount = await syncEmployeeForUser(
+      await syncEmployeeForUser(
         authData.user.id,
         parsed.fullName,
       )
-      if (employeeCount > 0) {
-        console.log(
-          `[sync] Signup: created ${employeeCount} employee record(s) for user ${authData.user.id}`,
-        )
-      }
     }
 
     return NextResponse.json({ data: { user: authData.user }, error: null })
