@@ -116,7 +116,7 @@ export default function DesignationsPage() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg border bg-background p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">editingId ? t('designations.edit_title') : t('designations.add_title')</h3>
+            <h3 className="text-lg font-semibold mb-4">{editingId ? t('designations.edit_title') : t('designations.add_title')}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t('common.name')} *</label>
