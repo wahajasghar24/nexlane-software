@@ -25,7 +25,7 @@
     },
     "accounts": {
       "title": "شجرة الحسابات",
-      "description": "إدارة شجرة الحسابات",
+      "description": "الوصف",
       "new_account": "حساب جديد",
       "cancel": "إلغاء",
       "select_type": "اختر النوع",
@@ -36,7 +36,6 @@
       "account_type": "نوع الحساب",
       "parent_account": "الحساب الأب",
       "none_top_level": "بدون (مستوى أعلى)",
-      "description": "الوصف",
       "optional_description": "وصف اختياري",
       "creating": "جارٍ الإنشاء...",
       "create_account": "إنشاء حساب",
@@ -95,7 +94,7 @@
     },
     "new_invoice": {
       "title": "فاتورة جديدة",
-      "description": "إنشاء فاتورة عميل جديدة",
+      "description": "الوصف",
       "customer_id": "معرّف العميل *",
       "customer_id_placeholder": "UUID من crm_companies",
       "customer_id_hint": "استخدم معرّف العميل UUID من شركات CRM",
@@ -108,7 +107,6 @@
       "optional_notes": "ملاحظات اختيارية",
       "invoice_items": "بنود الفاتورة",
       "add_item": "+ إضافة بند",
-      "description": "الوصف",
       "qty": "الكمية",
       "unit_price": "سعر الوحدة",
       "tax_pct": "الضريبة %",
@@ -125,13 +123,12 @@
     },
     "journal_entries": {
       "title": "قيود اليومية",
-      "description": "عرض وإدارة قيود اليومية",
+      "description": "الوصف",
       "new_entry": "قيد جديد",
       "no_entries": "لا توجد قيود يومية",
       "no_entries_hint": "أنشئ أول قيد يومي لتسجيل المعاملات",
       "entry_no": "رقم القيد",
       "date": "التاريخ",
-      "description": "الوصف",
       "reference": "المرجع",
       "status": "الحالة",
       "total": "الإجمالي",
@@ -170,7 +167,7 @@
     },
     "dashboard": {
       "title": "المحاسبة",
-      "description": "النظرة المالية والإدارة",
+      "description": "الوصف",
       "total_ar": "إجمالي الذمم المدينة",
       "revenue_mtd": "الإيرادات (منذ بداية الشهر)",
       "expenses_mtd": "المصروفات (منذ بداية الشهر)",
@@ -187,7 +184,6 @@
       "no_transactions": "لا توجد معاملات بعد",
       "no_transactions_hint": "ستظهر قيود اليومية هنا",
       "date": "التاريخ",
-      "description": "الوصف",
       "status": "الحالة",
       "entry_no": "رقم القيد"
     },
@@ -269,7 +265,7 @@
     },
     "general_ledger": {
       "title": "دفتر الأستاذ العام",
-      "description": "سجل تفصيلي للمعاملات",
+      "description": "الوصف",
       "back": "رجوع",
       "account": "الحساب",
       "all_accounts": "جميع الحسابات",
@@ -279,7 +275,6 @@
       "no_transactions_hint": "حاول تعديل عوامل التصفية",
       "date": "التاريخ",
       "entry_no": "رقم القيد",
-      "description": "الوصف",
       "debit": "مدين",
       "credit": "دائن",
       "page_of": "الصفحة {page} من {total}",
@@ -375,7 +370,8 @@
       "matched": "مطابق",
       "unmatched": "غير مطابق",
       "enter_journal_entry_id": "أدخل معرّف القيد اليومي للمطابقة",
-      "period": "الفترة"
+      "period": "الفترة",
+      "statement_balance": "رصيد كشف الحساب"
     }
   }
 }

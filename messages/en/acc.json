@@ -25,7 +25,7 @@
     },
     "accounts": {
       "title": "Chart of Accounts",
-      "description": "Manage your chart of accounts",
+      "description": "Description",
       "new_account": "New Account",
       "cancel": "Cancel",
       "select_type": "Select type",
@@ -36,7 +36,6 @@
       "account_type": "Account Type",
       "parent_account": "Parent Account",
       "none_top_level": "None (Top-level)",
-      "description": "Description",
       "optional_description": "Optional description",
       "creating": "Creating...",
       "create_account": "Create Account",
@@ -95,7 +94,7 @@
     },
     "new_invoice": {
       "title": "New Invoice",
-      "description": "Create a new customer invoice",
+      "description": "Description",
       "customer_id": "Customer ID *",
       "customer_id_placeholder": "UUID from crm_companies",
       "customer_id_hint": "Use customer UUID from CRM companies",
@@ -108,7 +107,6 @@
       "optional_notes": "Optional notes",
       "invoice_items": "Invoice Items",
       "add_item": "+ Add Item",
-      "description": "Description",
       "qty": "Qty",
       "unit_price": "Unit Price",
       "tax_pct": "Tax %",
@@ -125,13 +123,12 @@
     },
     "journal_entries": {
       "title": "Journal Entries",
-      "description": "View and manage journal entries",
+      "description": "Description",
       "new_entry": "New Entry",
       "no_entries": "No journal entries",
       "no_entries_hint": "Create your first journal entry to record transactions",
       "entry_no": "Entry #",
       "date": "Date",
-      "description": "Description",
       "reference": "Reference",
       "status": "Status",
       "total": "Total",
@@ -170,7 +167,7 @@
     },
     "dashboard": {
       "title": "Accounting",
-      "description": "Financial overview and management",
+      "description": "Description",
       "total_ar": "Total AR",
       "revenue_mtd": "Revenue (MTD)",
       "expenses_mtd": "Expenses (MTD)",
@@ -187,7 +184,6 @@
       "no_transactions": "No transactions yet",
       "no_transactions_hint": "Journal entries will appear here",
       "date": "Date",
-      "description": "Description",
       "status": "Status",
       "entry_no": "Entry #"
     },
@@ -269,7 +265,7 @@
     },
     "general_ledger": {
       "title": "General Ledger",
-      "description": "Detailed transaction history",
+      "description": "Description",
       "back": "Back",
       "account": "Account",
       "all_accounts": "All Accounts",
@@ -279,7 +275,6 @@
       "no_transactions_hint": "Try adjusting your filters",
       "date": "Date",
       "entry_no": "Entry #",
-      "description": "Description",
       "debit": "Debit",
       "credit": "Credit",
       "page_of": "Page {page} of {total}",
@@ -375,7 +370,8 @@
       "matched": "Matched",
       "unmatched": "Unmatched",
       "enter_journal_entry_id": "Enter journal entry ID to match",
-      "period": "Period"
+      "period": "Period",
+      "statement_balance": "Statement Balance"
     }
   }
 }
