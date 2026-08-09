@@ -18,7 +18,6 @@
     "quick_contacts_desc": "Manage contacts",
     "quick_activities": "Activities",
     "quick_activities_desc": "View activity log",
-
     "common_view": "View",
     "common_edit": "Edit",
     "common_delete": "Delete",
@@ -29,7 +28,6 @@
     "common_next": "Next",
     "common_page_of": "Page {page} of {totalPages}",
     "common_notes": "Notes",
-
     "companies_title": "Companies",
     "companies_description": "Manage your CRM companies",
     "companies_new": "New Company",
@@ -44,7 +42,6 @@
     "companies_col_website": "Website",
     "companies_col_contacts": "Contacts",
     "companies_col_actions": "Actions",
-
     "company_new_title": "New Company",
     "company_new_description": "Add a new company",
     "company_name": "Company Name",
@@ -61,7 +58,6 @@
     "company_create": "Create Company",
     "company_created": "Company created",
     "company_failed": "Failed",
-
     "company_detail_not_found": "Company not found",
     "company_detail_info": "Company Info",
     "company_detail_industry": "Industry",
@@ -74,11 +70,9 @@
     "company_detail_no_contacts": "No contacts linked",
     "company_detail_deals": "Deals ({count})",
     "company_detail_no_deals": "No deals for this company",
-
     "company_edit_title": "Edit Company",
     "company_edit_description": "Update company details",
     "company_edit_save": "Save Changes",
-
     "contacts_title": "Contacts",
     "contacts_description": "Manage your CRM contacts",
     "contacts_search": "Search contacts...",
@@ -91,7 +85,6 @@
     "contacts_col_phone": "Phone",
     "contacts_col_whatsapp": "WhatsApp",
     "contacts_col_actions": "Actions",
-
     "contact_new_title": "New Contact",
     "contact_new_description": "Create a new contact",
     "contact_name": "Name",
@@ -103,7 +96,6 @@
     "contact_primary": "Primary Contact",
     "contact_notes": "Notes",
     "contact_create": "Create Contact",
-
     "contact_detail_not_found": "Contact not found",
     "contact_detail_details": "Contact details",
     "contact_detail_name": "Name",
@@ -114,11 +106,9 @@
     "contact_detail_position": "Position",
     "contact_detail_created": "Created",
     "contact_detail_notes": "Notes",
-
     "contact_edit_title": "Edit Contact",
     "contact_edit_description": "Update contact information",
     "contact_edit_save": "Save Changes",
-
     "leads_title": "Leads",
     "leads_description": "Manage your sales leads",
     "leads_new": "New Lead",
@@ -139,7 +129,6 @@
     "leads_col_assigned": "Assigned To",
     "leads_col_created": "Created",
     "leads_col_actions": "Actions",
-
     "lead_new_title": "New Lead",
     "lead_new_description": "Create a new sales lead",
     "lead_title": "Title",
@@ -158,7 +147,6 @@
     "lead_create": "Create Lead",
     "lead_created": "Lead created",
     "lead_failed": "Failed",
-
     "lead_detail_untitled": "Untitled Lead",
     "lead_detail_contact": "Contact: {name}",
     "lead_detail_convert": "Convert to Deal",
@@ -184,13 +172,11 @@
     "lead_detail_no_notes": "No notes yet",
     "lead_detail_timeline": "Activity Timeline",
     "lead_detail_no_activities": "No activities recorded",
-
     "deals_title": "Deal Pipeline",
     "deals_description": "Track deals through each stage",
     "deals_new": "New Deal",
     "deals_empty_title": "No deals found",
     "deals_empty_desc": "Create your first deal to build your pipeline",
-
     "deal_new_title": "New Deal",
     "deal_new_description": "Create a new deal",
     "deal_name": "Deal Name",
@@ -205,7 +191,6 @@
     "deal_create": "Create Deal",
     "deal_created": "Deal created",
     "deal_failed": "Failed",
-
     "deal_detail_not_found": "Deal not found",
     "deal_detail_stage_desc": "Stage: {stage}",
     "deal_detail_mark_won": "Mark Won",
@@ -226,11 +211,9 @@
     "deal_detail_customer_phone": "Phone",
     "deal_detail_activities": "Activities",
     "deal_detail_no_activities": "No activities recorded",
-
     "deal_edit_title": "Edit Deal",
     "deal_edit_description": "Update deal information",
     "deal_edit_save": "Save Changes",
-
     "activities_title": "Activities",
     "activities_description": "View all CRM activities",
     "activities_all_types": "All Types",
@@ -240,7 +223,6 @@
     "activities_empty_desc": "Activities from CRM actions will appear here",
     "activities_assigned_to": "Assigned to: {name}",
     "activities_page_of": "Page {page} of {totalPages}",
-
     "status_new": "New",
     "status_contacted": "Contacted",
     "status_qualified": "Qualified",
@@ -271,6 +253,10 @@
     "entity_lead": "Lead",
     "entity_deal": "Deal",
     "entity_company": "Company",
-    "entity_contact": "Contact"
+    "entity_contact": "Contact",
+    "company_notes": "Notes",
+    "lead_edit_title": "Edit Lead",
+    "lead_edit_description": "Update lead details",
+    "lead_edit_save": "Save Changes"
   }
 }

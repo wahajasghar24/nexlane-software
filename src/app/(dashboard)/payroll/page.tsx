@@ -133,7 +133,7 @@ export default function PayrollPage() {
                   <td className="px-4 py-3 font-medium">{r.currency} {Number(r.net_pay).toLocaleString()}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[r.status] || 'bg-muted'}`}>
-                      {t(`hr.status.${r.status}`)}
+                      {t(`status.${r.status}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3">

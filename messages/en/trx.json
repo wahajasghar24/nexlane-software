@@ -23,7 +23,6 @@
     "sales_status_confirmed": "Confirmed",
     "sales_status_delivered": "Delivered",
     "sales_status_cancelled": "Cancelled",
-
     "sales_new_title": "New Quotation",
     "sales_new_desc": "Create a sales quotation — confirm it later to deduct stock and auto-generate an invoice",
     "sales_new_customer": "Customer",
@@ -46,7 +45,6 @@
     "sales_new_create": "Create Quotation",
     "sales_new_cancel": "Cancel",
     "sales_new_failed": "Failed to create quotation",
-
     "sales_detail_loading": "Loading...",
     "sales_detail_not_found": "Order not found",
     "sales_detail_failed_load": "Failed to load order",
@@ -66,7 +64,6 @@
     "sales_detail_tax": "Tax:",
     "sales_detail_total": "Total:",
     "sales_detail_notes_label": "Notes:",
-
     "purchase_title": "Purchase Orders",
     "purchase_description": "Vendor orders and stock receipts",
     "purchase_new": "New Purchase Order",
@@ -91,7 +88,6 @@
     "purchase_status_confirmed": "Confirmed",
     "purchase_status_received": "Received",
     "purchase_status_cancelled": "Cancelled",
-
     "purchase_new_title": "New Purchase Order",
     "purchase_new_desc": "Order stock from a vendor — receive it later to add stock to inventory",
     "purchase_new_vendor": "Vendor",
@@ -114,7 +110,6 @@
     "purchase_new_create": "Create Purchase Order",
     "purchase_new_cancel": "Cancel",
     "purchase_new_failed": "Failed to create purchase order",
-
     "purchase_detail_loading": "Loading...",
     "purchase_detail_not_found": "Order not found",
     "purchase_detail_failed_load": "Failed to load order",
@@ -133,6 +128,7 @@
     "purchase_detail_subtotal": "Subtotal:",
     "purchase_detail_tax": "Tax:",
     "purchase_detail_total": "Total:",
-    "purchase_detail_notes_label": "Notes:"
+    "purchase_detail_notes_label": "Notes:",
+    "sales_loading": "Loading..."
   }
 }

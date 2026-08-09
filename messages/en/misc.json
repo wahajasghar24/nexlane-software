@@ -138,6 +138,18 @@
     "settings_email_sending": "Sending...",
     "settings_email_test_sent": "Test email sent successfully!",
     "settings_email_test_failed": "Failed to send test email",
-    "settings_email_test_to_required": "Enter a recipient email address"
+    "settings_email_test_to_required": "Enter a recipient email address",
+    "settings_roles_title": "Roles & Permissions",
+    "settings_roles_desc": "Manage roles and permissions for your team",
+    "settings_users_title": "Users",
+    "settings_new_role": "New Role",
+    "settings_role_name": "Role Name",
+    "settings_save_role": "Save Role",
+    "settings_saved": "Settings saved",
+    "settings_load_failed": "Failed to load settings",
+    "settings_no_roles": "No roles created yet",
+    "settings_edit_permissions": "Edit Permissions",
+    "settings_assign_role": "Assign Role",
+    "settings_remove_role": "Remove Role"
   }
 }

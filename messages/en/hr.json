@@ -103,7 +103,8 @@
       "rejected": "Rejected",
       "pending": "Pending",
       "not_started": "Not Started",
-      "overdue": "Overdue"
+      "overdue": "Overdue",
+      "paid": "Paid"
     },
     "priority": {
       "low": "Low",

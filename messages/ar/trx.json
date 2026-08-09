@@ -23,7 +23,6 @@
     "sales_status_confirmed": "مؤكد",
     "sales_status_delivered": "تم التسليم",
     "sales_status_cancelled": "ملغي",
-
     "sales_new_title": "عرض أسعار جديد",
     "sales_new_desc": "أنشئ عرض سعر للبيع — قم بتأكيده لاحقاً لخصم المخزون وإنشاء فاتورة تلقائياً",
     "sales_new_customer": "العميل",
@@ -46,7 +45,6 @@
     "sales_new_create": "إنشاء عرض الأسعار",
     "sales_new_cancel": "إلغاء",
     "sales_new_failed": "فشل إنشاء عرض الأسعار",
-
     "sales_detail_loading": "جارٍ التحميل...",
     "sales_detail_not_found": "الطلب غير موجود",
     "sales_detail_failed_load": "فشل تحميل الطلب",
@@ -66,7 +64,6 @@
     "sales_detail_tax": "الضريبة:",
     "sales_detail_total": "الإجمالي:",
     "sales_detail_notes_label": "ملاحظات:",
-
     "purchase_title": "أوامر الشراء",
     "purchase_description": "أوامر الموردين وإيصالات المخزون",
     "purchase_new": "أمر شراء جديد",
@@ -91,7 +88,6 @@
     "purchase_status_confirmed": "مؤكد",
     "purchase_status_received": "تم الاستلام",
     "purchase_status_cancelled": "ملغي",
-
     "purchase_new_title": "أمر شراء جديد",
     "purchase_new_desc": "اطلب مخزوناً من مورد — استلمه لاحقاً لإضافته إلى المخزون",
     "purchase_new_vendor": "المورد",
@@ -114,7 +110,6 @@
     "purchase_new_create": "إنشاء أمر الشراء",
     "purchase_new_cancel": "إلغاء",
     "purchase_new_failed": "فشل إنشاء أمر الشراء",
-
     "purchase_detail_loading": "جارٍ التحميل...",
     "purchase_detail_not_found": "الطلب غير موجود",
     "purchase_detail_failed_load": "فشل تحميل الطلب",
@@ -133,6 +128,7 @@
     "purchase_detail_subtotal": "المجموع الفرعي:",
     "purchase_detail_tax": "الضريبة:",
     "purchase_detail_total": "الإجمالي:",
-    "purchase_detail_notes_label": "ملاحظات:"
+    "purchase_detail_notes_label": "ملاحظات:",
+    "sales_loading": "جارٍ التحميل..."
   }
 }

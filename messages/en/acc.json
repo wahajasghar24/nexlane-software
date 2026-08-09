@@ -333,6 +333,7 @@
       "tab_accounts": "Bank Accounts",
       "tab_reconciliation": "Reconciliation",
       "new_account": "New Bank Account",
+      "name": "Name",
       "cancel": "Cancel",
       "account_name": "Account Name",
       "name_placeholder": "e.g. Main Operating Account",

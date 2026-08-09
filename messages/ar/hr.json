@@ -103,7 +103,8 @@
       "rejected": "مرفوض",
       "pending": "قيد الانتظار",
       "not_started": "لم يبدأ",
-      "overdue": "متأخر"
+      "overdue": "متأخر",
+      "paid": "مدفوع"
     },
     "priority": {
       "low": "منخفضة",
