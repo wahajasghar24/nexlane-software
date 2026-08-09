@@ -59,18 +59,24 @@ export async function POST(request: Request) {
           is_default: true,
         })
 
-        // 2. Grant Owner role
-        const { data: ownerRole } = await adminClient
-          .from('roles')
-          .select('id')
-          .eq('company_id', company.id)
-          .eq('name', 'Owner')
-          .single()
+        // 1.5 Seed default roles for the new company (Owner, Admin, Manager, Employee, Accountant)
+        const defaultRoles = ['Owner', 'Admin', 'Manager', 'Employee', 'Accountant']
+        const roleRows: Record<string, string> = {}
+        for (const roleName of defaultRoles) {
+          const { data: roleRow } = await adminClient
+            .from('roles')
+            .insert({ company_id: company.id, name: roleName, is_system: true })
+            .select('id, name')
+            .single()
+          if (roleRow) roleRows[roleName] = roleRow.id
+        }
 
-        if (ownerRole) {
+        // 2. Grant Owner role
+        const ownerRoleId = roleRows['Owner']
+        if (ownerRoleId) {
           await adminClient.from('user_roles').insert({
             user_id: authData.user.id,
-            role_id: ownerRole.id,
+            role_id: ownerRoleId,
             company_id: company.id,
             assigned_by: authData.user.id,
           })
